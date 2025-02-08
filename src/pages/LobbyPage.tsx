@@ -5,7 +5,7 @@ import { LobbyScreen } from "../components/LobbyScreen";
 import { ThemeToggle } from "../components/ThemeToggle";
 
 // Create a Socket.IO client connection
-const socket = io("https://semantle.hobbyhood.app/");
+const socket = io("https://semantle.hobbyhood.app");
 
 export default function LobbyPage() {
   const navigate = useNavigate();
