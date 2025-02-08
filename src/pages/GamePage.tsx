@@ -19,7 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { BG_STYLE } from "@/constants/bgStyle";
+import { BG_STYLE, BG_STYLE_DARK } from "@/constants/bgStyle";
 
 // Create a Socket.IO client connection.
 const socket = io("https://semantle.hobbyhood.app");
@@ -42,6 +42,9 @@ export function GamePage() {
   // State for the win modal and statistics.
   const [winModalOpen, setWinModalOpen] = useState(false);
   const [winStats, setWinStats] = useState({ totalGuesses: 0, timeTaken: 0 });
+
+  const isDark = theme === "dark";
+  const style = isDark ? BG_STYLE : BG_STYLE_DARK;
 
   useEffect(() => {
     if (lobbyId) {
@@ -107,7 +110,7 @@ export function GamePage() {
   return (
     <div
       className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors"
-      style={BG_STYLE}
+      style={style}
     >
       <div className="flex flex-col container mx-auto px-4 py-2 h-full">
         <header className="flex justify-between items-center mb-4">

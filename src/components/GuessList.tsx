@@ -19,7 +19,7 @@ export function GuessList({ guesses }: GuessListProps) {
   );
 
   return (
-    <div className="backdrop-blur-[2px] p-2 bg-zinc-100/80 dark:bg-zinc-900/80 lg:p-2 pb-0 rounded-[20px] w-full h-[calc(100vh-160px)] flex flex-col items-center gap-2 overflow-auto">
+    <div className="backdrop-blur-[4px] p-2 border border-zinc-200 dark:border-zinc-800 lg:p-2 pb-0 rounded-[20px] w-full h-[calc(100vh-160px)] flex flex-col items-center gap-2 overflow-auto">
       <div className="grid grid-cols-2 gap-1 w-full bg-white dark:bg-black text-black dark:text-white rounded-full p-1">
         <button
           className={`px-2 py-1 transition-all rounded-full ${
@@ -46,7 +46,7 @@ export function GuessList({ guesses }: GuessListProps) {
         {sortedGuesses.map((guess, index) => (
           <div
             key={`${guess.guess}-${index}`}
-            className="max-w-md w-full text-black px-4 py-4 rounded-2xl bg-zinc-200 dark:bg-black dark:text-white"
+            className="max-w-md w-full text-black px-4 py-4 rounded-2xl bg-white dark:bg-zinc-800 dark:text-white"
           >
             <div className="flex justify-between gap-2 items-center">
               <span className="flex-1 font-medium truncate">{guess.guess}</span>
@@ -64,7 +64,7 @@ export function GuessList({ guesses }: GuessListProps) {
                   )}
                 </div>
                 {guess.similarity !== null ? (
-                  <div className="w-40 overflow-auto bg-white dark:bg-zinc-800 rounded-full h-3">
+                  <div className="w-40 overflow-auto bg-zinc-200/80 dark:bg-zinc-900 rounded-full h-3">
                     <div
                       className="bg-[#0AC8B9] h-full rounded-full transition-all"
                       style={{
