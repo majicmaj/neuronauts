@@ -1,17 +1,14 @@
-import { BG_STYLE } from "@/constants/bgStyle";
+import usePatternBg from "@/hooks/usePatternBg";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import { LobbyScreen } from "../components/LobbyScreen";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { useTheme } from "../hooks/useTheme";
 
 // Create a Socket.IO client connection
 const socket = io("https://semantle.hobbyhood.app");
 
 export default function LobbyPage() {
-  const { theme, setTheme } = useTheme();
-
   const navigate = useNavigate();
 
   // Emit event to create a lobby
@@ -30,13 +27,15 @@ export default function LobbyPage() {
     };
   }, [navigate]);
 
+  const style = usePatternBg();
+
   return (
     <div
       className="grid place-items-center p-2 min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors"
-      style={BG_STYLE}
+      style={style}
     >
       <div className="absolute top-0 p-2 flex justify-end w-full">
-        <ThemeToggle theme={theme} onChange={setTheme} />
+        <ThemeToggle />
       </div>
       <div className="p-8 rounded-lg shadow-xl grid place-items-center bg-white dark:bg-black text-black dark:text-white transition-colors">
         <LobbyScreen

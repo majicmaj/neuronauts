@@ -6,7 +6,6 @@ import { io } from "socket.io-client";
 import { GuessInput } from "../components/GuessInput";
 import { GuessList } from "../components/GuessList";
 import { ThemeToggle } from "../components/ThemeToggle";
-import { useTheme } from "../hooks/useTheme";
 import type { GameState, GuessResult } from "../types";
 
 // Import shadcn dialog components.
@@ -19,13 +18,12 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { BG_STYLE, BG_STYLE_DARK } from "@/constants/bgStyle";
+import usePatternBg from "@/hooks/usePatternBg";
 
 // Create a Socket.IO client connection.
 const socket = io("https://semantle.hobbyhood.app");
 
 export function GamePage() {
-  const { theme, setTheme } = useTheme();
   const { lobbyId } = useParams();
   const navigate = useNavigate();
 
@@ -43,8 +41,7 @@ export function GamePage() {
   const [winModalOpen, setWinModalOpen] = useState(false);
   const [winStats, setWinStats] = useState({ totalGuesses: 0, timeTaken: 0 });
 
-  const isDark = theme === "dark";
-  const style = isDark ? BG_STYLE : BG_STYLE_DARK;
+  const style = usePatternBg();
 
   useEffect(() => {
     if (lobbyId) {
@@ -123,7 +120,7 @@ export function GamePage() {
               </span>
             )}
           </div>
-          <ThemeToggle theme={theme} onChange={setTheme} />
+          <ThemeToggle />
         </header>
 
         <main className="flex flex-col items-center justify-center flex-grow">
