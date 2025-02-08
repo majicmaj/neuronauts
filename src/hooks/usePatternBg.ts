@@ -5,7 +5,7 @@ const usePatternBg = () => {
   const { effectiveTheme } = useTheme();
 
   const isDark = effectiveTheme === "dark";
-  const style = isDark ? BG_STYLE : BG_STYLE_DARK;
+  const style = !isDark ? BG_STYLE : BG_STYLE_DARK;
 
   return style;
 };
