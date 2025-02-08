@@ -19,17 +19,17 @@ export function GuessList({ guesses }: GuessListProps) {
           className="max-w-md w-full text-black px-4 py-2 rounded-2xl bg-zinc-200 dark:bg-black dark:text-white"
         >
           <div className="flex justify-between gap-2 items-center">
-            <span className="font-medium truncate">
+            <span className="flex-1 font-medium truncate">
               #{guesses?.indexOf(guess)} {guess.guess}
             </span>
 
             {guess.similarity !== null && (
-              <span className="text-sm flex-1">
+              <span className="text-xs text-zinc-600">
                 {(guess.similarity * 100).toFixed(2)}%
               </span>
             )}
             {guess.similarity !== null ? (
-              <div className="w-40 overflow-auto border-zinc-200 border-1 bg-white dark:bg-gray-800 rounded-full h-4">
+              <div className="w-20 lg:w-40 overflow-auto border-zinc-200 border-1 bg-white dark:bg-gray-800 rounded-full h-4">
                 <div
                   className="bg-black dark:bg-white h-full rounded-full transition-all"
                   style={{ width: `${Math.max(0, guess.similarity) * 100}%` }}
