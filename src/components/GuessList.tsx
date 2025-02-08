@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { GuessResult } from "../types";
+import GuessItem from "./GuessItem";
 
 interface GuessListProps {
   guesses: GuessResult[];
@@ -75,7 +76,7 @@ export function GuessList({ guesses }: GuessListProps) {
                   </span>
 
                   {mostRecentGuess.similarity !== null && (
-                    <span className="w-12 text-sm opacity-80">
+                    <span className="w-14 text-sm opacity-80">
                       {(mostRecentGuess.similarity * 100).toFixed(2)}%
                     </span>
                   )}
@@ -102,47 +103,10 @@ export function GuessList({ guesses }: GuessListProps) {
           </div>
         )}
 
-        {mostRecentGuess && (
-          <div className="border-b border-zinc-300 dark:border-zinc-700 w-[calc(100%-64px)] my-2" />
-        )}
+        <div className="border-b border-zinc-300 dark:border-zinc-700 w-[calc(100%-64px)] my-2" />
+
         {filterDuplicates(sortedGuesses).map((guess, index) => (
-          <div
-            key={`${guess.guess}-${index}`}
-            className="max-w-md w-full border border-zinc-200 dark:border-zinc-800 text-black px-4 py-4 rounded-2xl bg-white dark:bg-zinc-800 dark:text-white"
-          >
-            <div className="flex justify-between gap-2 items-center">
-              <span className="flex-1 font-medium truncate">{guess.guess}</span>
-
-              <div className="flex justify-between gap-1 items-center flex-col lg:flex-row lg:gap-2">
-                <div className="flex justify-between gap-2 items-center">
-                  <span className="w-10 font-normal text-sm truncate opacity-60">
-                    #{guesses?.indexOf(guess) + 1}
-                  </span>
-
-                  {guess.similarity !== null && (
-                    <span className="w-12 text-sm opacity-80">
-                      {(guess.similarity * 100).toFixed(2)}%
-                    </span>
-                  )}
-                </div>
-                {guess.similarity !== null ? (
-                  <div className="w-40 overflow-auto bg-zinc-200/80 dark:bg-zinc-900 rounded-full h-3">
-                    <div
-                      className="bg-[#0AC8B9] h-full rounded-full transition-all"
-                      style={{
-                        width: `${Math.max(0, guess.similarity) * 100}%`,
-                        backgroundSize: "100% 100%",
-                      }}
-                    ></div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-zinc-500 truncate">
-                    {guess.error}
-                  </p>
-                )}
-              </div>
-            </div>
-          </div>
+          <GuessItem key={index} guess={guess} index={guesses.indexOf(guess)} />
         ))}
 
         {sortedGuesses.length === 0 && (

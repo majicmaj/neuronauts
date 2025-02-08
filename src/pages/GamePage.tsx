@@ -144,17 +144,26 @@ export function GamePage() {
       {/* WIN MODAL using shadcn Dialog */}
       <Dialog open={winModalOpen} onOpenChange={setWinModalOpen}>
         {/* We omit DialogTrigger since the modal opens programmatically */}
-        <DialogContent className="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg p-8 shadow-lg">
+        <DialogContent className="max-w-md mx-auto bg-white border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 rounded-lg p-8 shadow-lg">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
-              <Trophy className="w-8 h-8 text-yellow-500" />
+              <Trophy className="w-8 h-8 text-teal-500" />
               Congratulations!
             </DialogTitle>
             <DialogDescription>
-              You found the word in {winStats.totalGuesses}{" "}
-              {winStats.totalGuesses === 1 ? "guess" : "guesses"}.
-              <br />
-              Time Taken: {winStats.timeTaken.toFixed(2)} seconds.
+              <div>
+                The word was{" "}
+                <span className="font-medium text-lg">
+                  {gameState.targetWord}
+                </span>
+                and you guessed it in{" "}
+                <span className="font-medium text-lg">
+                  {winStats.totalGuesses}
+                </span>{" "}
+                {winStats.totalGuesses === 1 ? "guess" : "guesses"}.
+                <br />
+                Time Taken: {winStats.timeTaken.toFixed(2)} seconds.
+              </div>
             </DialogDescription>
           </DialogHeader>
           <div className="mt-6 flex justify-end">
