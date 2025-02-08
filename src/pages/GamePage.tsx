@@ -9,7 +9,7 @@ import { useTheme } from "../hooks/useTheme";
 import type { GameState, GuessResult } from "../types";
 
 // Create a Socket.IO client connection
-const socket = io("http://localhost:3000");
+const socket = io("https://semantle.hobbyhood.app/");
 
 export function GamePage() {
   const { theme, setTheme } = useTheme();

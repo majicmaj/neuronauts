@@ -12,7 +12,7 @@ import { ThemeToggle } from "./components/ThemeToggle";
 import { GamePage } from "./pages/GamePage";
 
 // Create a Socket.IO client connection
-const socket = io("http://localhost:3000");
+const socket = io("https://semantle.hobbyhood.app/");
 
 function LobbyPage() {
   const navigate = useNavigate();
