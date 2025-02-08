@@ -11,11 +11,27 @@ const sortBySimilarity = (a: GuessResult, b: GuessResult) => {
   return b.similarity - a.similarity;
 };
 
+const sortByReverseOrder = (a: GuessResult, b: GuessResult) => {
+  return -1;
+};
+
+const filterDuplicates = (guesses: GuessResult[]) => {
+  const seen = new Set();
+  return guesses.filter((guess) => {
+    const key = `${guess.guess}-${guess.similarity}`;
+    if (seen.has(key)) {
+      return false;
+    }
+    seen.add(key);
+    return true;
+  });
+};
+
 export function GuessList({ guesses }: GuessListProps) {
   const [sort, setSort] = useState<"default" | "similarity">("similarity");
 
   const sortedGuesses = [...guesses].sort(
-    sort === "similarity" ? sortBySimilarity : undefined
+    sort === "similarity" ? sortBySimilarity : sortByReverseOrder
   );
 
   const mostRecentGuess = guesses[guesses.length - 1];
@@ -45,52 +61,51 @@ export function GuessList({ guesses }: GuessListProps) {
         </button>
       </div>
 
-      {mostRecentGuess && (
-        <div className="max-w-md w-full bg-black text-white border px-4 py-4 rounded-2xl dark:bg-white dark:text-black">
-          <div className="flex justify-between gap-2 items-center">
-            <span className="flex-1 font-medium truncate">
-              {mostRecentGuess.guess}
-            </span>
-            <div className="flex justify-between gap-1 items-center flex-col lg:flex-row lg:gap-2">
-              <div className="flex justify-between gap-2 items-center">
-                <span className="w-10 font-normal text-sm truncate opacity-60">
-                  #{guesses?.indexOf(mostRecentGuess) + 1}
-                </span>
-
-                {mostRecentGuess.similarity !== null && (
-                  <span className="w-12 text-sm opacity-80">
-                    {(mostRecentGuess.similarity * 100).toFixed(2)}%
+      <div className="rounded-xl w-full h-[calc(100vh-160px)] flex flex-col items-center gap-2 overflow-auto">
+        {mostRecentGuess && (
+          <div className="max-w-md w-full bg-black text-white border px-4 py-4 rounded-2xl dark:bg-white dark:text-black">
+            <div className="flex justify-between gap-2 items-center">
+              <span className="flex-1 font-medium truncate">
+                {mostRecentGuess.guess}
+              </span>
+              <div className="flex justify-between gap-1 items-center flex-col lg:flex-row lg:gap-2">
+                <div className="flex justify-between gap-2 items-center">
+                  <span className="w-10 font-normal text-sm truncate opacity-60">
+                    #{guesses?.indexOf(mostRecentGuess) + 1}
                   </span>
+
+                  {mostRecentGuess.similarity !== null && (
+                    <span className="w-12 text-sm opacity-80">
+                      {(mostRecentGuess.similarity * 100).toFixed(2)}%
+                    </span>
+                  )}
+                </div>
+                {mostRecentGuess.similarity !== null ? (
+                  <div className="w-40 overflow-auto bg-zinc-800 dark:bg-zinc-200 rounded-full h-3">
+                    <div
+                      className="bg-[#0AC8B9] h-full rounded-full transition-all"
+                      style={{
+                        width: `${
+                          Math.max(0, mostRecentGuess.similarity) * 100
+                        }%`,
+                        backgroundSize: "100% 100%",
+                      }}
+                    ></div>
+                  </div>
+                ) : (
+                  <p className="text-sm text-zinc-500 truncate">
+                    {mostRecentGuess.error}
+                  </p>
                 )}
               </div>
-              {mostRecentGuess.similarity !== null ? (
-                <div className="w-40 overflow-auto bg-zinc-800 dark:bg-zinc-200 rounded-full h-3">
-                  <div
-                    className="bg-[#0AC8B9] h-full rounded-full transition-all"
-                    style={{
-                      width: `${
-                        Math.max(0, mostRecentGuess.similarity) * 100
-                      }%`,
-                      backgroundSize: "100% 100%",
-                    }}
-                  ></div>
-                </div>
-              ) : (
-                <p className="text-sm text-zinc-500 truncate">
-                  {mostRecentGuess.error}
-                </p>
-              )}
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {mostRecentGuess && (
-        <div className="border-b border-zinc-300 dark:border-zinc-700 w-[calc(100%-64px)] my-2" />
-      )}
-
-      <div className="rounded-xl w-full h-[calc(100vh-160px)] flex flex-col items-center gap-2 overflow-auto">
-        {sortedGuesses.map((guess, index) => (
+        {mostRecentGuess && (
+          <div className="border-b border-zinc-300 dark:border-zinc-700 w-[calc(100%-64px)] my-2" />
+        )}
+        {filterDuplicates(sortedGuesses).map((guess, index) => (
           <div
             key={`${guess.guess}-${index}`}
             className="max-w-md w-full border border-zinc-200 dark:border-zinc-800 text-black px-4 py-4 rounded-2xl bg-white dark:bg-zinc-800 dark:text-white"
@@ -100,7 +115,7 @@ export function GuessList({ guesses }: GuessListProps) {
 
               <div className="flex justify-between gap-1 items-center flex-col lg:flex-row lg:gap-2">
                 <div className="flex justify-between gap-2 items-center">
-                  <span className="w-8 font-normal text-sm truncate opacity-60">
+                  <span className="w-10 font-normal text-sm truncate opacity-60">
                     #{guesses?.indexOf(guess) + 1}
                   </span>
 
