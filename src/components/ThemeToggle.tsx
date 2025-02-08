@@ -8,7 +8,7 @@ interface ThemeToggleProps {
 
 export function ThemeToggle({ theme, onChange }: ThemeToggleProps) {
   return (
-    <div className="relative group">
+    <div className="z-10 relative group">
       <button
         onClick={() => onChange(theme)}
         className="p-3 rounded-lg bg-black dark:bg-white text-white dark:text-black"

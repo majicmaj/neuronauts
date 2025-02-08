@@ -19,12 +19,12 @@ export function GuessList({ guesses }: GuessListProps) {
   );
 
   return (
-    <div className="lg:p-2 pb-0 rounded-xl w-full h-[calc(100vh-160px)] flex flex-col items-center gap-2 overflow-auto">
-      <div className="grid grid-cols-2 gap-1 w-full bg-zinc-200 dark:bg-white text-black dark:text-white rounded-full p-1">
+    <div className="backdrop-blur-[2px] p-2 bg-zinc-100/80 dark:bg-zinc-900/80 lg:p-2 pb-0 rounded-[20px] w-full h-[calc(100vh-160px)] flex flex-col items-center gap-2 overflow-auto">
+      <div className="grid grid-cols-2 gap-1 w-full bg-white dark:bg-black text-black dark:text-white rounded-full p-1">
         <button
           className={`px-2 py-1 transition-all rounded-full ${
             sort === "default"
-              ? "bg-black text-white dark:text-white dark:bg-black"
+              ? "bg-black text-white dark:text-black dark:bg-white"
               : ""
           }`}
           onClick={() => setSort("default")}
@@ -34,7 +34,7 @@ export function GuessList({ guesses }: GuessListProps) {
         <button
           className={`px-2 py-1 transition-all rounded-full ${
             sort === "similarity"
-              ? "bg-black text-white dark:text-white dark:bg-black"
+              ? "bg-black text-white dark:text-black dark:bg-white"
               : ""
           }`}
           onClick={() => setSort("similarity")}
@@ -64,7 +64,7 @@ export function GuessList({ guesses }: GuessListProps) {
                   )}
                 </div>
                 {guess.similarity !== null ? (
-                  <div className="w-40 overflow-auto border-zinc-200 border-1 bg-white dark:bg-gray-800 rounded-full h-3">
+                  <div className="w-40 overflow-auto bg-white dark:bg-zinc-800 rounded-full h-3">
                     <div
                       className="bg-[#0AC8B9] h-full rounded-full transition-all"
                       style={{

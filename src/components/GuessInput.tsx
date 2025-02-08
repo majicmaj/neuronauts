@@ -31,7 +31,7 @@ export function GuessInput({ onGuess, disabled }: GuessInputProps) {
         onChange={(e) => setInput(e.target.value)}
         disabled={disabled}
         placeholder="Enter your guess..."
-        className="px-3 flex-1 rounded-full bg-zinc-200/80 bg-white dark:bg-black text-black dark:text-white placeholder-gray-500 focus:outline-none"
+        className="px-3 flex-1 rounded-full bg-zinc-200/80 dark:bg-zinc-900 text-black dark:text-white placeholder-gray-500 focus:outline-none"
       />
       <button
         type="submit"

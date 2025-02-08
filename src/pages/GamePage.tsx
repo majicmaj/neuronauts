@@ -19,6 +19,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { BG_STYLE } from "@/constants/bgStyle";
 
 // Create a Socket.IO client connection.
 const socket = io("https://semantle.hobbyhood.app");
@@ -104,7 +105,10 @@ export function GamePage() {
   };
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
+    <div
+      className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors"
+      style={BG_STYLE}
+    >
       <div className="flex flex-col container mx-auto px-4 py-2 h-full">
         <header className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
@@ -129,7 +133,7 @@ export function GamePage() {
               <LoaderIcon className="animate-spin w-8 h-8" />
             </div>
           ) : (
-            <div className="w-full flex flex-col gap-8">
+            <div className="w-full flex flex-col items-center gap-8">
               <GuessList guesses={gameState.guessHistory} />
               <GuessInput onGuess={handleGuess} />
             </div>
