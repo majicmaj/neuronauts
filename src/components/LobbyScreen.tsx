@@ -1,5 +1,5 @@
-import { Brain } from "lucide-react";
 import React, { useState } from "react";
+import Neuronaut from "./Neuronaut";
 
 interface LobbyScreenProps {
   onCreateLobby: () => void;
@@ -19,7 +19,8 @@ export function LobbyScreen({ onCreateLobby, onJoinLobby }: LobbyScreenProps) {
   return (
     <div className="flex flex-col items-center gap-8 w-full max-w-md mx-auto">
       <div className="flex items-center gap-3">
-        <Brain className="w-12 h-12" />
+        {/* <Brain className="w-12 h-12" /> */}
+        <Neuronaut className="w-16 h-16" />
         <h1 className="text-4xl font-bold">Neuronauts</h1>
       </div>
 

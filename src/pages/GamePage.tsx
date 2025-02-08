@@ -1,5 +1,5 @@
 // GamePage.tsx
-import { Brain, LoaderIcon, Trophy } from "lucide-react";
+import { LoaderIcon, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -10,6 +10,7 @@ import type { GameState, GuessResult } from "../types";
 
 // Import shadcn dialog components.
 // (Adjust the import path if your project structure differs)
+import Neuronaut from "@/components/Neuronaut";
 import {
   Dialog,
   DialogClose,
@@ -112,7 +113,8 @@ export function GamePage() {
       <div className="flex flex-col container mx-auto px-4 py-2 h-full">
         <header className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
-            <Brain className="w-8 h-8" />
+            {/* <Brain className="w-8 h-8" /> */}
+            <Neuronaut className="w-10 h-10" />
             <h1 className="text-2xl font-bold">Neuronauts</h1>
             {lobbyId && (
               <span className="text-sm bg-black dark:bg-white text-white dark:text-black px-2 py-1 rounded">
