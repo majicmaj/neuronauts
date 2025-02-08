@@ -137,8 +137,8 @@ export function GamePage() {
             </div>
           ) : (
             <div className="w-full flex flex-col items-center gap-8">
-              <GuessList guesses={gameState.guessHistory} />
               <GuessInput onGuess={handleGuess} />
+              <GuessList guesses={gameState.guessHistory} />
             </div>
           )}
         </main>
