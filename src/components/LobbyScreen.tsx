@@ -20,7 +20,7 @@ export function LobbyScreen({ onCreateLobby, onJoinLobby }: LobbyScreenProps) {
     <div className="flex flex-col items-center gap-8 w-full max-w-md mx-auto">
       <div className="flex items-center gap-3">
         <Brain className="w-12 h-12" />
-        <h1 className="text-4xl font-bold">Semantle</h1>
+        <h1 className="text-4xl font-bold">Neuronauts</h1>
       </div>
 
       <button

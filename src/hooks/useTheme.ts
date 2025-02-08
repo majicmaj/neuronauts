@@ -36,11 +36,8 @@ export function useTheme() {
     const root = window.document.documentElement;
     const effectiveTheme = theme === "system" ? systemTheme : theme;
 
-    if (effectiveTheme === "dark") {
-      root.classList.add("dark");
-    } else {
-      root.classList.remove("dark");
-    }
+    root.classList.remove("light", "dark");
+    root.classList.add(effectiveTheme);
 
     localStorage.setItem("theme", theme);
   }, [theme, systemTheme]);

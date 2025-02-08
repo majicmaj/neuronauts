@@ -69,7 +69,7 @@ export function GamePage() {
         <header className="flex justify-between items-center">
           <div className="flex items-center gap-2">
             <Brain className="w-8 h-8" />
-            <h1 className="text-2xl font-bold">Semantle</h1>
+            <h1 className="text-2xl font-bold">Neuronauts</h1>
             {lobbyId && (
               <span className="text-sm bg-black dark:bg-white text-white dark:text-black px-2 py-1 rounded">
                 {lobbyId}
