@@ -110,7 +110,7 @@ export function GamePage() {
       className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors"
       style={style}
     >
-      <div className="flex flex-col container mx-auto px-4 py-2 h-full">
+      <div className="flex flex-col container max-w-lg mx-auto px-4 py-2 h-full">
         <header className="flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
             {/* <Brain className="w-8 h-8" /> */}

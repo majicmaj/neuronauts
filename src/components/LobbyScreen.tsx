@@ -46,7 +46,7 @@ export function LobbyScreen({ onCreateLobby, onJoinLobby }: LobbyScreenProps) {
           value={lobbyId}
           onChange={(e) => setLobbyId(e.target.value.toUpperCase())}
           placeholder="Enter Lobby Code"
-          className="w-full px-4 py-3 rounded-lg border-2 border-black dark:border-white bg-white dark:bg-black text-black dark:text-white placeholder-gray-500 focus:outline-none"
+          className="w-full px-4 py-3 rounded-lg border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-black text-black dark:text-white placeholder-gray-500 focus:outline-none"
           maxLength={6}
         />
         <button

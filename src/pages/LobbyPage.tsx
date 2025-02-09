@@ -37,7 +37,7 @@ export default function LobbyPage() {
       <div className="absolute top-0 p-2 flex justify-end w-full">
         <ThemeToggle />
       </div>
-      <div className="p-8 rounded-lg shadow-xl grid place-items-center bg-white dark:bg-black text-black dark:text-white transition-colors">
+      <div className="p-8 rounded-lg dark:border dark:border-zinc-800 shadow-xl grid place-items-center bg-white dark:bg-black text-black dark:text-white transition-colors">
         <LobbyScreen
           onCreateLobby={handleCreateLobby}
           onJoinLobby={(lobbyId) => navigate(`/game/${lobbyId}`)}
