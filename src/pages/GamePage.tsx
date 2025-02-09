@@ -10,6 +10,7 @@ import type { GameState, GuessResult } from "../types";
 
 // Import shadcn dialog components.
 // (Adjust the import path if your project structure differs)
+import BackgroundPattern from "@/components/BackgroundPattern";
 import Neuronaut from "@/components/Neuronaut";
 import {
   Dialog,
@@ -19,7 +20,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import usePatternBg from "@/hooks/usePatternBg";
 
 // Create a Socket.IO client connection.
 const socket = io("https://semantle.hobbyhood.app");
@@ -41,8 +41,6 @@ export function GamePage() {
   // State for the win modal and statistics.
   const [winModalOpen, setWinModalOpen] = useState(false);
   const [winStats, setWinStats] = useState({ totalGuesses: 0, timeTaken: 0 });
-
-  const style = usePatternBg();
 
   useEffect(() => {
     if (lobbyId) {
@@ -106,12 +104,11 @@ export function GamePage() {
   };
 
   return (
-    <div
-      className="min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors"
-      style={style}
-    >
-      <div className="flex flex-col container max-w-lg mx-auto px-4 py-2 h-full">
-        <header className="flex justify-between items-center mb-4">
+    <div className="min-h-screen h-full grid bg-white dark:bg-black text-black dark:text-white transition-colors">
+      <BackgroundPattern />
+
+      <div className="relative flex flex-col container max-w-lg mx-auto px-4 py-2 h-full">
+        <header className="absolute w-full flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
             {/* <Brain className="w-8 h-8" /> */}
             <Neuronaut className="w-10 h-10" />
@@ -125,9 +122,19 @@ export function GamePage() {
           <ThemeToggle />
         </header>
 
-        <main className="flex flex-col items-center justify-center flex-grow">
+        <main className="flex flex-col items-center justify-center h-full flex-grow">
           {error ? (
-            <div className="text-red-500 font-medium">{error}</div>
+            <div className="grid place-items-center gap-4">
+              <div className="text-zinc-700 dark:text-zinc-300 text-xl italic font-medium">
+                {error}
+              </div>
+              <a
+                href="/"
+                className="text-teal-600 font-bold dark:text-teal-400 underline hover:no-underline"
+              >
+                Home
+              </a>
+            </div>
           ) : gameState.targetLength === 0 ? (
             // Show loading indicator while embeddings are loading.
             <div className="grid place-items-center gap-4">
