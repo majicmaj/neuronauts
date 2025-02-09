@@ -24,7 +24,7 @@ const BackgroundPattern = () => {
           left: `${-x * 100}%`,
           top: `${-y * 100}%`,
           background:
-            "radial-gradient(circle, rgba(180,0,255,1) 0%, rgba(0,255,255,1) 40%, rgba(255,255,255,0) 70%)",
+            "radial-gradient(circle, rgba(180,0,255,0.75) 0%, rgba(0,255,255,0.75) 40%, rgba(255,255,255,0) 70%)",
           mixBlendMode: "overlay",
         }}
       />
