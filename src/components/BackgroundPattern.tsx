@@ -8,7 +8,7 @@ const BackgroundPattern = () => {
 
   const style = usePatternBg();
   return (
-    <>
+    <div className="absolute w-full h-full overflow-hidden">
       <div
         className="absolute w-full h-full"
         style={{
@@ -28,7 +28,7 @@ const BackgroundPattern = () => {
           mixBlendMode: "overlay",
         }}
       />
-    </>
+    </div>
   );
 };
 
