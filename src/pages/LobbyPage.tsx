@@ -1,4 +1,4 @@
-import usePatternBg from "@/hooks/usePatternBg";
+import BackgroundPattern from "@/components/BackgroundPattern";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -27,17 +27,13 @@ export default function LobbyPage() {
     };
   }, [navigate]);
 
-  const style = usePatternBg();
-
   return (
-    <div
-      className="grid place-items-center p-2 min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors"
-      style={style}
-    >
+    <div className="grid place-items-center p-2 min-h-screen bg-white dark:bg-black text-black dark:text-white transition-colors">
+      <BackgroundPattern />
       <div className="absolute top-0 p-2 flex justify-end w-full">
         <ThemeToggle />
       </div>
-      <div className="p-8 rounded-lg dark:border dark:border-zinc-800 shadow-xl grid place-items-center bg-white dark:bg-black text-black dark:text-white transition-colors">
+      <div className="absolute p-8 rounded-lg dark:border dark:border-zinc-800 shadow-xl grid place-items-center bg-white dark:bg-black text-black dark:text-white transition-colors">
         <LobbyScreen
           onCreateLobby={handleCreateLobby}
           onJoinLobby={(lobbyId) => navigate(`/game/${lobbyId}`)}
