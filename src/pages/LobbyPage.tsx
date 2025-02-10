@@ -1,4 +1,5 @@
 import BackgroundPattern from "@/components/BackgroundPattern";
+import { GlowEffect } from "@/components/ui/glow";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -33,11 +34,20 @@ export default function LobbyPage() {
       <div className="absolute top-0 p-2 flex justify-end w-full">
         <ThemeToggle />
       </div>
-      <div className="absolute p-8 rounded-lg dark:border dark:border-zinc-800 shadow-xl grid place-items-center bg-white dark:bg-black text-black dark:text-white transition-colors">
-        <LobbyScreen
-          onCreateLobby={handleCreateLobby}
-          onJoinLobby={(lobbyId) => navigate(`/game/${lobbyId}`)}
+      <div className="absolute rounded-lg grid place-items-center">
+        <GlowEffect
+          // colors={["#0894FF", "#C959DD", "#FF2E54", "#FF9004"]}
+          colors={["rgba(180,0,255,0.4)", "rgba(0,255,255, 0.35)"]}
+          mode="colorShift"
+          blur="strong"
+          scale={1}
         />
+        <div className="relative p-8 rounded-lg dark:border dark:border-zinc-800 grid place-items-center bg-white dark:bg-black text-black dark:text-white transition-colors">
+          <LobbyScreen
+            onCreateLobby={handleCreateLobby}
+            onJoinLobby={(lobbyId) => navigate(`/game/${lobbyId}`)}
+          />
+        </div>
       </div>
     </div>
   );

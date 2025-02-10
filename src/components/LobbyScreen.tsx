@@ -17,7 +17,7 @@ export function LobbyScreen({ onCreateLobby, onJoinLobby }: LobbyScreenProps) {
   };
 
   return (
-    <div className="flex flex-col items-center gap-8 w-full max-w-md mx-auto">
+    <div className="z-10 flex flex-col items-center gap-8 w-full max-w-md mx-auto">
       <div className="flex items-center gap-3">
         {/* <Brain className="w-12 h-12" /> */}
         <Neuronaut className="w-16 h-16" />
