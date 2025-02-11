@@ -48,7 +48,7 @@ export function GuessList({ guesses }: GuessListProps) {
           }`}
           onClick={() => setSort("default")}
         >
-          Default
+          Newest
         </button>
         <button
           className={`px-2 py-1 transition-all rounded-full ${
