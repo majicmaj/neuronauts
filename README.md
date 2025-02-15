@@ -4,6 +4,9 @@ A real-time multiplayer word guessing game powered by semantic word embeddings.
 
 <img alt="Made with React" src="https://img.shields.io/badge/React-20232A?logo=react&amp;logoColor=61DAFB"> <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&amp;logoColor=white"> <img alt="Socket.IO" src="https://img.shields.io/badge/Socket.io-010101?logo=socket.io&amp;logoColor=white">
 
+## Demo
+[semantle.netlify.app](https://semantle.netlify.app/)
+
 ## Quick Start
 
 ```bash
