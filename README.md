@@ -15,6 +15,9 @@ A real-time multiplayer word guessing game powered by semantic word embeddings.
 Note: The backend might be down / restarted frequently
 Experience the game live: [https://semantle.netlify.app/](https://semantle.netlify.app/)
 
+<img width="1512" alt="image" src="https://github.com/user-attachments/assets/7c81cc32-684f-43a7-9b8f-a80eff106389" />
+
+
 ## Table of Contents
 
 - [Features](#features)
