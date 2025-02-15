@@ -1,5 +1,5 @@
 // GamePage.tsx
-import { LoaderIcon, Trophy } from "lucide-react";
+import { Copy, LoaderIcon, Trophy } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { io } from "socket.io-client";
@@ -108,15 +108,18 @@ export function GamePage() {
       <BackgroundPattern />
 
       <div className="relative flex flex-col container max-w-lg mx-auto px-4 py-2 h-full">
-        <header className="absolute w-full flex justify-between items-center mb-4">
+        <header className="w-full flex justify-between items-center mb-4">
           <div className="flex items-center gap-2">
             {/* <Brain className="w-8 h-8" /> */}
             <Neuronaut className="w-10 h-10" />
             <h1 className="text-2xl font-bold">Neuronauts</h1>
             {lobbyId && (
-              <span className="text-sm bg-black dark:bg-white text-white dark:text-black px-2 py-1 rounded">
-                {lobbyId}
-              </span>
+              <button
+                className="flex gap-1 items-center text-sm bg-black dark:bg-white text-white dark:text-black px-2 py-0.5 rounded border-2 border-transparent active:border-teal-500"
+                onClick={() => navigator.clipboard.writeText(lobbyId)}
+              >
+                {lobbyId} <Copy className="h-4 w-4" />
+              </button>
             )}
           </div>
           <ThemeToggle />
