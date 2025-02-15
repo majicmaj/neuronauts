@@ -33,6 +33,7 @@ export function GamePage() {
     targetLength: 0,
     guessHistory: [],
   });
+
   const [error, setError] = useState<string | null>(null);
 
   // Record when the game starts (i.e. when the target word is set).
