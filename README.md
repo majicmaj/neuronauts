@@ -71,6 +71,9 @@ Set up your local development environment in just a few steps:
 
    Open your browser and navigate to the provided local URL to see the application in action.
 
+5. Set up the neuronauts-be!
+Instructions here: [https://github.com/majicmaj/neuronauts-be](https://github.com/majicmaj/neuronauts-be)
+
 ## Self-Hosting
 
 If you’d like to deploy and run Neuronauts on your own infrastructure, follow these additional steps:
