@@ -1,4 +1,7 @@
+<img alt="neuronauts logo" height="64px" width="64px" src="https://github.com/majicmaj/neuronauts/blob/main/public/android-chrome-192x192.png?raw=true">
+
 # Neuronauts
+
 
 [![GitHub stars](https://img.shields.io/github/stars/majicmaj/neuronauts?style=social)](https://github.com/majicmaj/neuronauts/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/majicmaj/neuronauts?style=social)](https://github.com/majicmaj/neuronauts/network)
