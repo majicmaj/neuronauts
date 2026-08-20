@@ -1,4 +1,5 @@
 import { Bulletlist } from "pixelarticons/react/Bulletlist";
+import { ChartBarBig } from "pixelarticons/react/ChartBarBig";
 import { Check } from "pixelarticons/react/Check";
 import { Close } from "pixelarticons/react/Close";
 import { CompassSolid } from "pixelarticons/react/CompassSolid";
@@ -13,11 +14,13 @@ import { Signal } from "pixelarticons/react/Signal";
 import { Spinner } from "pixelarticons/react/Spinner";
 import { SunSolid } from "pixelarticons/react/SunSolid";
 import { Target } from "pixelarticons/react/Target";
+import { Trophy } from "pixelarticons/react/Trophy";
 import { Users } from "pixelarticons/react/Users";
 import type { ComponentType, SVGProps } from "react";
 
 export type MissionGlyphName =
   | "callsign"
+  | "award"
   | "cancel"
   | "confirm"
   | "copy"
@@ -30,6 +33,7 @@ export type MissionGlyphName =
   | "night"
   | "orbit"
   | "signal"
+  | "stats"
   | "system"
   | "target"
   | "transmit";
@@ -39,6 +43,7 @@ interface MissionGlyphProps extends Omit<SVGProps<SVGSVGElement>, "children"> {
 }
 
 const GLYPHS: Record<MissionGlyphName, ComponentType<SVGProps<SVGSVGElement>>> = {
+  award: Trophy,
   callsign: Pencil,
   cancel: Close,
   confirm: Check,
@@ -52,6 +57,7 @@ const GLYPHS: Record<MissionGlyphName, ComponentType<SVGProps<SVGSVGElement>>> =
   night: Moon,
   orbit: Gps2,
   signal: Signal,
+  stats: ChartBarBig,
   system: Monitor,
   target: Target,
   transmit: Send,

@@ -24,6 +24,7 @@ export interface GuessResult {
 
 export interface Player {
   id: string;
+  participantId?: string;
   name: string;
   joinedAt: string;
   colorIndex?: number;
@@ -32,6 +33,49 @@ export interface Player {
 export interface Winner {
   playerId: string;
   playerName: string;
+}
+
+export interface RecapGuess {
+  word: string;
+  similarity: number;
+  rank: number | null;
+}
+
+export interface RecapAward {
+  id: string;
+  title: string;
+  description: string;
+  metricLabel: string;
+  playerId: string;
+  playerName: string;
+  colorIndex: number;
+}
+
+export interface PlayerRecap {
+  playerId: string;
+  playerName: string;
+  colorIndex: number;
+  guessCount: number;
+  wrongGuessCount: number;
+  hintCount: number;
+  averageSimilarity: number | null;
+  bestGuess: RecapGuess | null;
+  furthestGuess: RecapGuess | null;
+  breakthroughs: number;
+  biggestLeap: number;
+  foundTarget: boolean;
+  title: string;
+  titleDetail: string;
+  awardIds: string[];
+}
+
+export interface GameRecap {
+  totalGuesses: number;
+  totalHints: number;
+  elapsedSeconds: number | null;
+  playerCount: number;
+  awards: RecapAward[];
+  players: PlayerRecap[];
 }
 
 export type GameStatus = "loading" | "playing" | "won" | "error";
@@ -46,6 +90,7 @@ export interface GameState {
   winner: Winner | null;
   hintAvailableAt: string | null;
   error: string | null;
+  recap?: GameRecap | null;
 }
 
 export interface LobbyPayload {

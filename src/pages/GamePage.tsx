@@ -4,6 +4,7 @@ import { GuessList } from "@/components/GuessList";
 import { MissionGlyph } from "@/components/MissionGlyph";
 import Neuronaut from "@/components/Neuronaut";
 import { PlayerRoster } from "@/components/PlayerRoster";
+import { PostGameRecap } from "@/components/PostGameRecap";
 import { SemanticMap } from "@/components/SemanticMap";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { WinBanner } from "@/components/WinBanner";
@@ -46,6 +47,7 @@ export function GamePage() {
   const [copied, setCopied] = useState(false);
   const [clock, setClock] = useState(Date.now());
   const [hoveredGuessId, setHoveredGuessId] = useState<string | null>(null);
+  const [postGameView, setPostGameView] = useState<"recap" | "flight-log">("recap");
 
   useEffect(() => {
     if (!lobbyId) return;
@@ -96,6 +98,7 @@ export function GamePage() {
     const onGameWon = (state: GameState) => {
       setGameState(state);
       setCelebrating(true);
+      setPostGameView("recap");
     };
     const onHintCooldown = (payload: { hintAvailableAt: string }) => {
       setGameState((previous) => ({
@@ -180,6 +183,7 @@ export function GamePage() {
   );
   const canPlay = connected && gameState.status === "playing";
   const canHint = canPlay && Boolean(bestGuess) && hintSeconds === 0;
+  const selfParticipantId = players.find((player) => player.id === socket.id)?.participantId;
 
   const copyCode = async () => {
     if (!lobbyId) return;
@@ -239,9 +243,27 @@ export function GamePage() {
               <p className="mt-1 text-sm text-zinc-500">Loading the navigator’s word map…</p>
             </div>
           </div>
+        ) : gameState.status === "won" && gameState.recap && postGameView === "recap" ? (
+          <main>
+            <PostGameRecap
+              gameState={gameState}
+              selfParticipantId={selfParticipantId}
+              onNewGame={() => navigate("/")}
+              onReviewFlightLog={() => setPostGameView("flight-log")}
+            />
+          </main>
         ) : (
           <main className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_23rem]">
             <div className="min-w-0 space-y-4">
+              {gameState.status === "won" && gameState.recap && (
+                <button
+                  type="button"
+                  onClick={() => setPostGameView("recap")}
+                  className="debrief-return-button"
+                >
+                  <MissionGlyph name="award" className="h-6 w-6" /> Back to mission debrief
+                </button>
+              )}
               <WinBanner gameState={gameState} onNewGame={() => navigate("/")} />
 
               {gameState.status !== "won" && (

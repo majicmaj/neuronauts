@@ -25,6 +25,10 @@
   --hint-line: #e8c98f;
   --danger: #a63131;
   --danger-soft: #fff1f1;
+  --debrief: #12312a;
+  --debrief-ink: #effffb;
+  --debrief-muted: #b8d8cf;
+  --debrief-line: #3f6b60;
   --player-0: #087f70;
   --player-1: #b95016;
   --player-2: #6559bd;
@@ -57,6 +61,10 @@
   --hint-line: #70542d;
   --danger: #ff9b9b;
   --danger-soft: #351f1f;
+  --debrief: #0c2923;
+  --debrief-ink: #effffb;
+  --debrief-muted: #b8d8cf;
+  --debrief-line: #416f63;
   --player-0: #65cdb9;
   --player-1: #f29a5b;
   --player-2: #aaa0ff;
@@ -386,6 +394,311 @@
     background: var(--accent-soft);
     padding: 1.25rem;
   }
+
+  .mission-debrief {
+    display: grid;
+    gap: 1rem;
+    padding-bottom: 3rem;
+  }
+
+  .debrief-hero {
+    overflow: hidden;
+    border: 1px solid var(--debrief-line);
+    border-radius: 14px;
+    background: var(--debrief);
+    color: var(--debrief-ink);
+  }
+
+  .debrief-hero-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+  }
+
+  .debrief-target-icon {
+    flex: none;
+    color: #7de3cd;
+  }
+
+  .debrief-title {
+    max-width: 18ch;
+    font-size: clamp(1.8rem, 5vw, 3.75rem);
+    font-weight: 900;
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .debrief-target {
+    display: inline-block;
+    color: #7de3cd;
+    animation: debrief-lock 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .debrief-hero-main p {
+    max-width: 62ch;
+    margin-top: 0.75rem;
+    color: var(--debrief-muted);
+    line-height: 1.55;
+  }
+
+  .debrief-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    padding: 0 1.5rem 1.5rem;
+  }
+
+  .debrief-new-mission,
+  .debrief-review-button,
+  .debrief-return-button {
+    display: inline-flex;
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 10px;
+    padding: 0.65rem 1rem;
+    font-weight: 800;
+    transition: background-color 150ms ease-out, border-color 150ms ease-out,
+      color 150ms ease-out;
+  }
+
+  .debrief-new-mission {
+    border: 1px solid #7de3cd;
+    background: #7de3cd;
+    color: #10251f;
+  }
+
+  .debrief-new-mission:hover {
+    border-color: #a7f1e1;
+    background: #a7f1e1;
+  }
+
+  .debrief-review-button {
+    border: 1px solid var(--debrief-line);
+    background: transparent;
+    color: var(--debrief-ink);
+  }
+
+  .debrief-review-button:hover {
+    border-color: var(--debrief-muted);
+    color: #7de3cd;
+  }
+
+  .debrief-summary {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-top: 1px solid var(--debrief-line);
+  }
+
+  .debrief-summary > div {
+    min-width: 0;
+    padding: 0.85rem 1.5rem 1rem;
+    border-right: 1px solid var(--debrief-line);
+    border-bottom: 1px solid var(--debrief-line);
+  }
+
+  .debrief-summary > div:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .debrief-summary > div:nth-last-child(-n + 2) {
+    border-bottom: 0;
+  }
+
+  .debrief-summary dt,
+  .debrief-player-numbers dt {
+    color: var(--debrief-muted);
+    font-size: 0.7rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .debrief-summary dd {
+    margin-top: 0.15rem;
+    font-size: 1.35rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .debrief-section {
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+
+  .debrief-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.15rem 1.25rem;
+    border-bottom: 1px solid var(--line-strong);
+    color: var(--accent);
+  }
+
+  .debrief-section-heading h2 {
+    color: var(--ink);
+    font-size: 1.2rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
+  }
+
+  .debrief-section-heading p {
+    margin-top: 0.2rem;
+    color: var(--muted);
+    font-size: 0.875rem;
+  }
+
+  .debrief-player {
+    display: grid;
+    gap: 1rem;
+    padding: 1.1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .debrief-player:last-child {
+    border-bottom: 0;
+  }
+
+  .debrief-player-identity {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .debrief-avatar {
+    display: grid;
+    width: 2.25rem;
+    height: 2.25rem;
+    flex: none;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--crew-color);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .debrief-you {
+    border-radius: 999px;
+    background: var(--accent-soft);
+    padding: 0.1rem 0.4rem;
+    color: var(--accent);
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .debrief-callsign {
+    margin-top: 0.1rem;
+    color: var(--crew-color);
+    font-size: 0.875rem;
+    font-weight: 800;
+  }
+
+  .debrief-player-numbers {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0.75rem 1rem;
+  }
+
+  .debrief-player-numbers dt {
+    color: var(--muted);
+  }
+
+  .debrief-player-numbers dd {
+    margin-top: 0.1rem;
+    font-size: 1rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .debrief-player-numbers span {
+    display: block;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 0.75rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .debrief-player-footnote {
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.45;
+  }
+
+  .debrief-awards {
+    display: grid;
+  }
+
+  .debrief-award {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0.8rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .debrief-award:last-child {
+    border-bottom: 0;
+  }
+
+  .debrief-award-mark {
+    width: 0.8rem;
+    height: 0.8rem;
+    margin-top: 0.3rem;
+    transform: rotate(45deg);
+    background: var(--crew-color);
+  }
+
+  .debrief-award h3 {
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
+  .debrief-award p {
+    margin-top: 0.3rem;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.45;
+  }
+
+  .debrief-award .debrief-award-owner {
+    margin-top: 0.15rem;
+    color: var(--crew-color);
+    font-size: 0.75rem;
+    font-weight: 900;
+  }
+
+  .debrief-return-button {
+    border: 1px solid var(--line-strong);
+    background: var(--surface);
+    color: var(--ink);
+  }
+
+  .debrief-return-button:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+}
+
+@keyframes debrief-lock {
+  from {
+    clip-path: inset(0 100% 0 0);
+    filter: blur(2px);
+  }
+  to {
+    clip-path: inset(0);
+    filter: blur(0);
+  }
 }
 
 @keyframes mission-orbit {
@@ -510,6 +823,78 @@
   .guess-row {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
+  }
+
+  .debrief-summary {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .debrief-summary > div,
+  .debrief-summary > div:nth-child(2n) {
+    border-right: 1px solid var(--debrief-line);
+    border-bottom: 0;
+  }
+
+  .debrief-summary > div:last-child {
+    border-right: 0;
+  }
+
+  .debrief-player {
+    grid-template-columns: minmax(11rem, 1.2fr) minmax(20rem, 2fr);
+    align-items: center;
+  }
+
+  .debrief-player-numbers {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .debrief-player-footnote {
+    grid-column: 2;
+  }
+
+  .debrief-awards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .debrief-award:nth-child(odd) {
+    border-right: 1px solid var(--line);
+  }
+
+  .debrief-award:nth-last-child(-n + 2) {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .debrief-award:last-child {
+    border-bottom: 0;
+  }
+
+  .debrief-award:last-child:nth-child(odd) {
+    grid-column: 1 / -1;
+    border-right: 0;
+  }
+}
+
+@media (min-width: 900px) {
+  .debrief-hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .debrief-hero-main {
+    grid-column: 1;
+    padding: 2rem;
+  }
+
+  .debrief-actions {
+    grid-column: 2;
+    align-content: center;
+    align-items: stretch;
+    flex-direction: column;
+    padding: 2rem;
+  }
+
+  .debrief-summary {
+    grid-column: 1 / -1;
   }
 }
 
