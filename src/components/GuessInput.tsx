@@ -1,5 +1,5 @@
-import { Send } from "lucide-react";
 import { FormEvent, useState } from "react";
+import { MissionGlyph } from "./MissionGlyph";
 
 interface GuessInputProps {
   onGuess: (guess: string) => void;
@@ -39,7 +39,7 @@ export function GuessInput({ onGuess, disabled }: GuessInputProps) {
         className="neuron-primary-button grid w-12 shrink-0 place-items-center px-0"
         aria-label="Send guess"
       >
-        <Send className="h-5 w-5" />
+        <MissionGlyph name="transmit" className="h-6 w-6" />
       </button>
     </form>
   );

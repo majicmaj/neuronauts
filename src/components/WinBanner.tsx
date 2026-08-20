@@ -1,5 +1,5 @@
-import { ArrowRight, Trophy } from "lucide-react";
 import type { GameState } from "../types";
+import { MissionGlyph } from "./MissionGlyph";
 
 interface WinBannerProps {
   gameState: GameState;
@@ -22,7 +22,7 @@ export function WinBanner({ gameState, onNewGame }: WinBannerProps) {
     <section className="win-banner" aria-live="polite">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <Trophy className="mt-1 h-7 w-7 shrink-0 text-teal-800 dark:text-teal-200" />
+          <MissionGlyph name="target" className="mt-1 h-12 w-12 shrink-0 text-teal-800 dark:text-teal-200" />
           <div>
             <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Signal found: <span className="capitalize">{gameState.targetWord}</span></h2>
             <p className="mt-1 text-sm text-teal-950/70 dark:text-white/70">
@@ -32,7 +32,7 @@ export function WinBanner({ gameState, onNewGame }: WinBannerProps) {
           </div>
         </div>
         <button onClick={onNewGame} className="neuron-primary-button shrink-0">
-          New mission <ArrowRight className="h-4 w-4" />
+          New mission <MissionGlyph name="launch" className="h-6 w-6" />
         </button>
       </div>
     </section>

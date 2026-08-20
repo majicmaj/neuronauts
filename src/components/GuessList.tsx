@@ -1,7 +1,7 @@
-import { ArrowDownUp, ListFilter } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { GuessResult, Player } from "../types";
 import GuessItem from "./GuessItem";
+import { MissionGlyph } from "./MissionGlyph";
 
 interface GuessListProps {
   guesses: GuessResult[];
@@ -24,7 +24,7 @@ export function GuessList({ guesses, players, onGuessHover }: GuessListProps) {
     <section className="neuron-card min-h-[22rem] overflow-hidden" aria-labelledby="guesses-title">
       <div className="flex items-center justify-between gap-3 border-b border-zinc-200 px-4 py-3.5 dark:border-zinc-700">
         <div className="flex items-center gap-2">
-          <ListFilter className="h-4 w-4 text-teal-700 dark:text-teal-300" />
+          <MissionGlyph name="flight-log" className="h-6 w-6 text-teal-700 dark:text-teal-300" />
           <h2 id="guesses-title" className="font-semibold">Flight log</h2>
           <span className="text-xs text-zinc-500">{guesses.length}</span>
         </div>
@@ -39,7 +39,7 @@ export function GuessList({ guesses, players, onGuessHover }: GuessListProps) {
             onClick={() => setSort("similarity")}
             className={`flex items-center gap-1 rounded-md px-2.5 py-1.5 transition ${sort === "similarity" ? "bg-white font-semibold text-zinc-900 dark:bg-zinc-700 dark:text-white" : "text-zinc-500 dark:text-zinc-400"}`}
           >
-            <ArrowDownUp className="h-3 w-3" /> Closest
+            Closest
           </button>
         </div>
       </div>

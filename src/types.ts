@@ -7,11 +7,15 @@ export interface GuessResult {
   id: string;
   guess: string;
   similarity: number;
+  cosineSimilarity?: number;
+  rank?: number;
+  rankedWordCount?: number;
   correct: boolean;
   isHint: boolean;
   hintFrom: string | null;
   playerId: string;
   playerName: string;
+  colorIndex?: number;
   createdAt: string;
   position: VectorPosition;
   targetWord?: string;
@@ -22,6 +26,7 @@ export interface Player {
   id: string;
   name: string;
   joinedAt: string;
+  colorIndex?: number;
 }
 
 export interface Winner {

@@ -25,6 +25,18 @@
   --hint-line: #e8c98f;
   --danger: #a63131;
   --danger-soft: #fff1f1;
+  --player-0: #087f70;
+  --player-1: #b95016;
+  --player-2: #6559bd;
+  --player-3: #b93368;
+  --player-4: #176da8;
+  --player-5: #687719;
+  --player-6: #98508d;
+  --player-7: #8b6810;
+  --player-8: #287b49;
+  --player-9: #af4139;
+  --player-10: #496f9e;
+  --player-11: #7659a2;
 }
 
 .dark {
@@ -45,6 +57,18 @@
   --hint-line: #70542d;
   --danger: #ff9b9b;
   --danger-soft: #351f1f;
+  --player-0: #65cdb9;
+  --player-1: #f29a5b;
+  --player-2: #aaa0ff;
+  --player-3: #f28aae;
+  --player-4: #72b7e6;
+  --player-5: #b2c96e;
+  --player-6: #d99bce;
+  --player-7: #dfbd62;
+  --player-8: #79c995;
+  --player-9: #ef8c83;
+  --player-10: #8db2df;
+  --player-11: #b9a0df;
 }
 
 @layer base {
@@ -109,6 +133,34 @@
 }
 
 @layer components {
+  .mission-glyph {
+    display: block;
+    flex: none;
+    overflow: visible;
+    fill: currentColor;
+    shape-rendering: crispEdges;
+  }
+
+  .mission-loader {
+    animation: mission-orbit 1.15s cubic-bezier(0.55, 0.1, 0.35, 0.95) infinite;
+    transform-origin: center;
+  }
+
+  .mission-status-light {
+    width: 0.5rem;
+    height: 0.5rem;
+    transform: rotate(45deg);
+    background: currentColor;
+  }
+
+  .mission-status-light.is-online {
+    color: #16a36a;
+  }
+
+  .mission-status-light.is-reconnecting {
+    color: #d18a26;
+  }
+
   .app-shell {
     background: var(--canvas);
     color: var(--ink);
@@ -336,6 +388,18 @@
   }
 }
 
+@keyframes mission-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mission-loader {
+    animation-duration: 2.5s;
+  }
+}
+
 .semantic-map {
   display: block;
   width: 100%;
@@ -370,7 +434,8 @@
 }
 
 .map-dot-hint {
-  fill: var(--hint);
+  stroke: var(--hint);
+  stroke-width: 1.25;
 }
 
 .map-active-ring {

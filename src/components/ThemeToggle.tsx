@@ -1,11 +1,11 @@
 import { useTheme, type Theme } from "@/contexts/theme";
-import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { MissionGlyph, type MissionGlyphName } from "./MissionGlyph";
 
-const THEMES: Array<{ value: Theme; label: string; icon: typeof Sun }> = [
-  { value: "light", label: "Light", icon: Sun },
-  { value: "dark", label: "Dark", icon: Moon },
-  { value: "system", label: "System", icon: Monitor },
+const THEMES: Array<{ value: Theme; label: string; icon: MissionGlyphName }> = [
+  { value: "light", label: "Light", icon: "daylight" },
+  { value: "dark", label: "Dark", icon: "night" },
+  { value: "system", label: "System", icon: "system" },
 ];
 
 export function ThemeToggle() {
@@ -14,7 +14,6 @@ export function ThemeToggle() {
 
   const { theme, setTheme } = useTheme();
   const selected = THEMES.find((option) => option.value === theme) || THEMES[2];
-  const SelectedIcon = selected.icon;
 
   // Close the dropdown when clicking outside the component
   useEffect(() => {
@@ -52,7 +51,7 @@ export function ThemeToggle() {
         aria-expanded={open}
         aria-haspopup="menu"
       >
-        <SelectedIcon className="h-4 w-4" />
+        <MissionGlyph name={selected.icon} className="h-6 w-6" />
       </button>
 
       <div
@@ -64,7 +63,6 @@ export function ThemeToggle() {
         }`}
       >
         {THEMES.map((option) => {
-          const Icon = option.icon;
           return (
           <button
             key={option.value}
@@ -72,9 +70,9 @@ export function ThemeToggle() {
             onClick={() => handleThemeChange(option.value)}
             className="theme-menu-item"
           >
-            <Icon className="h-4 w-4" />
+            <MissionGlyph name={option.icon} className="h-6 w-6" />
             <span className="flex-1 text-left">{option.label}</span>
-            {theme === option.value && <Check className="h-4 w-4 text-teal-700 dark:text-teal-300" />}
+            {theme === option.value && <MissionGlyph name="confirm" className="h-6 w-6 text-teal-700 dark:text-teal-300" />}
           </button>
           );
         })}

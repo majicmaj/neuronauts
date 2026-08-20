@@ -1,6 +1,7 @@
 import { Celebration } from "@/components/Celebration";
 import { GuessInput } from "@/components/GuessInput";
 import { GuessList } from "@/components/GuessList";
+import { MissionGlyph } from "@/components/MissionGlyph";
 import Neuronaut from "@/components/Neuronaut";
 import { PlayerRoster } from "@/components/PlayerRoster";
 import { SemanticMap } from "@/components/SemanticMap";
@@ -18,14 +19,6 @@ import type {
   LobbyPayload,
   Player,
 } from "@/types";
-import {
-  Check,
-  Copy,
-  LoaderCircle,
-  Radio,
-  Sparkles,
-  Users,
-} from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
@@ -219,7 +212,7 @@ export function GamePage() {
             <div className="hidden min-w-0 sm:block">
               <div className="truncate text-lg font-extrabold leading-tight tracking-tight">Neuronauts</div>
               <div className="mt-0.5 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
-                <Radio className={`h-2.5 w-2.5 ${connected ? "text-emerald-500" : "text-amber-500"}`} />
+                <span className={`mission-status-light ${connected ? "is-online" : "is-reconnecting"}`} aria-hidden="true" />
                 {connected ? "live mission" : "reconnecting"}
               </div>
             </div>
@@ -227,11 +220,11 @@ export function GamePage() {
 
           <div className="flex items-center gap-2">
             <div className="hidden items-center gap-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 sm:flex">
-              <Users className="h-4 w-4" /> {players.length} online
+              <MissionGlyph name="crew" className="h-6 w-6" /> {players.length} online
             </div>
             {lobbyId && (
               <button onClick={copyCode} className="lobby-code-button" aria-label="Copy lobby code">
-                {lobbyId} {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
+                {lobbyId} {copied ? <MissionGlyph name="confirm" className="h-6 w-6" /> : <MissionGlyph name="copy" className="h-6 w-6" />}
               </button>
             )}
             <ThemeToggle />
@@ -241,7 +234,7 @@ export function GamePage() {
         {gameState.status === "loading" ? (
           <div className="grid min-h-[70vh] place-items-center">
             <div className="neuron-card flex flex-col items-center px-8 py-10 text-center">
-              <LoaderCircle className="mb-4 h-8 w-8 animate-spin text-teal-500" />
+              <MissionGlyph name="loader" className="mission-loader mb-4 h-12 w-12 text-teal-500" />
               <p className="font-bold">Calibrating semantic space</p>
               <p className="mt-1 text-sm text-zinc-500">Loading the navigator’s word map…</p>
             </div>
@@ -259,7 +252,12 @@ export function GamePage() {
                     </span>
                     {bestGuess && (
                       <span className="truncate text-right">
-                        Closest: <strong className="capitalize text-teal-600 dark:text-teal-300">{bestGuess.guess} · {(bestGuess.similarity * 100).toFixed(1)}%</strong>
+                        Closest: <strong className="capitalize text-teal-600 dark:text-teal-300">
+                          {bestGuess.guess} · {(bestGuess.similarity * 100).toFixed(1)}%
+                          {bestGuess.rank && (
+                            <span className="hidden normal-case sm:inline"> · #{bestGuess.rank.toLocaleString()}</span>
+                          )}
+                        </strong>
                       </span>
                     )}
                   </div>
@@ -274,7 +272,7 @@ export function GamePage() {
                       className="hint-button"
                       title={bestGuess ? "Find the nearest word to the halfway point between your best guess and the target" : "Make a valid guess first"}
                     >
-                      <Sparkles className="h-4 w-4" />
+                      <MissionGlyph name="navigator" className="h-6 w-6" />
                       {hintSeconds > 0 ? `Hint in ${hintSeconds}s` : "Halfway hint"}
                     </button>
                   </div>

@@ -1,6 +1,7 @@
-import { Crosshair, Orbit } from "lucide-react";
 import type { PointerEvent as ReactPointerEvent } from "react";
+import { playerColor } from "../lib/playerColors";
 import type { GuessResult } from "../types";
+import { MissionGlyph } from "./MissionGlyph";
 
 interface SemanticMapProps {
   guesses: GuessResult[];
@@ -60,11 +61,11 @@ export function SemanticMap({
       <div className="flex items-start justify-between gap-3 px-4 pt-4">
         <div>
           <div className="flex items-center gap-2">
-            <Orbit className="h-4 w-4 text-teal-500" />
+            <MissionGlyph name="orbit" className="h-6 w-6 text-teal-500" />
             <h2 id="map-title" className="font-semibold">Semantic space</h2>
           </div>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Closer to the center means closer in meaning.
+            Higher-ranked words sit closer. Colors track the crew.
           </p>
         </div>
         <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Live</span>
@@ -96,6 +97,7 @@ export function SemanticMap({
                 cy={y}
                 r={guess.correct ? 4.5 : guess.isHint ? 2.75 : 2.25}
                 className={guess.isHint ? "map-dot map-dot-hint" : "map-dot"}
+                style={{ fill: playerColor(guess.colorIndex, guess.playerId) }}
               />
             );
           })}
@@ -114,6 +116,7 @@ export function SemanticMap({
                 cy={pointY(hoveredGuess)}
                 r="7"
                 className="map-active-ring"
+                style={{ stroke: playerColor(hoveredGuess.colorIndex, hoveredGuess.playerId) }}
               />
               <rect
                 x={tooltipX - tooltipWidth / 2}
@@ -132,7 +135,7 @@ export function SemanticMap({
 
         {plotted.length === 0 && (
           <div className="pointer-events-none -mt-28 mb-16 flex flex-col items-center text-center text-sm text-zinc-500 dark:text-zinc-400">
-            <Crosshair className="mb-2 h-5 w-5" />
+            <MissionGlyph name="target" className="mb-2 h-6 w-6" />
             Your flight path appears after the first guess.
           </div>
         )}

@@ -1,6 +1,6 @@
-import { ArrowRight, Radio, Route, Users } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { getPreferredPlayerName, savePreferredPlayerName } from "../lib/socket";
+import { MissionGlyph } from "./MissionGlyph";
 import Neuronaut from "./Neuronaut";
 
 interface LobbyScreenProps {
@@ -41,9 +41,9 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
         </p>
 
         <ul className="mt-5 grid gap-2.5 text-sm text-zinc-700 dark:text-zinc-200 sm:mt-8 sm:gap-3">
-          <li className="flex items-center gap-3"><Users className="h-4 w-4 text-teal-700 dark:text-teal-300" /> Play in one shared lobby</li>
-          <li className="flex items-center gap-3"><Radio className="h-4 w-4 text-teal-700 dark:text-teal-300" /> See every guess as it lands</li>
-          <li className="flex items-center gap-3"><Route className="h-4 w-4 text-amber-700 dark:text-amber-300" /> Share one halfway hint per minute</li>
+          <li className="flex items-center gap-3"><MissionGlyph name="crew" className="h-6 w-6 text-teal-700 dark:text-teal-300" /> Play in one shared lobby</li>
+          <li className="flex items-center gap-3"><MissionGlyph name="signal" className="h-6 w-6 text-teal-700 dark:text-teal-300" /> See every guess as it lands</li>
+          <li className="flex items-center gap-3"><MissionGlyph name="navigator" className="h-6 w-6 text-amber-700 dark:text-amber-300" /> Share one halfway hint per minute</li>
         </ul>
       </div>
 
@@ -67,7 +67,7 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
           disabled={!connected || busy}
           className="neuron-primary-button w-full justify-center py-3.5"
         >
-          {busy ? "Launching…" : "Create a mission"} <ArrowRight className="h-4 w-4" />
+          {busy ? "Launching…" : "Create a mission"} <MissionGlyph name="launch" className="h-6 w-6" />
         </button>
 
         <div className="my-5 flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
