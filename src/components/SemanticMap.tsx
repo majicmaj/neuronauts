@@ -1,21 +1,59 @@
 import { Crosshair, Orbit } from "lucide-react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import type { GuessResult } from "../types";
 
 interface SemanticMapProps {
   guesses: GuessResult[];
   targetWord?: string;
+  hoveredGuessId?: string | null;
+  onGuessHover?: (guessId: string | null) => void;
 }
 
 const SIZE = 320;
 const pointX = (guess: GuessResult) => guess.position.x * SIZE;
 const pointY = (guess: GuessResult) => guess.position.y * SIZE;
 
-export function SemanticMap({ guesses, targetWord }: SemanticMapProps) {
+export function SemanticMap({
+  guesses,
+  targetWord,
+  hoveredGuessId,
+  onGuessHover,
+}: SemanticMapProps) {
   const plotted = guesses.filter((guess) => guess.position);
-  const labeled = new Set(plotted.slice(-7).map((guess) => guess.id));
-  const path = plotted
-    .map((guess) => `${pointX(guess)},${pointY(guess)}`)
-    .join(" ");
+  const hoveredGuess = plotted.find((guess) => guess.id === hoveredGuessId);
+  const fullTooltipText = hoveredGuess
+    ? `${hoveredGuess.isHint ? "hint: " : ""}${hoveredGuess.guess}`
+    : "";
+  const tooltipText = fullTooltipText.length > 28
+    ? `${fullTooltipText.slice(0, 27)}…`
+    : fullTooltipText;
+  const tooltipWidth = Math.min(200, Math.max(48, tooltipText.length * 6.5 + 16));
+  const tooltipX = hoveredGuess
+    ? Math.max(tooltipWidth / 2 + 5, Math.min(SIZE - tooltipWidth / 2 - 5, pointX(hoveredGuess)))
+    : 0;
+  const tooltipY = hoveredGuess
+    ? pointY(hoveredGuess) < 30
+      ? pointY(hoveredGuess) + 22
+      : pointY(hoveredGuess) - 12
+    : 0;
+
+  const handlePointerMove = (event: ReactPointerEvent<SVGSVGElement>) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const cursorX = ((event.clientX - bounds.left) / bounds.width) * SIZE;
+    const cursorY = ((event.clientY - bounds.top) / bounds.height) * SIZE;
+    let nearest: GuessResult | undefined;
+    let nearestDistance = 9 ** 2;
+
+    for (const guess of plotted) {
+      const distance = (pointX(guess) - cursorX) ** 2 + (pointY(guess) - cursorY) ** 2;
+      if (distance <= nearestDistance) {
+        nearest = guess;
+        nearestDistance = distance;
+      }
+    }
+
+    onGuessHover?.(nearest?.id ?? null);
+  };
 
   return (
     <section className="neuron-card overflow-hidden" aria-labelledby="map-title">
@@ -38,6 +76,8 @@ export function SemanticMap({ guesses, targetWord }: SemanticMapProps) {
           className="semantic-map"
           role="img"
           aria-label="Two-dimensional projection of guesses around the target word"
+          onPointerMove={handlePointerMove}
+          onPointerLeave={() => onGuessHover?.(null)}
         >
           <rect x="1" y="1" width="318" height="318" rx="12" className="map-surface" />
           {[42, 84, 126].map((radius) => (
@@ -46,33 +86,17 @@ export function SemanticMap({ guesses, targetWord }: SemanticMapProps) {
           <line x1="160" y1="25" x2="160" y2="295" className="map-axis" />
           <line x1="25" y1="160" x2="295" y2="160" className="map-axis" />
 
-          {plotted.length > 1 && (
-            <polyline points={path} className="map-path" pathLength="1" />
-          )}
-
-          {plotted.map((guess, index) => {
+          {plotted.map((guess) => {
             const x = pointX(guess);
             const y = pointY(guess);
-            const latest = index === plotted.length - 1;
             return (
-              <g key={guess.id}>
-                {latest && <circle cx={x} cy={y} r="12" className="map-latest-ring" />}
-                <circle
-                  cx={x}
-                  cy={y}
-                  r={guess.correct ? 7 : guess.isHint ? 6 : 5}
-                  className={guess.isHint ? "map-dot map-dot-hint" : "map-dot"}
-                />
-                {labeled.has(guess.id) && !guess.correct && (
-                  <text
-                    x={Math.max(10, Math.min(280, x + 8))}
-                    y={Math.max(16, y - 11)}
-                    className="map-label"
-                  >
-                    {guess.isHint ? `hint: ${guess.guess}` : guess.guess}
-                  </text>
-                )}
-              </g>
+              <circle
+                key={guess.id}
+                cx={x}
+                cy={y}
+                r={guess.correct ? 4.5 : guess.isHint ? 2.75 : 2.25}
+                className={guess.isHint ? "map-dot map-dot-hint" : "map-dot"}
+              />
             );
           })}
 
@@ -82,6 +106,28 @@ export function SemanticMap({ guesses, targetWord }: SemanticMapProps) {
           <text x="160" y="181" textAnchor="middle" className="map-target-label">
             {targetWord || "target"}
           </text>
+
+          {hoveredGuess && (
+            <g className="map-hover-detail" pointerEvents="none">
+              <circle
+                cx={pointX(hoveredGuess)}
+                cy={pointY(hoveredGuess)}
+                r="7"
+                className="map-active-ring"
+              />
+              <rect
+                x={tooltipX - tooltipWidth / 2}
+                y={tooltipY - 13}
+                width={tooltipWidth}
+                height="19"
+                rx="4"
+                className="map-tooltip-surface"
+              />
+              <text x={tooltipX} y={tooltipY} textAnchor="middle" className="map-label">
+                {tooltipText}
+              </text>
+            </g>
+          )}
         </svg>
 
         {plotted.length === 0 && (

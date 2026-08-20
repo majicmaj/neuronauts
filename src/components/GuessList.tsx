@@ -6,11 +6,12 @@ import GuessItem from "./GuessItem";
 interface GuessListProps {
   guesses: GuessResult[];
   players: Player[];
+  onGuessHover?: (guessId: string | null) => void;
 }
 
 type SortMode = "newest" | "similarity";
 
-export function GuessList({ guesses, players }: GuessListProps) {
+export function GuessList({ guesses, players, onGuessHover }: GuessListProps) {
   const [sort, setSort] = useState<SortMode>("newest");
   const sorted = useMemo(() => {
     const copy = [...guesses];
@@ -51,6 +52,7 @@ export function GuessList({ guesses, players }: GuessListProps) {
             index={guesses.findIndex((entry) => entry.id === guess.id)}
             players={players}
             latest={guess.id === guesses[guesses.length - 1]?.id}
+            onHoverChange={onGuessHover}
           />
         ))}
 

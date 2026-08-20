@@ -310,6 +310,19 @@
     background: var(--accent-soft);
   }
 
+  .guess-word {
+    cursor: crosshair;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.18em;
+    transition: color 120ms ease-out, text-decoration-color 120ms ease-out;
+  }
+
+  .guess-word:hover {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+
   .hint-label {
     background: var(--hint-soft);
     color: var(--hint);
@@ -326,8 +339,9 @@
 .semantic-map {
   display: block;
   width: 100%;
-  max-height: 340px;
+  aspect-ratio: 1;
   overflow: visible;
+  cursor: crosshair;
 }
 
 .map-surface {
@@ -348,31 +362,21 @@
   stroke-dasharray: 2 9;
 }
 
-.map-path {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-  stroke-dasharray: 1;
-  animation: map-path-in 550ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
 .map-dot {
   fill: var(--accent);
-  stroke: var(--surface);
-  stroke-width: 2;
+  stroke: color-mix(in srgb, var(--surface) 80%, transparent);
+  stroke-width: 1;
+  pointer-events: none;
 }
 
 .map-dot-hint {
   fill: var(--hint);
 }
 
-.map-latest-ring {
+.map-active-ring {
   fill: none;
   stroke: var(--accent);
-  stroke-width: 1.5;
-  opacity: 0.6;
+  stroke-width: 1.75;
 }
 
 .map-target {
@@ -381,8 +385,7 @@
   stroke-width: 3;
 }
 
-.map-target-label,
-.map-label {
+.map-target-label {
   fill: var(--ink);
   font-family: "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
   font-size: 11px;
@@ -391,6 +394,19 @@
   stroke: var(--surface-subtle);
   stroke-width: 4px;
   stroke-linejoin: round;
+}
+
+.map-tooltip-surface {
+  fill: var(--ink);
+  stroke: var(--surface);
+  stroke-width: 1;
+}
+
+.map-label {
+  fill: var(--surface);
+  font-family: "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
 }
 
 .map-target-label {
@@ -423,11 +439,6 @@
   0% { translate: 0 -2vh; transform: rotate(0deg); opacity: 0; }
   8% { opacity: 1; }
   100% { translate: calc((var(--drift, 1) * 8vw)) 108vh; transform: rotate(720deg); opacity: 0.9; }
-}
-
-@keyframes map-path-in {
-  from { stroke-dasharray: 0 1; }
-  to { stroke-dasharray: 1 0; }
 }
 
 @media (min-width: 640px) {

@@ -52,6 +52,7 @@ export function GamePage() {
   const [celebrating, setCelebrating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [clock, setClock] = useState(Date.now());
+  const [hoveredGuessId, setHoveredGuessId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!lobbyId) return;
@@ -283,13 +284,19 @@ export function GamePage() {
                 </section>
               )}
 
-              <GuessList guesses={gameState.guessHistory} players={players} />
+              <GuessList
+                guesses={gameState.guessHistory}
+                players={players}
+                onGuessHover={setHoveredGuessId}
+              />
             </div>
 
             <aside className="space-y-4 lg:sticky lg:top-5">
               <SemanticMap
                 guesses={gameState.guessHistory}
                 targetWord={gameState.targetWord}
+                hoveredGuessId={hoveredGuessId}
+                onGuessHover={setHoveredGuessId}
               />
               <PlayerRoster
                 players={players}

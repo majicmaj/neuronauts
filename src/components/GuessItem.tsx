@@ -6,9 +6,16 @@ interface GuessItemProps {
   index: number;
   players: Player[];
   latest?: boolean;
+  onHoverChange?: (guessId: string | null) => void;
 }
 
-export default function GuessItem({ guess, index, players, latest }: GuessItemProps) {
+export default function GuessItem({
+  guess,
+  index,
+  players,
+  latest,
+  onHoverChange,
+}: GuessItemProps) {
   const liveName = players.find((player) => player.id === guess.playerId)?.name;
   const playerName = liveName || guess.playerName;
   const percentage = guess.similarity * 100;
@@ -24,7 +31,13 @@ export default function GuessItem({ guess, index, players, latest }: GuessItemPr
         </span>
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-2">
-            <span className="truncate text-base font-bold capitalize">{guess.guess}</span>
+            <span
+              className="guess-word truncate text-base font-bold capitalize"
+              onPointerEnter={() => onHoverChange?.(guess.id)}
+              onPointerLeave={() => onHoverChange?.(null)}
+            >
+              {guess.guess}
+            </span>
             {guess.isHint && (
               <span className="hint-label inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[11px] font-bold">
                 <Sparkles className="h-3 w-3" /> Hint
