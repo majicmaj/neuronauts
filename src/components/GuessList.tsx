@@ -21,29 +21,29 @@ export function GuessList({ guesses, players }: GuessListProps) {
 
   return (
     <section className="neuron-card min-h-[22rem] overflow-hidden" aria-labelledby="guesses-title">
-      <div className="flex items-center justify-between gap-3 border-b border-zinc-200/80 px-4 py-3 dark:border-zinc-800/80">
+      <div className="flex items-center justify-between gap-3 border-b border-zinc-200 px-4 py-3.5 dark:border-zinc-700">
         <div className="flex items-center gap-2">
-          <ListFilter className="h-4 w-4 text-teal-500" />
+          <ListFilter className="h-4 w-4 text-teal-700 dark:text-teal-300" />
           <h2 id="guesses-title" className="font-semibold">Flight log</h2>
           <span className="text-xs text-zinc-500">{guesses.length}</span>
         </div>
-        <div className="flex rounded-xl bg-zinc-100 p-1 text-xs dark:bg-zinc-900">
+        <div className="sort-control flex text-xs">
           <button
             onClick={() => setSort("newest")}
-            className={`rounded-lg px-2.5 py-1.5 transition ${sort === "newest" ? "bg-white font-semibold shadow-sm dark:bg-zinc-800" : "text-zinc-500"}`}
+            className={`rounded-md px-2.5 py-1.5 transition ${sort === "newest" ? "bg-white font-semibold text-zinc-900 dark:bg-zinc-700 dark:text-white" : "text-zinc-500 dark:text-zinc-400"}`}
           >
             Newest
           </button>
           <button
             onClick={() => setSort("similarity")}
-            className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 transition ${sort === "similarity" ? "bg-white font-semibold shadow-sm dark:bg-zinc-800" : "text-zinc-500"}`}
+            className={`flex items-center gap-1 rounded-md px-2.5 py-1.5 transition ${sort === "similarity" ? "bg-white font-semibold text-zinc-900 dark:bg-zinc-700 dark:text-white" : "text-zinc-500 dark:text-zinc-400"}`}
           >
             <ArrowDownUp className="h-3 w-3" /> Closest
           </button>
         </div>
       </div>
 
-      <div className="max-h-[34rem] space-y-2 overflow-y-auto p-3">
+      <div className="guess-scroll max-h-[34rem] overflow-y-auto px-4">
         {sorted.map((guess) => (
           <GuessItem
             key={guess.id}
@@ -55,9 +55,8 @@ export function GuessList({ guesses, players }: GuessListProps) {
         ))}
 
         {sorted.length === 0 && (
-          <div className="grid min-h-64 place-items-center rounded-2xl border border-dashed border-zinc-200 text-center dark:border-zinc-800">
+          <div className="grid min-h-64 place-items-center text-center">
             <div className="max-w-xs px-6">
-              <div className="mx-auto mb-3 h-2 w-24 rounded-full bg-gradient-to-r from-violet-500 via-cyan-400 to-teal-400 opacity-60" />
               <p className="font-semibold">No signals yet</p>
               <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
                 Guess a word to measure its semantic distance from the target.

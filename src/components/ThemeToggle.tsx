@@ -1,20 +1,20 @@
 import { useTheme, type Theme } from "@/contexts/theme";
-import { Monitor, Moon, Sun } from "lucide-react";
+import { Check, Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+
+const THEMES: Array<{ value: Theme; label: string; icon: typeof Sun }> = [
+  { value: "light", label: "Light", icon: Sun },
+  { value: "dark", label: "Dark", icon: Moon },
+  { value: "system", label: "System", icon: Monitor },
+];
 
 export function ThemeToggle() {
   const [open, setOpen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [supportsHover, setSupportsHover] = useState(false);
 
   const { theme, setTheme } = useTheme();
-
-  // Check if the device supports hover (typically desktops)
-  useEffect(() => {
-    if (window.matchMedia && window.matchMedia("(hover: hover)").matches) {
-      setSupportsHover(true);
-    }
-  }, []);
+  const selected = THEMES.find((option) => option.value === theme) || THEMES[2];
+  const SelectedIcon = selected.icon;
 
   // Close the dropdown when clicking outside the component
   useEffect(() => {
@@ -26,8 +26,15 @@ export function ThemeToggle() {
         setOpen(false);
       }
     }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpen(false);
+    }
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
   }, []);
 
   // Change theme and close the dropdown
@@ -36,60 +43,41 @@ export function ThemeToggle() {
     setOpen(false);
   };
 
-  // Conditionally add hover events only on devices that support them.
-  const containerProps = supportsHover
-    ? {
-        onMouseEnter: () => setOpen(true),
-        onMouseLeave: () => setOpen(false),
-      }
-    : {};
-
   return (
-    <div ref={containerRef} className="z-10 relative" {...containerProps}>
+    <div ref={containerRef} className="relative z-10">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="p-3 rounded-lg bg-black dark:bg-white text-white dark:text-black"
-        aria-label="Selected Theme"
+        className="theme-toggle"
+        aria-label={`Theme: ${selected.label}`}
+        aria-expanded={open}
+        aria-haspopup="menu"
       >
-        {theme === "light" && <Sun className="w-4 h-4" />}
-        {theme === "system" && <Monitor className="w-4 h-4" />}
-        {theme === "dark" && <Moon className="w-4 h-4" />}
+        <SelectedIcon className="h-4 w-4" />
       </button>
 
       <div
-        className={`absolute top-0 left-0 flex flex-col gap-1 p-1 bg-zinc-100 dark:bg-zinc-800 rounded-lg transition-opacity duration-200 ${
+        role="menu"
+        className={`theme-menu absolute right-0 top-[calc(100%+0.5rem)] w-36 p-1 transition duration-150 ${
           open
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
+            ? "visible translate-y-0 opacity-100"
+            : "invisible -translate-y-1 opacity-0"
         }`}
       >
-        {theme !== "light" && (
+        {THEMES.map((option) => {
+          const Icon = option.icon;
+          return (
           <button
-            onClick={() => handleThemeChange("light")}
-            className="p-2 rounded-md text-black dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700"
-            aria-label="Light mode"
+            key={option.value}
+            role="menuitem"
+            onClick={() => handleThemeChange(option.value)}
+            className="theme-menu-item"
           >
-            <Sun className="w-4 h-4" />
+            <Icon className="h-4 w-4" />
+            <span className="flex-1 text-left">{option.label}</span>
+            {theme === option.value && <Check className="h-4 w-4 text-teal-700 dark:text-teal-300" />}
           </button>
-        )}
-        {theme !== "system" && (
-          <button
-            onClick={() => handleThemeChange("system")}
-            className="p-2 rounded-md text-black dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700"
-            aria-label="System theme"
-          >
-            <Monitor className="w-4 h-4" />
-          </button>
-        )}
-        {theme !== "dark" && (
-          <button
-            onClick={() => handleThemeChange("dark")}
-            className="p-2 rounded-md text-black dark:text-white hover:bg-zinc-200 dark:hover:bg-zinc-700"
-            aria-label="Dark mode"
-          >
-            <Moon className="w-4 h-4" />
-          </button>
-        )}
+          );
+        })}
       </div>
     </div>
   );

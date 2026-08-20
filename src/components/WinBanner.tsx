@@ -1,4 +1,4 @@
-import { ArrowRight, Sparkles, Trophy } from "lucide-react";
+import { ArrowRight, Trophy } from "lucide-react";
 import type { GameState } from "../types";
 
 interface WinBannerProps {
@@ -20,16 +20,11 @@ export function WinBanner({ gameState, onNewGame }: WinBannerProps) {
 
   return (
     <section className="win-banner" aria-live="polite">
-      <div className="relative z-10 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3">
-          <div className="rounded-2xl bg-white/80 p-3 text-teal-700 shadow-sm dark:bg-black/30 dark:text-teal-200">
-            <Trophy className="h-7 w-7" />
-          </div>
+          <Trophy className="mt-1 h-7 w-7 shrink-0 text-teal-800 dark:text-teal-200" />
           <div>
-            <div className="mb-1 flex items-center gap-1.5 text-xs font-bold uppercase tracking-[0.2em] text-teal-800/70 dark:text-teal-100/70">
-              <Sparkles className="h-3.5 w-3.5" /> Signal found
-            </div>
-            <h2 className="text-3xl font-black tracking-tight sm:text-4xl">{gameState.targetWord}</h2>
+            <h2 className="text-2xl font-extrabold tracking-tight sm:text-3xl">Signal found: <span className="capitalize">{gameState.targetWord}</span></h2>
             <p className="mt-1 text-sm text-teal-950/70 dark:text-white/70">
               {gameState.winner?.playerName || "A neuronaut"} found it in {gameState.guessHistory.length} {gameState.guessHistory.length === 1 ? "guess" : "guesses"}
               {elapsed ? ` · ${elapsed}` : ""}.

@@ -4,7 +4,7 @@ interface CelebrationProps {
   active: boolean;
 }
 
-const COLORS = ["#14b8a6", "#22d3ee", "#8b5cf6", "#d946ef", "#f8fafc"];
+const COLORS = ["#0f766e", "#2dd4bf", "#d97706", "#fbbf24", "#f8fafc"];
 
 export function Celebration({ active }: CelebrationProps) {
   const pieces = useMemo(

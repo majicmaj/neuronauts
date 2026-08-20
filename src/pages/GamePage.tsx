@@ -1,4 +1,3 @@
-import BackgroundPattern from "@/components/BackgroundPattern";
 import { Celebration } from "@/components/Celebration";
 import { GuessInput } from "@/components/GuessInput";
 import { GuessList } from "@/components/GuessList";
@@ -197,9 +196,8 @@ export function GamePage() {
 
   if (fatalError) {
     return (
-      <div className="relative grid min-h-dvh place-items-center overflow-hidden bg-zinc-50 px-4 text-center dark:bg-black">
-        <BackgroundPattern />
-        <div className="neuron-card relative z-10 max-w-md p-8">
+      <div className="app-shell grid min-h-dvh place-items-center px-4 text-center">
+        <div className="neuron-card max-w-md p-8">
           <Neuronaut className="mx-auto mb-4 h-16 w-16" />
           <h1 className="text-2xl font-black">Mission unavailable</h1>
           <p className="mt-2 text-zinc-500 dark:text-zinc-400">{fatalError}</p>
@@ -210,17 +208,16 @@ export function GamePage() {
   }
 
   return (
-    <div className="relative min-h-dvh overflow-hidden bg-zinc-50 text-zinc-950 transition-colors dark:bg-black dark:text-white">
-      <BackgroundPattern />
+    <div className="app-shell min-h-dvh overflow-hidden">
       <Celebration active={celebrating} />
 
-      <div className="relative z-10 mx-auto w-full max-w-7xl px-3 py-3 sm:px-5 sm:py-5">
-        <header className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-white/60 bg-white/70 px-3 py-2.5 shadow-sm backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/70">
+      <div className="mx-auto w-full max-w-7xl px-3 py-3 sm:px-5 sm:py-5">
+        <header className="mission-header mb-5 flex items-center justify-between gap-3 pb-3">
           <button onClick={() => navigate("/")} className="flex min-w-0 items-center gap-2 text-left">
             <Neuronaut className="h-10 w-10 shrink-0" />
             <div className="hidden min-w-0 sm:block">
-              <div className="truncate text-lg font-black leading-tight tracking-tight">Neuronauts</div>
-              <div className="flex items-center gap-1 text-[10px] uppercase tracking-widest text-zinc-500">
+              <div className="truncate text-lg font-extrabold leading-tight tracking-tight">Neuronauts</div>
+              <div className="mt-0.5 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                 <Radio className={`h-2.5 w-2.5 ${connected ? "text-emerald-500" : "text-amber-500"}`} />
                 {connected ? "live mission" : "reconnecting"}
               </div>
@@ -228,11 +225,11 @@ export function GamePage() {
           </button>
 
           <div className="flex items-center gap-2">
-            <div className="hidden items-center gap-1.5 rounded-xl bg-zinc-100 px-3 py-2 text-xs font-semibold text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300 sm:flex">
-              <Users className="h-3.5 w-3.5" /> {players.length}
+            <div className="hidden items-center gap-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-300 sm:flex">
+              <Users className="h-4 w-4" /> {players.length} online
             </div>
             {lobbyId && (
-              <button onClick={copyCode} className="flex items-center gap-2 rounded-xl bg-zinc-950 px-3 py-2 font-mono text-sm font-bold tracking-widest text-white transition hover:bg-teal-600 dark:bg-white dark:text-black dark:hover:bg-teal-300" aria-label="Copy lobby code">
+              <button onClick={copyCode} className="lobby-code-button" aria-label="Copy lobby code">
                 {lobbyId} {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
             )}
@@ -254,8 +251,8 @@ export function GamePage() {
               <WinBanner gameState={gameState} onNewGame={() => navigate("/")} />
 
               {gameState.status !== "won" && (
-                <section className="neuron-card p-3 sm:p-4">
-                  <div className="mb-3 flex items-center justify-between gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+                <section className="neuron-card p-4 sm:p-5">
+                  <div className="mb-3 flex items-center justify-between gap-3 text-sm text-zinc-500 dark:text-zinc-400">
                     <span>
                       Target signal: <strong className="text-zinc-800 dark:text-zinc-200">{gameState.targetLength} letters</strong>
                     </span>
@@ -280,7 +277,7 @@ export function GamePage() {
                       {hintSeconds > 0 ? `Hint in ${hintSeconds}s` : "Halfway hint"}
                     </button>
                   </div>
-                  <p className="mt-2 text-xs text-zinc-400">
+                  <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
                     Hints are shared with the crew and recharge for 60 seconds.
                   </p>
                 </section>
@@ -307,7 +304,7 @@ export function GamePage() {
       </div>
 
       {actionError && (
-        <div className="fixed bottom-5 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-amber-200 bg-white/95 px-4 py-3 text-center text-sm font-medium text-amber-800 shadow-2xl backdrop-blur dark:border-amber-900/70 dark:bg-zinc-950/95 dark:text-amber-200" role="alert">
+        <div className="alert-toast fixed bottom-5 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 text-center" role="alert">
           {actionError}
         </div>
       )}

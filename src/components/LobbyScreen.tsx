@@ -1,4 +1,4 @@
-import { ArrowRight, Radio, Rocket, Users } from "lucide-react";
+import { ArrowRight, Radio, Route, Users } from "lucide-react";
 import { FormEvent, useState } from "react";
 import { getPreferredPlayerName, savePreferredPlayerName } from "../lib/socket";
 import Neuronaut from "./Neuronaut";
@@ -32,44 +32,34 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
   };
 
   return (
-    <div className="relative z-10 w-full max-w-xl">
-      <div className="mb-8 flex flex-col items-center text-center">
-        <div className="relative mb-4">
-          <div className="absolute inset-0 rounded-full bg-gradient-to-br from-violet-500 to-teal-400 blur-2xl opacity-35" />
-          <Neuronaut className="relative h-24 w-24 drop-shadow-xl" />
-        </div>
-        <p className="mb-2 text-xs font-black uppercase tracking-[0.32em] text-teal-600 dark:text-teal-300">
-          Cooperative semantic search
+    <div className="grid w-full max-w-4xl items-center gap-8 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
+      <div>
+        <Neuronaut className="mb-3 h-16 w-16 sm:mb-5 sm:h-20 sm:w-20" />
+        <h1 className="text-4xl font-extrabold tracking-[-0.035em] sm:text-6xl">Neuronauts</h1>
+        <p className="mt-3 max-w-md text-base leading-7 text-zinc-600 dark:text-zinc-300 sm:mt-4 sm:text-lg">
+          Chart word space with your crew and close in on one hidden signal.
         </p>
-        <h1 className="text-5xl font-black tracking-[-0.05em] sm:text-6xl">Neuronauts</h1>
-        <p className="mt-4 max-w-md text-base leading-relaxed text-zinc-600 dark:text-zinc-300">
-          Chart word space together. Every guess moves your crew closer to one hidden signal.
-        </p>
+
+        <ul className="mt-5 grid gap-2.5 text-sm text-zinc-700 dark:text-zinc-200 sm:mt-8 sm:gap-3">
+          <li className="flex items-center gap-3"><Users className="h-4 w-4 text-teal-700 dark:text-teal-300" /> Play in one shared lobby</li>
+          <li className="flex items-center gap-3"><Radio className="h-4 w-4 text-teal-700 dark:text-teal-300" /> See every guess as it lands</li>
+          <li className="flex items-center gap-3"><Route className="h-4 w-4 text-amber-700 dark:text-amber-300" /> Share one halfway hint per minute</li>
+        </ul>
       </div>
 
-      <div className="mb-5 grid grid-cols-3 gap-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
-        <div className="rounded-2xl border border-zinc-200/80 bg-white/70 px-2 py-3 dark:border-zinc-800 dark:bg-zinc-950/60">
-          <Users className="mx-auto mb-1.5 h-4 w-4 text-violet-500" /> Multiplayer
-        </div>
-        <div className="rounded-2xl border border-zinc-200/80 bg-white/70 px-2 py-3 dark:border-zinc-800 dark:bg-zinc-950/60">
-          <Radio className="mx-auto mb-1.5 h-4 w-4 text-cyan-500" /> Live signals
-        </div>
-        <div className="rounded-2xl border border-zinc-200/80 bg-white/70 px-2 py-3 dark:border-zinc-800 dark:bg-zinc-950/60">
-          <Rocket className="mx-auto mb-1.5 h-4 w-4 text-teal-500" /> Shared hints
-        </div>
-      </div>
-
-      <div className="neuron-card p-4 sm:p-5">
-        <label htmlFor="player-name" className="mb-1.5 block text-xs font-bold uppercase tracking-wider text-zinc-500">
-          Your call sign <span className="font-normal normal-case tracking-normal">(optional)</span>
+      <div>
+        <div className="neuron-card p-5 sm:p-6">
+          <h2 className="mb-5 text-xl font-bold tracking-tight">Start or join a mission</h2>
+          <label htmlFor="player-name" className="mb-2 block text-sm font-semibold">
+          Call sign <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span>
         </label>
         <input
           id="player-name"
           value={preferredName}
           onChange={(event) => setPreferredName(event.target.value)}
           maxLength={24}
-          placeholder="We'll assign a cosmic name"
-          className="mb-3 w-full rounded-2xl border border-zinc-200 bg-white px-4 py-3 outline-none transition focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 dark:border-zinc-800 dark:bg-zinc-950"
+          placeholder="We’ll assign one if you leave this blank"
+          className="mission-input mb-3 w-full"
         />
 
         <button
@@ -80,8 +70,8 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
           {busy ? "Launching…" : "Create a mission"} <ArrowRight className="h-4 w-4" />
         </button>
 
-        <div className="my-4 flex items-center gap-3 text-xs uppercase tracking-widest text-zinc-400">
-          <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" /> or join a crew <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-800" />
+        <div className="my-5 flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
+          <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-700" /> Have a lobby code? <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-700" />
         </div>
 
         <form onSubmit={handleJoin} className="flex gap-2">
@@ -90,23 +80,24 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
             id="lobby-code"
             value={lobbyId}
             onChange={(event) => setLobbyId(event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, ""))}
-            placeholder="LOBBY CODE"
-            className="min-w-0 flex-1 rounded-2xl border border-zinc-200 bg-white px-4 py-3 font-mono font-bold tracking-[0.18em] outline-none transition placeholder:font-sans placeholder:tracking-normal focus:border-violet-500 focus:ring-4 focus:ring-violet-500/10 dark:border-zinc-800 dark:bg-zinc-950"
+            placeholder="Lobby code"
+            className="mission-input min-w-0 flex-1 font-mono font-bold uppercase tracking-[0.16em] placeholder:font-sans placeholder:font-normal placeholder:normal-case placeholder:tracking-normal"
             maxLength={6}
           />
           <button
             type="submit"
             disabled={!connected || busy || lobbyId.length !== 6}
-            className="rounded-2xl border border-zinc-200 bg-zinc-100 px-5 font-bold transition hover:border-violet-400 hover:bg-violet-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-40 dark:border-zinc-800 dark:bg-zinc-900"
+            className="neuron-secondary-button px-5"
           >
             Join
           </button>
         </form>
-      </div>
+        </div>
 
-      <div className="mt-4 flex items-center justify-center gap-2 text-xs text-zinc-500">
-        <span className={`h-2 w-2 rounded-full ${connected ? "bg-emerald-500" : "animate-pulse bg-amber-500"}`} />
-        {connected ? "Navigator online" : "Connecting to navigator…"}
+        <div className="mt-3 flex items-center justify-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
+          <span className={`h-2 w-2 rounded-full ${connected ? "bg-emerald-600" : "bg-amber-500"}`} />
+          {connected ? "Navigator online" : "Connecting to navigator…"}
+        </div>
       </div>
     </div>
   );

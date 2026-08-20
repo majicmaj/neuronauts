@@ -14,7 +14,7 @@ function App() {
       <Router>
         <Suspense
           fallback={
-            <div className="grid min-h-dvh place-items-center bg-zinc-50 text-sm font-semibold text-zinc-500 dark:bg-black dark:text-zinc-400">
+            <div className="app-shell grid min-h-dvh place-items-center text-sm font-semibold text-zinc-500 dark:text-zinc-400">
               Opening mission…
             </div>
           }

@@ -29,9 +29,7 @@ export function SemanticMap({ guesses, targetWord }: SemanticMapProps) {
             Closer to the center means closer in meaning.
           </p>
         </div>
-        <span className="rounded-full bg-teal-500/10 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-teal-700 dark:text-teal-300">
-          live map
-        </span>
+        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Live</span>
       </div>
 
       <div className="p-3 pt-2">
@@ -41,20 +39,7 @@ export function SemanticMap({ guesses, targetWord }: SemanticMapProps) {
           role="img"
           aria-label="Two-dimensional projection of guesses around the target word"
         >
-          <defs>
-            <radialGradient id="mapGlow">
-              <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.18" />
-              <stop offset="45%" stopColor="#8b5cf6" stopOpacity="0.08" />
-              <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0" />
-            </radialGradient>
-            <filter id="targetGlow" x="-100%" y="-100%" width="300%" height="300%">
-              <feGaussianBlur stdDeviation="4" result="blur" />
-              <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
-            </filter>
-          </defs>
-
-          <rect x="1" y="1" width="318" height="318" rx="20" className="map-surface" />
-          <circle cx="160" cy="160" r="138" fill="url(#mapGlow)" />
+          <rect x="1" y="1" width="318" height="318" rx="12" className="map-surface" />
           {[42, 84, 126].map((radius) => (
             <circle key={radius} cx="160" cy="160" r={radius} className="map-ring" />
           ))}
@@ -84,19 +69,18 @@ export function SemanticMap({ guesses, targetWord }: SemanticMapProps) {
                     y={Math.max(16, y - 11)}
                     className="map-label"
                   >
-                    {guess.isHint ? `✦ ${guess.guess}` : guess.guess}
+                    {guess.isHint ? `hint: ${guess.guess}` : guess.guess}
                   </text>
                 )}
               </g>
             );
           })}
 
-          <g filter="url(#targetGlow)">
-            <circle cx="160" cy="160" r="11" className="map-target-glow" />
+          <g>
             <circle cx="160" cy="160" r="6" className="map-target" />
           </g>
           <text x="160" y="181" textAnchor="middle" className="map-target-label">
-            {targetWord ? `★ ${targetWord}` : "TARGET"}
+            {targetWord || "target"}
           </text>
         </svg>
 

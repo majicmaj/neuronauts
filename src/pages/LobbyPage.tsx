@@ -1,4 +1,3 @@
-import BackgroundPattern from "@/components/BackgroundPattern";
 import { LobbyScreen } from "@/components/LobbyScreen";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { savePreferredPlayerName, socket } from "@/lib/socket";
@@ -57,10 +56,9 @@ export default function LobbyPage() {
   };
 
   return (
-    <div className="relative min-h-dvh overflow-hidden bg-zinc-50 text-zinc-950 transition-colors dark:bg-black dark:text-white">
-      <BackgroundPattern />
+    <div className="app-shell relative min-h-dvh overflow-hidden">
       <div className="absolute right-4 top-4 z-20"><ThemeToggle /></div>
-      <main className="relative z-10 grid min-h-dvh place-items-center px-4 py-16">
+      <main className="grid min-h-dvh place-items-center px-4 py-10 sm:px-6 sm:py-16">
         <LobbyScreen
           connected={connected}
           busy={busy}
@@ -68,7 +66,7 @@ export default function LobbyPage() {
           onJoinLobby={joinLobby}
         />
         {error && (
-          <div className="fixed bottom-5 left-1/2 z-30 -translate-x-1/2 rounded-2xl border border-red-200 bg-white px-4 py-3 text-sm font-medium text-red-700 shadow-xl dark:border-red-900 dark:bg-zinc-950 dark:text-red-300" role="alert">
+          <div className="alert-toast fixed bottom-5 left-1/2 z-30 -translate-x-1/2" role="alert">
             {error}
           </div>
         )}
