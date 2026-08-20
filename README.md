@@ -1,140 +1,48 @@
-<img alt="neuronauts logo" height="64px" width="64px" src="https://github.com/majicmaj/neuronauts/blob/main/public/android-chrome-192x192.png?raw=true">
+<img alt="Neuronauts logo" height="64" width="64" src="https://github.com/majicmaj/neuronauts/blob/main/public/android-chrome-192x192.png?raw=true">
 
 # Neuronauts
 
+A cooperative, real-time semantic word game. A crew shares guesses, charts them around a hidden target in vector space, and tries to find the target word together.
 
-[![GitHub stars](https://img.shields.io/github/stars/majicmaj/neuronauts?style=social)](https://github.com/majicmaj/neuronauts/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/majicmaj/neuronauts?style=social)](https://github.com/majicmaj/neuronauts/network)
+Production: <https://semantle.netlify.app>
 
-A real-time multiplayer word guessing game powered by semantic word embeddings.
+## Gameplay
 
-<img alt="Made with React" src="https://img.shields.io/badge/React-20232A?logo=react&amp;logoColor=61DAFB"> <img alt="TypeScript" src="https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&amp;logoColor=white"> <img alt="Socket.IO" src="https://img.shields.io/badge/Socket.io-010101?logo=socket.io&amp;logoColor=white">
+- Every valid guess shows its cosine similarity to the target and its position on a shared semantic map.
+- Guesses are attributed to unique, editable Neuronaut call signs.
+- A shared hint returns the dictionary word nearest the embedding midpoint between the crew's best guess and the target. Hints have a server-enforced 60-second lobby cooldown.
+- A correct guess reveals the target to everyone in the lobby with an in-page celebration.
 
-## Demo
+## Local development
 
-Note: The backend might be down / restarted frequently
-Experience the game live: [https://semantle.netlify.app/](https://semantle.netlify.app/)
+Requirements: Node.js 22 or newer and a running [`neuronauts-be`](https://github.com/majicmaj/neuronauts-be) server.
 
-<img width="1512" alt="image" src="https://github.com/user-attachments/assets/7c81cc32-684f-43a7-9b8f-a80eff106389" />
+```bash
+npm ci
+cp .env.example .env
+npm run dev
+```
 
+Set the backend URL in `.env`:
 
-## Table of Contents
+```dotenv
+VITE_API_URL=http://localhost:3000
+```
 
-- [Features](#features)
-- [Getting Started](#getting-started)
-- [Self-Hosting](#self-hosting)
-- [Contributing](#contributing)
-- [License](#license)
+Quality checks:
 
-## Features
+```bash
+npm run lint
+npm run build
+npm audit --omit=dev
+```
 
-- **Real-Time Multiplayer:** Engage in word guessing challenges with players from around the world.
-- **Responsive Design:** Enjoy a seamless experience on desktops and mobile devices.
-- **Theme Support:** Automatic dark/light mode syncing with your system preferences.
-- **Instant Semantic Checks:** Benefit from fast, semantic word similarity calculations.
+## Architecture
 
-## Getting Started
+- React 19 + TypeScript + Vite
+- Tailwind CSS
+- One app-wide Socket.IO connection with reconnect/rejoin behavior
+- Lazy-loaded game route to keep the landing-page bundle smaller
+- Server-calculated semantic positions; target embeddings never reach browsers
 
-Set up your local development environment in just a few steps:
-
-1. **Clone the Repository:**
-
-   ```bash
-   git clone https://github.com/yourusername/neuronauts.git
-   cd neuronauts
-   ```
-
-2. **Install Dependencies:**
-
-   ```bash
-   npm install
-   ```
-
-3. **Configure Environment Variables:**
-
-   Create a `.env` file by copying the example:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-   Then, update the `VITE_API_URL` in your `.env` file with the URL of your backend server:
-
-   ```dotenv
-   VITE_API_URL=https://your-backend-url.com
-   ```
-
-4. **Run the Development Server:**
-
-   ```bash
-   npm run dev
-   ```
-
-   Open your browser and navigate to the provided local URL to see the application in action.
-
-5. Set up the neuronauts-be!
-Instructions here: [https://github.com/majicmaj/neuronauts-be](https://github.com/majicmaj/neuronauts-be)
-
-## Self-Hosting
-
-If you’d like to deploy and run Neuronauts on your own infrastructure, follow these additional steps:
-
-1. **Build for Production:**
-
-   Generate an optimized production build:
-
-   ```bash
-   npm run build
-   ```
-
-2. **Preview the Production Build Locally:**
-
-   Test your build with:
-
-   ```bash
-   npm run preview
-   ```
-
-3. **Deploy Your Build:**
-
-   - **Static File Server:** Serve the contents of the `dist` folder using any static server (e.g., [serve](https://www.npmjs.com/package/serve)).
-   - **Docker:** While a Docker setup isn’t provided out-of-the-box, you can easily create a `Dockerfile` to containerize the app. Contributions for official Docker support are welcome!
-   - **Cloud Platforms:** Deploy on services like Netlify, Vercel, or AWS S3 + CloudFront for global reach.
-
-4. **Customize Your Deployment:**
-
-   - Ensure that your environment variables (especially `VITE_API_URL`) are correctly configured for your production backend.
-   - Integrate with any additional custom backend or middleware as needed.
-
-## Contributing
-
-We welcome contributions from the community!
-
-1. **Fork the Repository**
-2. **Create a Feature Branch:**
-
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
-
-3. **Commit Your Changes:**
-
-   ```bash
-   git commit -m "Add: Description of your feature"
-   ```
-
-4. **Push to Your Branch:**
-
-   ```bash
-   git push origin feature/your-feature-name
-   ```
-
-5. **Open a Pull Request:**
-
-   Provide a clear description of your changes and the problem they solve.
-
-For detailed guidelines, please review our [Code of Conduct](CODE_OF_CONDUCT.md) and [Contribution Guidelines](CONTRIBUTING.md).
-
-## License
-
-This project is licensed under the [MIT License](LICENSE).
+Netlify builds `main` and publishes `dist/`. `VITE_API_URL` is a build-time variable and must point at the public backend.

@@ -1,196 +1,316 @@
-// GamePage.tsx
-import { Copy, LoaderIcon, Trophy } from "lucide-react";
-import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import { io } from "socket.io-client";
-import { GuessInput } from "../components/GuessInput";
-import { GuessList } from "../components/GuessList";
-import { ThemeToggle } from "../components/ThemeToggle";
-import type { GameState, GuessResult } from "../types";
-
-// Import shadcn dialog components.
-// (Adjust the import path if your project structure differs)
 import BackgroundPattern from "@/components/BackgroundPattern";
+import { Celebration } from "@/components/Celebration";
+import { GuessInput } from "@/components/GuessInput";
+import { GuessList } from "@/components/GuessList";
 import Neuronaut from "@/components/Neuronaut";
+import { PlayerRoster } from "@/components/PlayerRoster";
+import { SemanticMap } from "@/components/SemanticMap";
+import { ThemeToggle } from "@/components/ThemeToggle";
+import { WinBanner } from "@/components/WinBanner";
 import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+  getPreferredPlayerName,
+  savePreferredPlayerName,
+  socket,
+} from "@/lib/socket";
+import type {
+  ActionError,
+  GameState,
+  GuessResult,
+  LobbyPayload,
+  Player,
+} from "@/types";
+import {
+  Check,
+  Copy,
+  LoaderCircle,
+  Radio,
+  Sparkles,
+  Users,
+} from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 
-// Create a Socket.IO client connection.
-const socket = io(import.meta.env.VITE_API_URL);
+const EMPTY_GAME: GameState = {
+  status: "loading",
+  targetLength: 0,
+  guessHistory: [],
+  startedAt: null,
+  solvedAt: null,
+  winner: null,
+  hintAvailableAt: null,
+  error: null,
+};
 
 export function GamePage() {
-  const { lobbyId } = useParams();
+  const { lobbyId: routeLobbyId } = useParams();
+  const lobbyId = routeLobbyId?.toUpperCase();
   const navigate = useNavigate();
-
-  // Game state received from the server.
-  const [gameState, setGameState] = useState<GameState>({
-    targetLength: 0,
-    guessHistory: [],
-  });
-
-  const [error, setError] = useState<string | null>(null);
-
-  // Record when the game starts (i.e. when the target word is set).
-  const [startTime, setStartTime] = useState<number | null>(null);
-
-  // State for the win modal and statistics.
-  const [winModalOpen, setWinModalOpen] = useState(false);
-  const [winStats, setWinStats] = useState({ totalGuesses: 0, timeTaken: 0 });
+  const [gameState, setGameState] = useState<GameState>(EMPTY_GAME);
+  const [players, setPlayers] = useState<Player[]>([]);
+  const [connected, setConnected] = useState(socket.connected);
+  const [fatalError, setFatalError] = useState<string | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [celebrating, setCelebrating] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [clock, setClock] = useState(Date.now());
 
   useEffect(() => {
-    if (lobbyId) {
-      // Auto-join the lobby.
-      socket.emit("joinLobby", lobbyId);
-    }
+    if (!lobbyId) return;
 
-    // Update game state when joining a lobby.
-    socket.on("lobbyJoined", ({ gameState }: { gameState: GameState }) => {
-      setGameState(gameState);
-      setError(null);
-      if (gameState.targetLength !== 0 && !startTime) {
-        setStartTime(Date.now());
-      }
-    });
-
-    // Listen for when embeddings have loaded.
-    socket.on("gameReady", (gameState: GameState) => {
-      setGameState(gameState);
-      if (gameState.targetLength !== 0 && !startTime) {
-        setStartTime(Date.now());
-      }
-    });
-
-    // Listen for guess results.
-    socket.on("guessResult", (result: GuessResult) => {
-      setGameState((prev) => {
-        const newGuessHistory = [...prev.guessHistory, result];
-        if (result.correct) {
-          const endTime = Date.now();
-          const timeTaken = startTime ? (endTime - startTime) / 1000 : 0;
-          setWinStats({ totalGuesses: newGuessHistory.length, timeTaken });
-          setWinModalOpen(true);
-        }
-        return { ...prev, guessHistory: newGuessHistory };
+    const joinLobby = () => {
+      setConnected(true);
+      socket.emit("joinLobby", {
+        lobbyId,
+        preferredName: getPreferredPlayerName(),
       });
-    });
+    };
+    const onDisconnect = () => setConnected(false);
+    const onLobbyJoined = (payload: LobbyPayload) => {
+      setGameState(payload.gameState);
+      setPlayers(payload.players);
+      setFatalError(null);
+      const self = payload.players.find((player) => player.id === socket.id);
+      if (self) savePreferredPlayerName(self.name);
+    };
+    const onGameReady = (state: GameState) => setGameState(state);
+    const onPlayersUpdated = (payload: { players: Player[] }) => {
+      setPlayers(payload.players);
+      const self = payload.players.find((player) => player.id === socket.id);
+      if (self) savePreferredPlayerName(self.name);
+    };
+    const onGuessResult = (result: GuessResult) => {
+      setGameState((previous) => {
+        if (previous.guessHistory.some((guess) => guess.id === result.id)) {
+          return previous;
+        }
+        const next: GameState = {
+          ...previous,
+          guessHistory: [...previous.guessHistory, result],
+          hintAvailableAt: result.hintAvailableAt || previous.hintAvailableAt,
+        };
+        if (result.correct) {
+          next.status = "won";
+          next.targetWord = result.targetWord;
+          next.solvedAt = result.createdAt;
+          next.winner = {
+            playerId: result.playerId,
+            playerName: result.playerName,
+          };
+        }
+        return next;
+      });
+    };
+    const onGameWon = (state: GameState) => {
+      setGameState(state);
+      setCelebrating(true);
+    };
+    const onHintCooldown = (payload: { hintAvailableAt: string }) => {
+      setGameState((previous) => ({
+        ...previous,
+        hintAvailableAt: payload.hintAvailableAt,
+      }));
+      setClock(Date.now());
+    };
+    const onActionError = (error: ActionError) => {
+      setActionError(error.message);
+      if (error.hintAvailableAt) {
+        setGameState((previous) => ({
+          ...previous,
+          hintAvailableAt: error.hintAvailableAt || null,
+        }));
+      }
+    };
+    const onLobbyError = (message: string) => setFatalError(message);
+    const onNameChanged = ({ name }: { name: string }) =>
+      savePreferredPlayerName(name);
 
-    socket.on("error", (message: string) => {
-      setError(message);
-    });
+    socket.on("connect", joinLobby);
+    socket.on("disconnect", onDisconnect);
+    socket.on("lobbyJoined", onLobbyJoined);
+    socket.on("gameReady", onGameReady);
+    socket.on("playersUpdated", onPlayersUpdated);
+    socket.on("guessResult", onGuessResult);
+    socket.on("gameWon", onGameWon);
+    socket.on("hintCooldown", onHintCooldown);
+    socket.on("actionError", onActionError);
+    socket.on("error", onLobbyError);
+    socket.on("playerNameChanged", onNameChanged);
+    if (socket.connected) joinLobby();
 
     return () => {
-      socket.off("lobbyJoined");
-      socket.off("gameReady");
-      socket.off("guessResult");
-      socket.off("error");
+      socket.off("connect", joinLobby);
+      socket.off("disconnect", onDisconnect);
+      socket.off("lobbyJoined", onLobbyJoined);
+      socket.off("gameReady", onGameReady);
+      socket.off("playersUpdated", onPlayersUpdated);
+      socket.off("guessResult", onGuessResult);
+      socket.off("gameWon", onGameWon);
+      socket.off("hintCooldown", onHintCooldown);
+      socket.off("actionError", onActionError);
+      socket.off("error", onLobbyError);
+      socket.off("playerNameChanged", onNameChanged);
     };
-  }, [lobbyId, startTime]);
+  }, [lobbyId]);
 
-  // Emit a guess event.
-  const handleGuess = (guess: string) => {
-    if (lobbyId) {
-      socket.emit("guess", { lobbyId, guess });
-    }
+  useEffect(() => {
+    if (!actionError) return;
+    const timer = window.setTimeout(() => setActionError(null), 4_500);
+    return () => window.clearTimeout(timer);
+  }, [actionError]);
+
+  useEffect(() => {
+    if (!celebrating) return;
+    const timer = window.setTimeout(() => setCelebrating(false), 6_000);
+    return () => window.clearTimeout(timer);
+  }, [celebrating]);
+
+  useEffect(() => {
+    const availableAt = gameState.hintAvailableAt
+      ? Date.parse(gameState.hintAvailableAt)
+      : 0;
+    if (!availableAt || availableAt <= Date.now()) return;
+    const timer = window.setInterval(() => setClock(Date.now()), 250);
+    return () => window.clearInterval(timer);
+  }, [gameState.hintAvailableAt]);
+
+  const hintSeconds = gameState.hintAvailableAt
+    ? Math.max(0, Math.ceil((Date.parse(gameState.hintAvailableAt) - clock) / 1_000))
+    : 0;
+  const bestGuess = useMemo(
+    () =>
+      gameState.guessHistory.reduce<GuessResult | null>(
+        (best, guess) =>
+          !best || guess.similarity > best.similarity ? guess : best,
+        null
+      ),
+    [gameState.guessHistory]
+  );
+  const canPlay = connected && gameState.status === "playing";
+  const canHint = canPlay && Boolean(bestGuess) && hintSeconds === 0;
+
+  const copyCode = async () => {
+    if (!lobbyId) return;
+    await navigator.clipboard.writeText(lobbyId);
+    setCopied(true);
+    window.setTimeout(() => setCopied(false), 1_500);
   };
 
-  // For starting a new game – here we navigate back to the lobby screen.
-  const handleNewGame = () => {
-    navigate("/");
-  };
+  if (fatalError) {
+    return (
+      <div className="relative grid min-h-dvh place-items-center overflow-hidden bg-zinc-50 px-4 text-center dark:bg-black">
+        <BackgroundPattern />
+        <div className="neuron-card relative z-10 max-w-md p-8">
+          <Neuronaut className="mx-auto mb-4 h-16 w-16" />
+          <h1 className="text-2xl font-black">Mission unavailable</h1>
+          <p className="mt-2 text-zinc-500 dark:text-zinc-400">{fatalError}</p>
+          <button onClick={() => navigate("/")} className="neuron-primary-button mx-auto mt-6">Return home</button>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen h-full grid bg-white dark:bg-black text-black dark:text-white transition-colors">
+    <div className="relative min-h-dvh overflow-hidden bg-zinc-50 text-zinc-950 transition-colors dark:bg-black dark:text-white">
       <BackgroundPattern />
+      <Celebration active={celebrating} />
 
-      <div className="relative flex flex-col container max-w-lg mx-auto px-4 py-2 h-full">
-        <header className="w-full flex justify-between items-center mb-4">
+      <div className="relative z-10 mx-auto w-full max-w-7xl px-3 py-3 sm:px-5 sm:py-5">
+        <header className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-white/60 bg-white/70 px-3 py-2.5 shadow-sm backdrop-blur-xl dark:border-zinc-800/80 dark:bg-zinc-950/70">
+          <button onClick={() => navigate("/")} className="flex min-w-0 items-center gap-2 text-left">
+            <Neuronaut className="h-10 w-10 shrink-0" />
+            <div className="hidden min-w-0 sm:block">
+              <div className="truncate text-lg font-black leading-tight tracking-tight">Neuronauts</div>
+              <div className="flex items-center gap-1 text-[10px] uppercase tracking-widest text-zinc-500">
+                <Radio className={`h-2.5 w-2.5 ${connected ? "text-emerald-500" : "text-amber-500"}`} />
+                {connected ? "live mission" : "reconnecting"}
+              </div>
+            </div>
+          </button>
+
           <div className="flex items-center gap-2">
-            {/* <Brain className="w-8 h-8" /> */}
-            <Neuronaut className="w-10 h-10" />
-            <h1 className="text-2xl font-bold">Neuronauts</h1>
+            <div className="hidden items-center gap-1.5 rounded-xl bg-zinc-100 px-3 py-2 text-xs font-semibold text-zinc-600 dark:bg-zinc-900 dark:text-zinc-300 sm:flex">
+              <Users className="h-3.5 w-3.5" /> {players.length}
+            </div>
             {lobbyId && (
-              <button
-                className="flex gap-1 items-center text-sm bg-black dark:bg-white text-white dark:text-black px-2 py-0.5 rounded border-2 border-transparent active:border-teal-500"
-                onClick={() => navigator.clipboard.writeText(lobbyId)}
-              >
-                {lobbyId} <Copy className="h-4 w-4" />
+              <button onClick={copyCode} className="flex items-center gap-2 rounded-xl bg-zinc-950 px-3 py-2 font-mono text-sm font-bold tracking-widest text-white transition hover:bg-teal-600 dark:bg-white dark:text-black dark:hover:bg-teal-300" aria-label="Copy lobby code">
+                {lobbyId} {copied ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
               </button>
             )}
+            <ThemeToggle />
           </div>
-          <ThemeToggle />
         </header>
 
-        <main className="flex flex-col items-center justify-center h-full flex-grow">
-          {error ? (
-            <div className="grid place-items-center gap-4">
-              <div className="text-zinc-700 dark:text-zinc-300 text-xl italic font-medium">
-                {error}
-              </div>
-              <a
-                href="/"
-                className="text-teal-600 font-bold dark:text-teal-400 underline hover:no-underline"
-              >
-                Home
-              </a>
+        {gameState.status === "loading" ? (
+          <div className="grid min-h-[70vh] place-items-center">
+            <div className="neuron-card flex flex-col items-center px-8 py-10 text-center">
+              <LoaderCircle className="mb-4 h-8 w-8 animate-spin text-teal-500" />
+              <p className="font-bold">Calibrating semantic space</p>
+              <p className="mt-1 text-sm text-zinc-500">Loading the navigator’s word map…</p>
             </div>
-          ) : gameState.targetLength === 0 ? (
-            // Show loading indicator while embeddings are loading.
-            <div className="grid place-items-center gap-4">
-              <p className="text-lg font-medium">Loading game...</p>
-              <LoaderIcon className="animate-spin w-8 h-8" />
+          </div>
+        ) : (
+          <main className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_23rem]">
+            <div className="min-w-0 space-y-4">
+              <WinBanner gameState={gameState} onNewGame={() => navigate("/")} />
+
+              {gameState.status !== "won" && (
+                <section className="neuron-card p-3 sm:p-4">
+                  <div className="mb-3 flex items-center justify-between gap-3 text-xs text-zinc-500 dark:text-zinc-400">
+                    <span>
+                      Target signal: <strong className="text-zinc-800 dark:text-zinc-200">{gameState.targetLength} letters</strong>
+                    </span>
+                    {bestGuess && (
+                      <span className="truncate text-right">
+                        Closest: <strong className="capitalize text-teal-600 dark:text-teal-300">{bestGuess.guess} · {(bestGuess.similarity * 100).toFixed(1)}%</strong>
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex flex-col gap-2 sm:flex-row">
+                    <GuessInput
+                      onGuess={(guess) => socket.emit("guess", { lobbyId, guess })}
+                      disabled={!canPlay}
+                    />
+                    <button
+                      onClick={() => socket.emit("requestHint", { lobbyId })}
+                      disabled={!canHint}
+                      className="hint-button"
+                      title={bestGuess ? "Find the nearest word to the halfway point between your best guess and the target" : "Make a valid guess first"}
+                    >
+                      <Sparkles className="h-4 w-4" />
+                      {hintSeconds > 0 ? `Hint in ${hintSeconds}s` : "Halfway hint"}
+                    </button>
+                  </div>
+                  <p className="mt-2 text-xs text-zinc-400">
+                    Hints are shared with the crew and recharge for 60 seconds.
+                  </p>
+                </section>
+              )}
+
+              <GuessList guesses={gameState.guessHistory} players={players} />
             </div>
-          ) : (
-            <div className="w-full flex flex-col items-center gap-8">
-              <GuessInput onGuess={handleGuess} />
-              <GuessList guesses={gameState.guessHistory} />
-            </div>
-          )}
-        </main>
+
+            <aside className="space-y-4 lg:sticky lg:top-5">
+              <SemanticMap
+                guesses={gameState.guessHistory}
+                targetWord={gameState.targetWord}
+              />
+              <PlayerRoster
+                players={players}
+                selfId={socket.id}
+                onRename={(name) =>
+                  socket.emit("setPlayerName", { lobbyId, name })
+                }
+              />
+            </aside>
+          </main>
+        )}
       </div>
 
-      {/* WIN MODAL using shadcn Dialog */}
-      <Dialog open={winModalOpen} onOpenChange={setWinModalOpen}>
-        {/* We omit DialogTrigger since the modal opens programmatically */}
-        <DialogContent className="max-w-md mx-auto bg-white border border-zinc-200 dark:border-zinc-800 dark:bg-zinc-900 rounded-lg p-8 shadow-lg">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Trophy className="w-8 h-8 text-teal-500" />
-              Congratulations!
-            </DialogTitle>
-            <DialogDescription>
-              <div>
-                The word was{" "}
-                <span className="font-medium text-lg">
-                  {gameState.targetWord}
-                </span>
-                and you guessed it in{" "}
-                <span className="font-medium text-lg">
-                  {winStats.totalGuesses}
-                </span>{" "}
-                {winStats.totalGuesses === 1 ? "guess" : "guesses"}.
-                <br />
-                Time Taken: {winStats.timeTaken.toFixed(2)} seconds.
-              </div>
-            </DialogDescription>
-          </DialogHeader>
-          <div className="mt-6 flex justify-end">
-            <DialogClose asChild>
-              <button
-                onClick={handleNewGame}
-                className="px-6 py-2 bg-black dark:bg-white text-white dark:text-black rounded-lg font-medium hover:bg-gray-900 dark:hover:bg-gray-100 transition-colors"
-              >
-                Play Again
-              </button>
-            </DialogClose>
-          </div>
-        </DialogContent>
-      </Dialog>
+      {actionError && (
+        <div className="fixed bottom-5 left-1/2 z-50 w-[calc(100%-2rem)] max-w-md -translate-x-1/2 rounded-2xl border border-amber-200 bg-white/95 px-4 py-3 text-center text-sm font-medium text-amber-800 shadow-2xl backdrop-blur dark:border-amber-900/70 dark:bg-zinc-950/95 dark:text-amber-200" role="alert">
+          {actionError}
+        </div>
+      )}
     </div>
   );
 }

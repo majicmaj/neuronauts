@@ -1,120 +1,71 @@
-import { useState } from "react";
-import type { GuessResult } from "../types";
+import { ArrowDownUp, ListFilter } from "lucide-react";
+import { useMemo, useState } from "react";
+import type { GuessResult, Player } from "../types";
 import GuessItem from "./GuessItem";
 
 interface GuessListProps {
   guesses: GuessResult[];
+  players: Player[];
 }
 
-const sortBySimilarity = (a: GuessResult, b: GuessResult) => {
-  if (a.similarity === null) return 1;
-  if (b.similarity === null) return -1;
-  return b.similarity - a.similarity;
-};
+type SortMode = "newest" | "similarity";
 
-const sortByReverseOrder = (a: GuessResult, b: GuessResult) => {
-  return -1;
-};
-
-const filterDuplicates = (guesses: GuessResult[]) => {
-  const seen = new Set();
-  return guesses.filter((guess) => {
-    const key = `${guess.guess}-${guess.similarity}`;
-    if (seen.has(key)) {
-      return false;
-    }
-    seen.add(key);
-    return true;
-  });
-};
-
-export function GuessList({ guesses }: GuessListProps) {
-  const [sort, setSort] = useState<"default" | "similarity">("similarity");
-
-  const sortedGuesses = [...guesses].sort(
-    sort === "similarity" ? sortBySimilarity : sortByReverseOrder
-  );
-
-  const mostRecentGuess = guesses[guesses.length - 1];
+export function GuessList({ guesses, players }: GuessListProps) {
+  const [sort, setSort] = useState<SortMode>("newest");
+  const sorted = useMemo(() => {
+    const copy = [...guesses];
+    return sort === "similarity"
+      ? copy.sort((a, b) => b.similarity - a.similarity)
+      : copy.reverse();
+  }, [guesses, sort]);
 
   return (
-    <div className="bg-white dark:bg-black p-2 border border-zinc-200 dark:border-zinc-800 lg:p-2 pb-0 rounded-[20px] w-full h-[calc(100vh-160px)] flex flex-col items-center gap-2 overflow-auto">
-      <div className="grid grid-cols-2 gap-1 w-full bg-white dark:bg-black text-black dark:text-white rounded-full p-1">
-        <button
-          className={`px-2 py-1 transition-all rounded-full ${
-            sort === "default"
-              ? "bg-black text-white dark:text-black dark:bg-white"
-              : ""
-          }`}
-          onClick={() => setSort("default")}
-        >
-          Newest
-        </button>
-        <button
-          className={`px-2 py-1 transition-all rounded-full ${
-            sort === "similarity"
-              ? "bg-black text-white dark:text-black dark:bg-white"
-              : ""
-          }`}
-          onClick={() => setSort("similarity")}
-        >
-          Similarity
-        </button>
+    <section className="neuron-card min-h-[22rem] overflow-hidden" aria-labelledby="guesses-title">
+      <div className="flex items-center justify-between gap-3 border-b border-zinc-200/80 px-4 py-3 dark:border-zinc-800/80">
+        <div className="flex items-center gap-2">
+          <ListFilter className="h-4 w-4 text-teal-500" />
+          <h2 id="guesses-title" className="font-semibold">Flight log</h2>
+          <span className="text-xs text-zinc-500">{guesses.length}</span>
+        </div>
+        <div className="flex rounded-xl bg-zinc-100 p-1 text-xs dark:bg-zinc-900">
+          <button
+            onClick={() => setSort("newest")}
+            className={`rounded-lg px-2.5 py-1.5 transition ${sort === "newest" ? "bg-white font-semibold shadow-sm dark:bg-zinc-800" : "text-zinc-500"}`}
+          >
+            Newest
+          </button>
+          <button
+            onClick={() => setSort("similarity")}
+            className={`flex items-center gap-1 rounded-lg px-2.5 py-1.5 transition ${sort === "similarity" ? "bg-white font-semibold shadow-sm dark:bg-zinc-800" : "text-zinc-500"}`}
+          >
+            <ArrowDownUp className="h-3 w-3" /> Closest
+          </button>
+        </div>
       </div>
 
-      <div className="rounded-xl w-full h-[calc(100vh-160px)] flex flex-col items-center gap-2 overflow-auto">
-        {mostRecentGuess && (
-          <div className="max-w-md w-full bg-black text-white border px-4 py-4 rounded-2xl dark:bg-white dark:text-black">
-            <div className="flex justify-between gap-2 items-center">
-              <span className="flex-1 font-medium truncate">
-                {mostRecentGuess.guess}
-              </span>
-              <div className="flex justify-between gap-1 items-center flex-col lg:flex-row lg:gap-2">
-                <div className="flex justify-between gap-2 items-center">
-                  <span className="w-10 font-normal text-sm truncate opacity-60">
-                    #{guesses?.indexOf(mostRecentGuess) + 1}
-                  </span>
+      <div className="max-h-[34rem] space-y-2 overflow-y-auto p-3">
+        {sorted.map((guess) => (
+          <GuessItem
+            key={guess.id}
+            guess={guess}
+            index={guesses.findIndex((entry) => entry.id === guess.id)}
+            players={players}
+            latest={guess.id === guesses[guesses.length - 1]?.id}
+          />
+        ))}
 
-                  {mostRecentGuess.similarity !== null && (
-                    <span className="w-14 text-sm opacity-80">
-                      {(mostRecentGuess.similarity * 100).toFixed(2)}%
-                    </span>
-                  )}
-                </div>
-                {mostRecentGuess.similarity !== null ? (
-                  <div className="w-40 overflow-auto bg-zinc-800 dark:bg-zinc-200 rounded-full h-3">
-                    <div
-                      className="bg-[#0AC8B9] h-full rounded-full transition-all"
-                      style={{
-                        width: `${
-                          Math.max(0, mostRecentGuess.similarity) * 100
-                        }%`,
-                        backgroundSize: "100% 100%",
-                      }}
-                    ></div>
-                  </div>
-                ) : (
-                  <p className="text-sm text-zinc-500 truncate">
-                    {mostRecentGuess.error}
-                  </p>
-                )}
-              </div>
+        {sorted.length === 0 && (
+          <div className="grid min-h-64 place-items-center rounded-2xl border border-dashed border-zinc-200 text-center dark:border-zinc-800">
+            <div className="max-w-xs px-6">
+              <div className="mx-auto mb-3 h-2 w-24 rounded-full bg-gradient-to-r from-violet-500 via-cyan-400 to-teal-400 opacity-60" />
+              <p className="font-semibold">No signals yet</p>
+              <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">
+                Guess a word to measure its semantic distance from the target.
+              </p>
             </div>
           </div>
         )}
-
-        <div className="border-b border-zinc-300 dark:border-zinc-700 w-[calc(100%-64px)] my-2" />
-
-        {filterDuplicates(sortedGuesses).map((guess, index) => (
-          <GuessItem key={index} guess={guess} index={guesses.indexOf(guess)} />
-        ))}
-
-        {sortedGuesses.length === 0 && (
-          <div className="px-4 py-2 rounded-2xl bg-zinc-200 dark:bg-black dark:text-white text-black">
-            <p className="text-sm">No guesses yet</p>
-          </div>
-        )}
       </div>
-    </div>
+    </section>
   );
 }

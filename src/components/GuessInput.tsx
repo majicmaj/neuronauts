@@ -1,5 +1,5 @@
 import { Send } from "lucide-react";
-import React, { useState } from "react";
+import { FormEvent, useState } from "react";
 
 interface GuessInputProps {
   onGuess: (guess: string) => void;
@@ -9,36 +9,37 @@ interface GuessInputProps {
 export function GuessInput({ onGuess, disabled }: GuessInputProps) {
   const [input, setInput] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-
+  const handleSubmit = (event: FormEvent) => {
+    event.preventDefault();
     const value = input.trim();
-    if (value.split(" ").length !== 1) {
-      return;
-    }
-
-    if (value.trim()) {
-      onGuess(input.trim());
-      setInput("");
-    }
+    if (!value || value.includes(" ")) return;
+    onGuess(value);
+    setInput("");
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex gap-2 w-full max-w-md h-9">
+    <form onSubmit={handleSubmit} className="flex min-w-0 flex-1 gap-2">
+      <label className="sr-only" htmlFor="guess-input">Guess a word</label>
       <input
+        id="guess-input"
         type="text"
         value={input}
-        onChange={(e) => setInput(e.target.value)}
+        onChange={(event) => setInput(event.target.value)}
         disabled={disabled}
-        placeholder="Enter your guess..."
-        className="px-3 flex-1 rounded-full bg-zinc-200/80 dark:bg-zinc-900 text-black dark:text-white placeholder-gray-500 focus:outline-none"
+        maxLength={40}
+        autoComplete="off"
+        autoCapitalize="none"
+        spellCheck="false"
+        placeholder="Plot a word…"
+        className="min-w-0 flex-1 rounded-2xl border border-zinc-200 bg-white/90 px-4 py-3 text-base text-black outline-none transition placeholder:text-zinc-400 focus:border-teal-500 focus:ring-4 focus:ring-teal-500/10 disabled:cursor-not-allowed disabled:opacity-60 dark:border-zinc-800 dark:bg-zinc-950/90 dark:text-white"
       />
       <button
         type="submit"
-        disabled={disabled || !input.trim()}
-        className="p-2 rounded-full bg-black dark:bg-white text-white dark:text-black hover:bg-gray-900 dark:hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+        disabled={disabled || !input.trim() || input.trim().includes(" ")}
+        className="grid w-12 shrink-0 place-items-center rounded-2xl bg-zinc-950 text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-teal-600 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 dark:bg-white dark:text-black dark:hover:bg-teal-300"
+        aria-label="Send guess"
       >
-        <Send className="w-5 h-5" />
+        <Send className="h-5 w-5" />
       </button>
     </form>
   );

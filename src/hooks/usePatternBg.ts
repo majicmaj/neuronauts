@@ -1,5 +1,5 @@
 import { BG_STYLE, BG_STYLE_DARK } from "@/constants/bgStyle";
-import { useTheme } from "@/contexts/ThemeContext";
+import { useTheme } from "@/contexts/theme";
 
 const usePatternBg = () => {
   const { effectiveTheme } = useTheme();

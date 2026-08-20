@@ -1,5 +1,4 @@
-import { useTheme } from "@/contexts/ThemeContext";
-import { Theme } from "@/hooks/useTheme";
+import { useTheme, type Theme } from "@/contexts/theme";
 import { Monitor, Moon, Sun } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
