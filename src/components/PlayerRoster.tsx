@@ -1,18 +1,70 @@
-import { FormEvent, useEffect, useState } from "react";
-import { playerColor } from "../lib/playerColors";
-import type { Player } from "../types";
+import { AVATARS, assignUniqueAvatarIds } from "@/lib/avatars";
+import type { GuessResult, Player } from "@/types";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 import { MissionGlyph } from "./MissionGlyph";
+import { PlayerAvatar } from "./PlayerAvatar";
 
 interface PlayerRosterProps {
   players: Player[];
+  guesses: GuessResult[];
+  typingPlayerIds: string[];
   selfId?: string;
   onRename: (name: string) => void;
+  onAvatarChange: (avatarId: string) => void;
 }
 
-export function PlayerRoster({ players, selfId, onRename }: PlayerRosterProps) {
+interface LiveStats {
+  count: number;
+  average: number | null;
+}
+
+function formatAverage(value: number | null) {
+  return value === null ? "—" : `${(value * 100).toFixed(1)}%`;
+}
+
+export function PlayerRoster({
+  players,
+  guesses,
+  typingPlayerIds,
+  selfId,
+  onRename,
+  onAvatarChange,
+}: PlayerRosterProps) {
   const self = players.find((player) => player.id === selfId);
   const [editing, setEditing] = useState(false);
+  const [choosingAvatar, setChoosingAvatar] = useState(false);
   const [name, setName] = useState(self?.name || "");
+  const avatarAssignments = useMemo(
+    () => assignUniqueAvatarIds(
+      players.map((player) => ({ key: player.id, avatarId: player.avatarId }))
+    ),
+    [players]
+  );
+  const takenAvatars = useMemo(
+    () => new Map(
+      players.map((player) => [avatarAssignments.get(player.id), player])
+    ),
+    [avatarAssignments, players]
+  );
+  const stats = useMemo(() => {
+    const byPlayer = new Map<string, { count: number; total: number }>();
+    for (const guess of guesses) {
+      if (guess.isHint) continue;
+      const current = byPlayer.get(guess.playerId) || { count: 0, total: 0 };
+      current.count += 1;
+      current.total += guess.similarity;
+      byPlayer.set(guess.playerId, current);
+    }
+    return new Map(
+      players.map((player) => {
+        const current = byPlayer.get(player.participantId || player.id);
+        const liveStats: LiveStats = current
+          ? { count: current.count, average: current.total / current.count }
+          : { count: 0, average: null };
+        return [player.id, liveStats];
+      })
+    );
+  }, [guesses, players]);
 
   useEffect(() => {
     if (!editing) setName(self?.name || "");
@@ -25,63 +77,139 @@ export function PlayerRoster({ players, selfId, onRename }: PlayerRosterProps) {
     setEditing(false);
   };
 
+  const chooseAvatar = (avatarId: string) => {
+    onAvatarChange(avatarId);
+    setChoosingAvatar(false);
+  };
+
   return (
-    <section className="neuron-card overflow-hidden" aria-labelledby="crew-title">
-      <div className="flex items-center justify-between border-b border-zinc-200 px-4 py-3.5 dark:border-zinc-700">
+    <section className="neuron-card crew-manifest" aria-labelledby="crew-title">
+      <div className="crew-manifest-heading">
         <div className="flex items-center gap-2">
           <MissionGlyph name="crew" className="h-6 w-6 text-teal-700 dark:text-teal-300" />
-          <h2 id="crew-title" className="font-semibold">Crew</h2>
+          <h2 id="crew-title" className="font-semibold">Crew manifest</h2>
         </div>
-        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">
-          {players.length} connected
-        </span>
+        <span>{players.length} online</span>
       </div>
 
-      <div className="divide-y divide-zinc-200 px-4 dark:divide-zinc-700">
+      <div className="crew-list">
         {players.map((player) => {
           const isSelf = player.id === selfId;
+          const avatarId = avatarAssignments.get(player.id) || AVATARS[0].id;
+          const isTyping = typingPlayerIds.includes(player.id);
+          const playerStats = stats.get(player.id) || { count: 0, average: null };
           return (
-            <div key={player.id} className="flex min-h-12 items-center gap-2 py-2.5">
-              <span
-                className="grid h-6 w-6 shrink-0 place-items-center rounded-full text-[10px] font-bold text-white"
-                style={{ backgroundColor: playerColor(player.colorIndex, player.id) }}
+            <div key={player.id} className="crew-member">
+              <button
+                type="button"
+                className="crew-avatar-button"
+                onClick={() => isSelf && setChoosingAvatar((open) => !open)}
+                disabled={!isSelf}
+                aria-label={isSelf ? "Choose your avatar" : `${player.name}'s avatar`}
+                aria-expanded={isSelf ? choosingAvatar : undefined}
+                title={isSelf ? "Choose your avatar" : player.name}
               >
-                {player.name.slice(0, 1).toUpperCase()}
-              </span>
+                <PlayerAvatar avatarId={avatarId} decorative />
+                {isSelf && <MissionGlyph name="callsign" className="crew-avatar-edit h-5 w-5" />}
+              </button>
 
-              {isSelf && editing ? (
-                <form onSubmit={submit} className="flex min-w-0 flex-1 items-center gap-1">
-                  <input
-                    autoFocus
-                    value={name}
-                    onChange={(event) => setName(event.target.value)}
-                    maxLength={24}
-                    aria-label="Your player name"
-                    className="mission-input min-w-0 flex-1 px-2.5 py-1.5 text-sm"
-                  />
-                  <button type="submit" className="rounded-md p-1 text-teal-600" aria-label="Save name">
-                    <MissionGlyph name="confirm" className="h-6 w-6" />
-                  </button>
-                  <button type="button" onClick={() => setEditing(false)} className="rounded-md p-1 text-zinc-500" aria-label="Cancel">
-                    <MissionGlyph name="cancel" className="h-6 w-6" />
-                  </button>
-                </form>
-              ) : (
-                <>
-                  <span className="min-w-0 flex-1 truncate text-sm font-medium">
-                    {player.name} {isSelf && <span className="font-normal text-zinc-500">(you)</span>}
-                  </span>
-                  {isSelf && (
-                    <button onClick={() => setEditing(true)} className="rounded-md p-1.5 text-zinc-500 transition hover:bg-zinc-200 hover:text-zinc-900 dark:hover:bg-zinc-800 dark:hover:text-white" aria-label="Change your name">
-                      <MissionGlyph name="callsign" className="h-6 w-6" />
+              <div className="crew-identity">
+                {isSelf && editing ? (
+                  <form onSubmit={submit} className="crew-name-form">
+                    <input
+                      autoFocus
+                      value={name}
+                      onChange={(event) => setName(event.target.value)}
+                      maxLength={24}
+                      aria-label="Your player name"
+                      className="mission-input"
+                    />
+                    <button type="submit" aria-label="Save name">
+                      <MissionGlyph name="confirm" className="h-5 w-5" />
                     </button>
+                    <button type="button" onClick={() => setEditing(false)} aria-label="Cancel">
+                      <MissionGlyph name="cancel" className="h-5 w-5" />
+                    </button>
+                  </form>
+                ) : (
+                  <div className="crew-name-line">
+                    <span className="crew-name">{player.name}</span>
+                    {isSelf && <span className="crew-you">you</span>}
+                    {isSelf && (
+                      <button onClick={() => setEditing(true)} aria-label="Change your name">
+                        <MissionGlyph name="callsign" className="h-5 w-5" />
+                      </button>
+                    )}
+                  </div>
+                )}
+                <div className="crew-activity" aria-live="polite">
+                  {isTyping ? (
+                    <span className="crew-typing">
+                      plotting a guess
+                      <span className="typing-pips" aria-hidden="true"><i /><i /><i /></span>
+                    </span>
+                  ) : (
+                    <span>{isSelf ? "ready to transmit" : "ready on comms"}</span>
                   )}
-                </>
-              )}
+                </div>
+              </div>
+
+              <dl className="crew-live-stats">
+                <div>
+                  <dd>{playerStats.count}</dd>
+                  <dt>{playerStats.count === 1 ? "guess" : "guesses"}</dt>
+                </div>
+                <div>
+                  <dd>{formatAverage(playerStats.average)}</dd>
+                  <dt>average</dt>
+                </div>
+              </dl>
             </div>
           );
         })}
       </div>
+
+      {self && choosingAvatar && (
+        <div className="avatar-picker" aria-label="Choose your avatar">
+          <div className="avatar-picker-heading">
+            <div>
+              <h3>Choose your neuronaut</h3>
+              <p>Claimed avatars are reserved for your crewmates.</p>
+            </div>
+            <button type="button" onClick={() => setChoosingAvatar(false)} aria-label="Close avatar picker">
+              <MissionGlyph name="cancel" className="h-5 w-5" />
+            </button>
+          </div>
+          <div className="avatar-grid">
+            {AVATARS.map((avatar) => {
+              const owner = takenAvatars.get(avatar.id);
+              const isCurrent = avatarAssignments.get(self.id) === avatar.id;
+              const isTaken = Boolean(owner && owner.id !== self.id);
+              return (
+                <button
+                  key={avatar.id}
+                  type="button"
+                  onClick={() => chooseAvatar(avatar.id)}
+                  disabled={isTaken || isCurrent}
+                  aria-label={
+                    isTaken
+                      ? `${avatar.name}, claimed by ${owner?.name}`
+                      : isCurrent
+                        ? `${avatar.name}, your current avatar`
+                        : `Choose ${avatar.name}`
+                  }
+                  aria-pressed={isCurrent}
+                  title={isTaken ? `Claimed by ${owner?.name}` : avatar.name}
+                >
+                  <PlayerAvatar avatarId={avatar.id} decorative />
+                  {isTaken && <span className="avatar-claimed" aria-hidden="true">taken</span>}
+                  {isCurrent && <MissionGlyph name="confirm" className="avatar-current h-5 w-5" />}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
     </section>
   );
 }

@@ -20,7 +20,7 @@ import type {
   LobbyPayload,
   Player,
 } from "@/types";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EMPTY_GAME: GameState = {
@@ -40,6 +40,7 @@ export function GamePage() {
   const navigate = useNavigate();
   const [gameState, setGameState] = useState<GameState>(EMPTY_GAME);
   const [players, setPlayers] = useState<Player[]>([]);
+  const [typingPlayerIds, setTypingPlayerIds] = useState<string[]>([]);
   const [connected, setConnected] = useState(socket.connected);
   const [fatalError, setFatalError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -63,6 +64,7 @@ export function GamePage() {
     const onLobbyJoined = (payload: LobbyPayload) => {
       setGameState(payload.gameState);
       setPlayers(payload.players);
+      setTypingPlayerIds(payload.typingPlayerIds || []);
       setFatalError(null);
       const self = payload.players.find((player) => player.id === socket.id);
       if (self) savePreferredPlayerName(self.name);
@@ -73,6 +75,8 @@ export function GamePage() {
       const self = payload.players.find((player) => player.id === socket.id);
       if (self) savePreferredPlayerName(self.name);
     };
+    const onTypingUpdated = (payload: { playerIds: string[] }) =>
+      setTypingPlayerIds(payload.playerIds);
     const onGuessResult = (result: GuessResult) => {
       setGameState((previous) => {
         if (previous.guessHistory.some((guess) => guess.id === result.id)) {
@@ -97,6 +101,7 @@ export function GamePage() {
     };
     const onGameWon = (state: GameState) => {
       setGameState(state);
+      setTypingPlayerIds([]);
       setCelebrating(true);
       setPostGameView("recap");
     };
@@ -125,6 +130,7 @@ export function GamePage() {
     socket.on("lobbyJoined", onLobbyJoined);
     socket.on("gameReady", onGameReady);
     socket.on("playersUpdated", onPlayersUpdated);
+    socket.on("typingUpdated", onTypingUpdated);
     socket.on("guessResult", onGuessResult);
     socket.on("gameWon", onGameWon);
     socket.on("hintCooldown", onHintCooldown);
@@ -139,6 +145,7 @@ export function GamePage() {
       socket.off("lobbyJoined", onLobbyJoined);
       socket.off("gameReady", onGameReady);
       socket.off("playersUpdated", onPlayersUpdated);
+      socket.off("typingUpdated", onTypingUpdated);
       socket.off("guessResult", onGuessResult);
       socket.off("gameWon", onGameWon);
       socket.off("hintCooldown", onHintCooldown);
@@ -184,6 +191,10 @@ export function GamePage() {
   const canPlay = connected && gameState.status === "playing";
   const canHint = canPlay && Boolean(bestGuess) && hintSeconds === 0;
   const selfParticipantId = players.find((player) => player.id === socket.id)?.participantId;
+  const handleTypingChange = useCallback(
+    (isTyping: boolean) => socket.emit("typing", { lobbyId, isTyping }),
+    [lobbyId]
+  );
 
   const copyCode = async () => {
     if (!lobbyId) return;
@@ -253,8 +264,9 @@ export function GamePage() {
             />
           </main>
         ) : (
-          <main className="grid items-start gap-4 lg:grid-cols-[minmax(0,1fr)_23rem]">
-            <div className="min-w-0 space-y-4">
+          <main className="game-layout">
+            <div className="game-primary">
+              <div className="game-actions min-w-0 space-y-4">
               {gameState.status === "won" && gameState.recap && (
                 <button
                   type="button"
@@ -286,6 +298,7 @@ export function GamePage() {
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <GuessInput
                       onGuess={(guess) => socket.emit("guess", { lobbyId, guess })}
+                      onTypingChange={handleTypingChange}
                       disabled={!canPlay}
                     />
                     <button
@@ -304,26 +317,35 @@ export function GamePage() {
                 </section>
               )}
 
-              <GuessList
-                guesses={gameState.guessHistory}
-                players={players}
-                onGuessHover={setHoveredGuessId}
-              />
+              </div>
+
+              <div className="game-log min-w-0">
+                <GuessList
+                  guesses={gameState.guessHistory}
+                  players={players}
+                  onGuessHover={setHoveredGuessId}
+                />
+              </div>
             </div>
 
-            <aside className="space-y-4 lg:sticky lg:top-5">
+            <aside className="game-rail">
+              <PlayerRoster
+                players={players}
+                guesses={gameState.guessHistory}
+                typingPlayerIds={typingPlayerIds}
+                selfId={socket.id}
+                onRename={(name) =>
+                  socket.emit("setPlayerName", { lobbyId, name })
+                }
+                onAvatarChange={(avatarId) =>
+                  socket.emit("setPlayerAvatar", { lobbyId, avatarId })
+                }
+              />
               <SemanticMap
                 guesses={gameState.guessHistory}
                 targetWord={gameState.targetWord}
                 hoveredGuessId={hoveredGuessId}
                 onGuessHover={setHoveredGuessId}
-              />
-              <PlayerRoster
-                players={players}
-                selfId={socket.id}
-                onRename={(name) =>
-                  socket.emit("setPlayerName", { lobbyId, name })
-                }
               />
             </aside>
           </main>
