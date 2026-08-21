@@ -1,9 +1,14 @@
-import type { GameState } from "../types";
+import type { GameState, RematchState } from "../types";
 import { MissionGlyph } from "./MissionGlyph";
+import { PlayAgainButton } from "./PlayAgainButton";
 
 interface WinBannerProps {
   gameState: GameState;
-  onNewGame: () => void;
+  rematch: RematchState | null;
+  selfParticipantId?: string;
+  playAgainBusy: boolean;
+  playAgainDisabled: boolean;
+  onPlayAgain: () => void;
 }
 
 function elapsedLabel(startedAt: string | null, solvedAt: string | null) {
@@ -14,7 +19,14 @@ function elapsedLabel(startedAt: string | null, solvedAt: string | null) {
   return minutes ? `${minutes}m ${remainder}s` : `${remainder}s`;
 }
 
-export function WinBanner({ gameState, onNewGame }: WinBannerProps) {
+export function WinBanner({
+  gameState,
+  rematch,
+  selfParticipantId,
+  playAgainBusy,
+  playAgainDisabled,
+  onPlayAgain,
+}: WinBannerProps) {
   if (gameState.status !== "won" || !gameState.targetWord) return null;
   const elapsed = elapsedLabel(gameState.startedAt, gameState.solvedAt);
 
@@ -31,9 +43,15 @@ export function WinBanner({ gameState, onNewGame }: WinBannerProps) {
             </p>
           </div>
         </div>
-        <button onClick={onNewGame} className="neuron-primary-button shrink-0">
-          New mission <MissionGlyph name="launch" className="h-6 w-6" />
-        </button>
+        <PlayAgainButton
+          rematch={rematch}
+          totalPlayers={gameState.recap?.playerCount || 1}
+          selfParticipantId={selfParticipantId}
+          busy={playAgainBusy}
+          disabled={playAgainDisabled}
+          className="neuron-primary-button shrink-0"
+          onClick={onPlayAgain}
+        />
       </div>
     </section>
   );

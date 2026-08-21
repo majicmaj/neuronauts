@@ -19,6 +19,7 @@ import type {
   GuessResult,
   LobbyPayload,
   Player,
+  RematchState,
 } from "@/types";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -52,6 +53,8 @@ export function GamePage() {
   const [featuredGuessVersion, setFeaturedGuessVersion] = useState(0);
   const [featuredGuessIsRecall, setFeaturedGuessIsRecall] = useState(false);
   const [postGameView, setPostGameView] = useState<"recap" | "flight-log">("recap");
+  const [rematch, setRematch] = useState<RematchState | null>(null);
+  const [playAgainBusy, setPlayAgainBusy] = useState(false);
   const pendingGuess = useRef<string | null>(null);
 
   useEffect(() => {
@@ -69,6 +72,8 @@ export function GamePage() {
       setGameState(payload.gameState);
       setPlayers(payload.players);
       setTypingPlayerIds(payload.typingPlayerIds || []);
+      setRematch(payload.rematch || null);
+      setPlayAgainBusy(false);
       setFatalError(null);
       const self = payload.players.find((player) => player.id === socket.id);
       if (self) {
@@ -88,6 +93,12 @@ export function GamePage() {
     };
     const onTypingUpdated = (payload: { playerIds: string[] }) =>
       setTypingPlayerIds(payload.playerIds);
+    const onRematchUpdated = (nextRematch: RematchState) =>
+      setRematch(nextRematch);
+    const onRematchReady = (payload: { lobbyId: string; rematch: RematchState }) => {
+      setRematch(payload.rematch);
+      navigate(`/game/${payload.lobbyId}`);
+    };
     const onGuessResult = (result: GuessResult) => {
       if (pendingGuess.current === result.guess) {
         pendingGuess.current = null;
@@ -131,6 +142,7 @@ export function GamePage() {
     };
     const onActionError = (error: ActionError) => {
       pendingGuess.current = null;
+      setPlayAgainBusy(false);
       setActionError(error.message);
       if (error.hintAvailableAt) {
         setGameState((previous) => ({
@@ -149,6 +161,8 @@ export function GamePage() {
     socket.on("gameReady", onGameReady);
     socket.on("playersUpdated", onPlayersUpdated);
     socket.on("typingUpdated", onTypingUpdated);
+    socket.on("rematchUpdated", onRematchUpdated);
+    socket.on("rematchReady", onRematchReady);
     socket.on("guessResult", onGuessResult);
     socket.on("gameWon", onGameWon);
     socket.on("hintCooldown", onHintCooldown);
@@ -164,6 +178,8 @@ export function GamePage() {
       socket.off("gameReady", onGameReady);
       socket.off("playersUpdated", onPlayersUpdated);
       socket.off("typingUpdated", onTypingUpdated);
+      socket.off("rematchUpdated", onRematchUpdated);
+      socket.off("rematchReady", onRematchReady);
       socket.off("guessResult", onGuessResult);
       socket.off("gameWon", onGameWon);
       socket.off("hintCooldown", onHintCooldown);
@@ -171,7 +187,7 @@ export function GamePage() {
       socket.off("error", onLobbyError);
       socket.off("playerNameChanged", onNameChanged);
     };
-  }, [lobbyId]);
+  }, [lobbyId, navigate]);
 
   useEffect(() => {
     if (!actionError) return;
@@ -251,6 +267,13 @@ export function GamePage() {
     socket.emit("guess", { lobbyId, guess });
   };
 
+  const playAgain = () => {
+    if (!lobbyId || playAgainBusy || gameState.status !== "won") return;
+    setActionError(null);
+    setPlayAgainBusy(true);
+    socket.emit("requestRematch", { lobbyId });
+  };
+
   if (fatalError) {
     return (
       <div className="app-shell grid min-h-dvh place-items-center px-4 text-center">
@@ -307,7 +330,10 @@ export function GamePage() {
             <PostGameRecap
               gameState={gameState}
               selfParticipantId={selfParticipantId}
-              onNewGame={() => navigate("/")}
+              rematch={rematch}
+              playAgainBusy={playAgainBusy}
+              playAgainDisabled={!connected}
+              onPlayAgain={playAgain}
               onReviewFlightLog={() => setPostGameView("flight-log")}
             />
           </main>
@@ -324,7 +350,14 @@ export function GamePage() {
                   <MissionGlyph name="award" className="h-6 w-6" /> Back to mission debrief
                 </button>
               )}
-              <WinBanner gameState={gameState} onNewGame={() => navigate("/")} />
+              <WinBanner
+                gameState={gameState}
+                rematch={rematch}
+                selfParticipantId={selfParticipantId}
+                playAgainBusy={playAgainBusy}
+                playAgainDisabled={!connected}
+                onPlayAgain={playAgain}
+              />
 
               {gameState.status !== "won" && (
                 <section className="neuron-card p-4 sm:p-5">

@@ -991,6 +991,26 @@
     background: color-mix(in srgb, var(--grade-color) 78%, white);
   }
 
+  .play-again-button {
+    font-variant-numeric: tabular-nums;
+  }
+
+  .play-again-button:disabled {
+    cursor: wait;
+    opacity: 0.72;
+  }
+
+  .play-again-count {
+    min-width: 3.6rem;
+    border: 1px solid currentColor;
+    border-radius: 8px;
+    padding: 0.16rem 0.42rem;
+    font-size: 0.76rem;
+    font-weight: 900;
+    line-height: 1.2;
+    text-align: center;
+  }
+
   .debrief-review-button {
     border: 1px solid var(--debrief-line);
     background: transparent;
@@ -1142,13 +1162,13 @@
   .debrief-card-award > button {
     display: grid;
     width: 100%;
-    min-height: 2.8rem;
+    min-height: 3.45rem;
     cursor: pointer;
     border: 0;
     background: transparent;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
-    gap: 0.65rem;
+    gap: 0.55rem;
     padding: 0.55rem 0;
     color: var(--ink);
     font: inherit;
@@ -1161,8 +1181,19 @@
     outline-offset: 3px;
   }
 
-  .debrief-card-award > button > svg {
-    color: var(--crew-color);
+  .debrief-award-icon {
+    width: 2.8rem;
+    height: 2.8rem;
+    object-fit: contain;
+    filter: drop-shadow(0 5px 5px rgb(17 24 21 / 0.16));
+    transition: transform 170ms cubic-bezier(0.22, 1, 0.36, 1),
+      filter 170ms ease-out;
+  }
+
+  .debrief-card-award > button:hover .debrief-award-icon,
+  .debrief-card-award > button:focus-visible .debrief-award-icon {
+    filter: drop-shadow(0 7px 7px rgb(17 24 21 / 0.2));
+    transform: translateY(-2px) rotate(-2deg);
   }
 
   .debrief-card-award > button > span {
@@ -1173,14 +1204,16 @@
   .debrief-card-award small {
     display: block;
     overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
   }
 
   .debrief-card-award strong {
+    display: -webkit-box;
     font-size: 0.8rem;
     font-weight: 900;
     letter-spacing: -0.01em;
+    line-height: 1.18;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
   }
 
   .debrief-card-award small {
@@ -1188,6 +1221,7 @@
     color: var(--muted);
     font-size: 0.72rem;
     font-weight: 700;
+    line-height: 1.25;
   }
 
   .debrief-card-award-detail {

@@ -25,3 +25,11 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+## 3Dicons
+
+Neuronauts uses optimized renders from [3Dicons](https://3dicons.co/) by
+Vijay Verma for post-mission distinctions.
+
+The 3Dicons V1 collection is released under the Creative Commons CC0 1.0
+Universal license for personal and commercial use.
