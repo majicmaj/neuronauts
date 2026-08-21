@@ -65,7 +65,7 @@ export function SemanticMap({
             <h2 id="map-title" className="font-semibold">Semantic space</h2>
           </div>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Higher-ranked words sit closer. Colors track the crew.
+            Stronger semantic matches sit closer. Colors track the crew.
           </p>
         </div>
         <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Live</span>
