@@ -1064,10 +1064,6 @@
     display: none;
   }
 
-  .debrief-award-citation:focus-within > .debrief-award-detail {
-    display: block;
-  }
-
   .debrief-return-button {
     border: 1px solid var(--line-strong);
     background: var(--surface);
@@ -1263,12 +1259,6 @@
   .debrief-superlative-person {
     grid-template-columns: minmax(11rem, 1.2fr) minmax(20rem, 2fr);
     align-items: start;
-  }
-}
-
-@media (hover: hover) {
-  .debrief-award-citation:hover > .debrief-award-detail {
-    display: block;
   }
 }
 

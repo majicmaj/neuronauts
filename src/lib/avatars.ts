@@ -25,15 +25,40 @@ export const AVATARS = [
 
 export type AvatarId = (typeof AVATARS)[number]["id"];
 
-export function avatarIndex(avatarId: string | null | undefined) {
-  const index = AVATARS.findIndex((avatar) => avatar.id === avatarId);
-  return index < 0 ? 0 : index;
+export function isAvatarId(value: string | null | undefined): value is AvatarId {
+  return AVATARS.some((avatar) => avatar.id === value);
 }
 
-export function avatarName(avatarId: string | null | undefined) {
-  return AVATARS[avatarIndex(avatarId)].name;
+export function assignUniqueAvatarIds(
+  players: ReadonlyArray<{ key: string; avatarId?: string | null }>
+) {
+  const assignments = new Map<string, AvatarId>();
+  const claimed = new Set<AvatarId>();
+  const needsFallback: string[] = [];
+
+  for (const player of players) {
+    if (isAvatarId(player.avatarId) && !claimed.has(player.avatarId)) {
+      assignments.set(player.key, player.avatarId);
+      claimed.add(player.avatarId);
+    } else {
+      needsFallback.push(player.key);
+    }
+  }
+
+  for (const key of needsFallback) {
+    const available = AVATARS.find((avatar) => !claimed.has(avatar.id));
+    if (!available) break;
+    assignments.set(key, available.id);
+    claimed.add(available.id);
+  }
+
+  return assignments;
 }
 
-export function avatarDefinition(avatarId: string | null | undefined) {
-  return AVATARS[avatarIndex(avatarId)];
+export function avatarName(avatarId: AvatarId) {
+  return AVATARS.find((avatar) => avatar.id === avatarId)?.name || "Neuronaut";
+}
+
+export function avatarDefinition(avatarId: AvatarId) {
+  return AVATARS.find((avatar) => avatar.id === avatarId) || AVATARS[0];
 }

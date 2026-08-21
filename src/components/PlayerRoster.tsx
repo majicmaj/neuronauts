@@ -1,4 +1,4 @@
-import { AVATARS } from "@/lib/avatars";
+import { AVATARS, assignUniqueAvatarIds } from "@/lib/avatars";
 import type { GuessResult, Player } from "@/types";
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import { MissionGlyph } from "./MissionGlyph";
@@ -34,9 +34,17 @@ export function PlayerRoster({
   const [editing, setEditing] = useState(false);
   const [choosingAvatar, setChoosingAvatar] = useState(false);
   const [name, setName] = useState(self?.name || "");
-  const takenAvatars = useMemo(
-    () => new Map(players.map((player) => [player.avatarId, player])),
+  const avatarAssignments = useMemo(
+    () => assignUniqueAvatarIds(
+      players.map((player) => ({ key: player.id, avatarId: player.avatarId }))
+    ),
     [players]
+  );
+  const takenAvatars = useMemo(
+    () => new Map(
+      players.map((player) => [avatarAssignments.get(player.id), player])
+    ),
+    [avatarAssignments, players]
   );
   const stats = useMemo(() => {
     const byPlayer = new Map<string, { count: number; total: number }>();
@@ -87,6 +95,7 @@ export function PlayerRoster({
       <div className="crew-list">
         {players.map((player) => {
           const isSelf = player.id === selfId;
+          const avatarId = avatarAssignments.get(player.id) || AVATARS[0].id;
           const isTyping = typingPlayerIds.includes(player.id);
           const playerStats = stats.get(player.id) || { count: 0, average: null };
           return (
@@ -100,7 +109,7 @@ export function PlayerRoster({
                 aria-expanded={isSelf ? choosingAvatar : undefined}
                 title={isSelf ? "Choose your avatar" : player.name}
               >
-                <PlayerAvatar avatarId={player.avatarId} decorative />
+                <PlayerAvatar avatarId={avatarId} decorative />
                 {isSelf && <MissionGlyph name="callsign" className="crew-avatar-edit h-5 w-5" />}
               </button>
 
@@ -174,7 +183,7 @@ export function PlayerRoster({
           <div className="avatar-grid">
             {AVATARS.map((avatar) => {
               const owner = takenAvatars.get(avatar.id);
-              const isCurrent = self.avatarId === avatar.id;
+              const isCurrent = avatarAssignments.get(self.id) === avatar.id;
               const isTaken = Boolean(owner && owner.id !== self.id);
               return (
                 <button

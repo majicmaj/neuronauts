@@ -1,4 +1,5 @@
 import { playerColor } from "@/lib/playerColors";
+import { AVATARS, assignUniqueAvatarIds, type AvatarId } from "@/lib/avatars";
 import type { GameState, PlayerRecap, RecapAward } from "@/types";
 import { useId, useState, type CSSProperties } from "react";
 import { MissionGlyph } from "./MissionGlyph";
@@ -22,13 +23,21 @@ function percent(value: number | null) {
   return value === null ? "—" : `${(value * 100).toFixed(1)}%`;
 }
 
-function PlayerStats({ player, isSelf }: { player: PlayerRecap; isSelf: boolean }) {
+function PlayerStats({
+  player,
+  avatarId,
+  isSelf,
+}: {
+  player: PlayerRecap;
+  avatarId: AvatarId;
+  isSelf: boolean;
+}) {
   const color = playerColor(player.colorIndex, player.playerId);
 
   return (
     <article className="debrief-player" style={{ "--crew-color": color } as CSSProperties}>
       <div className="debrief-player-identity">
-        <PlayerAvatar avatarId={player.avatarId} className="debrief-avatar" decorative />
+        <PlayerAvatar avatarId={avatarId} className="debrief-avatar" decorative />
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-2">
             <h3 className="truncate font-extrabold">{player.playerName}</h3>
@@ -77,16 +86,28 @@ type Citation = Pick<RecapAward, "title" | "metricLabel" | "description">;
 
 function AwardCitation({ award }: { award: Citation }) {
   const detailId = useId();
-  const [isOpen, setIsOpen] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isFocused, setIsFocused] = useState(false);
+  const isOpen = isPinned || isHovered || isFocused;
 
   return (
-    <div className="debrief-award-citation" data-open={isOpen}>
+    <div
+      className="debrief-award-citation"
+      data-open={isOpen}
+      onPointerEnter={(event) => event.pointerType === "mouse" && setIsHovered(true)}
+      onPointerLeave={(event) => event.pointerType === "mouse" && setIsHovered(false)}
+      onFocus={() => setIsFocused(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setIsFocused(false);
+      }}
+    >
       <button
         type="button"
         aria-controls={detailId}
         aria-expanded={isOpen}
         aria-describedby={detailId}
-        onClick={() => setIsOpen((open) => !open)}
+        onClick={() => setIsPinned((open) => !open)}
       >
         <MissionGlyph name="award" className="debrief-award-icon h-5 w-5" />
         <span className="debrief-award-title">{award.title}</span>
@@ -99,10 +120,12 @@ function AwardCitation({ award }: { award: Citation }) {
 
 function PlayerAwards({
   player,
+  avatarId,
   awards,
   isSelf,
 }: {
   player: PlayerRecap;
+  avatarId: AvatarId;
   awards: RecapAward[];
   isSelf: boolean;
 }) {
@@ -114,7 +137,7 @@ function PlayerAwards({
       style={{ "--crew-color": color } as CSSProperties}
     >
       <div className="debrief-superlative-identity">
-        <PlayerAvatar avatarId={player.avatarId} className="debrief-avatar" decorative />
+        <PlayerAvatar avatarId={avatarId} className="debrief-avatar" decorative />
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-2">
             <h3 className="truncate">{player.playerName}</h3>
@@ -153,6 +176,12 @@ export function PostGameRecap({
 }: PostGameRecapProps) {
   const recap = gameState.recap;
   if (!recap || !gameState.targetWord) return null;
+  const avatarAssignments = assignUniqueAvatarIds(
+    recap.players.map((player) => ({
+      key: player.playerId,
+      avatarId: player.avatarId,
+    }))
+  );
 
   return (
     <div className="mission-debrief">
@@ -199,6 +228,7 @@ export function PostGameRecap({
             <PlayerStats
               key={player.playerId}
               player={player}
+              avatarId={avatarAssignments.get(player.playerId) || AVATARS[0].id}
               isSelf={player.playerId === selfParticipantId}
             />
           ))}
@@ -218,6 +248,7 @@ export function PostGameRecap({
             <PlayerAwards
               key={player.playerId}
               player={player}
+              avatarId={avatarAssignments.get(player.playerId) || AVATARS[0].id}
               awards={recap.awards.filter((award) => award.playerId === player.playerId)}
               isSelf={player.playerId === selfParticipantId}
             />

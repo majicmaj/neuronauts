@@ -1,8 +1,9 @@
 import { AVATAR_SHEETS, avatarDefinition, avatarName } from "@/lib/avatars";
+import type { AvatarId } from "@/lib/avatars";
 import type { CSSProperties } from "react";
 
 interface PlayerAvatarProps {
-  avatarId?: string | null;
+  avatarId: AvatarId;
   className?: string;
   decorative?: boolean;
 }
