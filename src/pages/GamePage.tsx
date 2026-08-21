@@ -20,7 +20,7 @@ import type {
   LobbyPayload,
   Player,
 } from "@/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EMPTY_GAME: GameState = {
@@ -48,7 +48,11 @@ export function GamePage() {
   const [copied, setCopied] = useState(false);
   const [clock, setClock] = useState(Date.now());
   const [hoveredGuessId, setHoveredGuessId] = useState<string | null>(null);
+  const [featuredGuessId, setFeaturedGuessId] = useState<string | null>(null);
+  const [featuredGuessVersion, setFeaturedGuessVersion] = useState(0);
+  const [featuredGuessIsRecall, setFeaturedGuessIsRecall] = useState(false);
   const [postGameView, setPostGameView] = useState<"recap" | "flight-log">("recap");
+  const pendingGuess = useRef<string | null>(null);
 
   useEffect(() => {
     if (!lobbyId) return;
@@ -67,7 +71,14 @@ export function GamePage() {
       setTypingPlayerIds(payload.typingPlayerIds || []);
       setFatalError(null);
       const self = payload.players.find((player) => player.id === socket.id);
-      if (self) savePreferredPlayerName(self.name);
+      if (self) {
+        savePreferredPlayerName(self.name);
+        const latestOwnGuess = [...payload.gameState.guessHistory]
+          .reverse()
+          .find((guess) => guess.playerId === self.participantId);
+        setFeaturedGuessId(latestOwnGuess?.id || null);
+        setFeaturedGuessIsRecall(false);
+      }
     };
     const onGameReady = (state: GameState) => setGameState(state);
     const onPlayersUpdated = (payload: { players: Player[] }) => {
@@ -78,6 +89,12 @@ export function GamePage() {
     const onTypingUpdated = (payload: { playerIds: string[] }) =>
       setTypingPlayerIds(payload.playerIds);
     const onGuessResult = (result: GuessResult) => {
+      if (pendingGuess.current === result.guess) {
+        pendingGuess.current = null;
+        setFeaturedGuessId(result.id);
+        setFeaturedGuessIsRecall(false);
+        setFeaturedGuessVersion((version) => version + 1);
+      }
       setGameState((previous) => {
         if (previous.guessHistory.some((guess) => guess.id === result.id)) {
           return previous;
@@ -113,6 +130,7 @@ export function GamePage() {
       setClock(Date.now());
     };
     const onActionError = (error: ActionError) => {
+      pendingGuess.current = null;
       setActionError(error.message);
       if (error.hintAvailableAt) {
         setGameState((previous) => ({
@@ -197,6 +215,10 @@ export function GamePage() {
   );
   const canPlay = connected && gameState.status === "playing";
   const canHint = canPlay && Boolean(bestGuess) && hintSeconds === 0;
+  const featuredGuess = useMemo(
+    () => gameState.guessHistory.find((guess) => guess.id === featuredGuessId) || null,
+    [featuredGuessId, gameState.guessHistory]
+  );
   const selfParticipantId = players.find((player) => player.id === socket.id)?.participantId;
   const handleTypingChange = useCallback(
     (isTyping: boolean) => socket.emit("typing", { lobbyId, isTyping }),
@@ -208,6 +230,25 @@ export function GamePage() {
     await navigator.clipboard.writeText(lobbyId);
     setCopied(true);
     window.setTimeout(() => setCopied(false), 1_500);
+  };
+
+  const submitGuess = (rawGuess: string) => {
+    const guess = rawGuess.trim().toLowerCase();
+    const existingGuess = gameState.guessHistory.find(
+      (entry) => entry.guess === guess
+    );
+
+    setActionError(null);
+    if (existingGuess) {
+      pendingGuess.current = null;
+      setFeaturedGuessId(existingGuess.id);
+      setFeaturedGuessIsRecall(true);
+      setFeaturedGuessVersion((version) => version + 1);
+      return;
+    }
+
+    pendingGuess.current = guess;
+    socket.emit("guess", { lobbyId, guess });
   };
 
   if (fatalError) {
@@ -287,12 +328,12 @@ export function GamePage() {
 
               {gameState.status !== "won" && (
                 <section className="neuron-card p-4 sm:p-5">
-                  <div className="mb-3 flex items-center justify-between gap-3 text-sm text-zinc-500 dark:text-zinc-400">
+                  <div className="mb-3 flex flex-col items-start gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span>
                       Target signal: <strong className="text-zinc-800 dark:text-zinc-200">{gameState.targetLength} letters</strong>
                     </span>
                     {bestGuess && (
-                      <span className="truncate text-right">
+                      <span className="max-w-full truncate sm:text-right">
                         Closest: <strong className="capitalize text-teal-600 dark:text-teal-300">
                           {bestGuess.guess} · {(bestGuess.similarity * 100).toFixed(1)}%
                           {bestGuess.rank && (
@@ -304,7 +345,7 @@ export function GamePage() {
                   </div>
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <GuessInput
-                      onGuess={(guess) => socket.emit("guess", { lobbyId, guess })}
+                      onGuess={submitGuess}
                       onTypingChange={handleTypingChange}
                       disabled={!canPlay}
                     />
@@ -318,9 +359,6 @@ export function GamePage() {
                       {hintSeconds > 0 ? `Hint in ${hintSeconds}s` : "Halfway hint"}
                     </button>
                   </div>
-                  <p className="mt-2 text-sm text-zinc-500 dark:text-zinc-400">
-                    Hints are shared with the crew and recharge for 60 seconds.
-                  </p>
                 </section>
               )}
 
@@ -330,6 +368,9 @@ export function GamePage() {
                 <GuessList
                   guesses={gameState.guessHistory}
                   players={players}
+                  featuredGuess={featuredGuess}
+                  featuredGuessVersion={featuredGuessVersion}
+                  featuredGuessIsRecall={featuredGuessIsRecall}
                   onGuessHover={setHoveredGuessId}
                 />
               </div>
