@@ -1,0 +1,43 @@
+{
+  "title": "Choose the VS arena",
+  "question": "Which structure should carry team setup, the live head-to-head search, and the final result?",
+  "options": [
+    {
+      "id": "airlock-arena",
+      "label": "Airlock Arena",
+      "kicker": "THE ROLL",
+      "lineage": "opposing ready rooms opening into one match floor",
+      "thesis": "Team setup becomes the arena: two facing rosters lock in, then open around the shared semantic field.",
+      "palette": ["#101613", "#171f1c", "#d95a5a", "#5b91d8", "#65cdb9"],
+      "materials": ["matte mission panels", "team-color signal rails"],
+      "viewport": "Red and blue team bays own the left and right thirds; a narrow launch seam becomes the live semantic map and match status after ready-up.",
+      "risk": "The theatrical symmetry must collapse into a practical single-column mobile flow.",
+      "comp": ".impeccable/mocks/decision/airlock-arena.webp"
+    },
+    {
+      "id": "orbital-tug",
+      "label": "Orbital Tug",
+      "lineage": "a central navigation plot pulled by two telemetry rails",
+      "thesis": "The semantic map is the contest itself, with each team’s progress exerting visible pressure from opposite sides.",
+      "palette": ["#101613", "#171f1c", "#d95a5a", "#5b91d8", "#f0bb64"],
+      "materials": ["radar plotting field", "compact instrument readouts"],
+      "viewport": "An oversized semantic field occupies the center; narrow team rails flank it with progress, players, typing, and finish state while your guess console anchors below.",
+      "risk": "A dominant map can crowd the flight log on short laptop screens.",
+      "comp": ".impeccable/mocks/decision/orbital-tug.webp"
+    },
+    {
+      "id": "timing-lanes",
+      "label": "Timing Lanes",
+      "lineage": "a race-control timing screen with two synchronized lanes",
+      "thesis": "The match reads in one glance as parallel runs toward the same target, without pretending the opponent’s words are visible.",
+      "palette": ["#101613", "#171f1c", "#d95a5a", "#5b91d8", "#65cdb9"],
+      "materials": ["ruled telemetry rows", "fixed-width live counters"],
+      "viewport": "Two full-width team lanes lead with best, average, guesses, hints, and player activity; your flight log and the shared redacted map sit below in a stable work grid.",
+      "risk": "The clarity is exceptional, but it needs a decisive spatial moment to avoid feeling like a dashboard.",
+      "comp": ".impeccable/mocks/decision/timing-lanes.webp"
+    }
+  ],
+  "reroll": { "registers": ["safer", "bolder"] },
+  "buildPath": { "value": "comp", "toggle": true },
+  "steer": true
+}

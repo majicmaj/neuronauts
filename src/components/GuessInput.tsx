@@ -5,9 +5,17 @@ interface GuessInputProps {
   onGuess: (guess: string) => void;
   onTypingChange?: (isTyping: boolean) => void;
   disabled?: boolean;
+  inputId?: string;
+  submitLabel?: string;
 }
 
-export function GuessInput({ onGuess, onTypingChange, disabled }: GuessInputProps) {
+export function GuessInput({
+  onGuess,
+  onTypingChange,
+  disabled,
+  inputId = "guess-input",
+  submitLabel,
+}: GuessInputProps) {
   const [input, setInput] = useState("");
   const typing = useRef(false);
   const idleTimer = useRef<number | null>(null);
@@ -56,9 +64,9 @@ export function GuessInput({ onGuess, onTypingChange, disabled }: GuessInputProp
 
   return (
     <form onSubmit={handleSubmit} className="flex min-w-0 flex-1 gap-2">
-      <label className="sr-only" htmlFor="guess-input">Guess a word</label>
+      <label className="sr-only" htmlFor={inputId}>Guess a word</label>
       <input
-        id="guess-input"
+        id={inputId}
         type="text"
         value={input}
         onChange={(event) => handleChange(event.target.value)}
@@ -73,10 +81,11 @@ export function GuessInput({ onGuess, onTypingChange, disabled }: GuessInputProp
       <button
         type="submit"
         disabled={disabled || !input.trim() || input.trim().includes(" ")}
-        className="neuron-primary-button grid w-12 shrink-0 place-items-center px-0"
+        className={`neuron-primary-button guess-submit-button shrink-0 ${submitLabel ? "has-label" : ""}`}
         aria-label="Send guess"
       >
         <MissionGlyph name="transmit" className="h-6 w-6" />
+        {submitLabel && <span className="guess-submit-label">{submitLabel}</span>}
       </button>
     </form>
   );

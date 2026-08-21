@@ -33,3 +33,10 @@ Vijay Verma for post-mission distinctions.
 
 The 3Dicons V1 collection is released under the Creative Commons CC0 1.0
 Universal license for personal and commercial use.
+
+## Barlow Condensed
+
+Neuronauts self-hosts Barlow Condensed by Jeremy Tribby for VS-mode
+instrument displays. The font files are sourced from the official Google
+Fonts repository and are licensed under the SIL Open Font License 1.1. A copy
+of the license is included at `public/fonts/barlow-condensed/OFL.txt`.

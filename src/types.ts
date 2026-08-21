@@ -55,6 +55,8 @@ export interface Player {
   joinedAt: string;
   colorIndex?: number;
   avatarId?: string | null;
+  teamId?: TeamId | null;
+  ready?: boolean;
 }
 
 export interface Winner {
@@ -113,7 +115,7 @@ export interface RematchState {
   readyParticipantIds: string[];
 }
 
-export type GameStatus = "loading" | "playing" | "won" | "error";
+export type GameStatus = "loading" | "setup" | "playing" | "team-finished" | "won" | "error";
 
 export interface GameState {
   status: GameStatus;
@@ -130,11 +132,83 @@ export interface GameState {
 
 export interface LobbyPayload {
   lobbyId: string;
+  mode?: GameMode;
   gameState: GameState;
   players: Player[];
   playerCount: number;
   typingPlayerIds?: string[];
   rematch?: RematchState | null;
+  versus?: VersusState | null;
+}
+
+export type GameMode = "classic" | "versus";
+export type TeamId = "red" | "blue";
+export type VersusPhase = "setup" | "playing" | "complete";
+
+export interface VersusPlayerStats {
+  playerId: string;
+  playerName: string;
+  avatarId: string | null;
+  guessCount: number;
+  hintCount: number;
+  averageSimilarity: number | null;
+  bestSimilarity: number | null;
+}
+
+export interface VersusTeamSummary {
+  id: TeamId;
+  label: string;
+  status: "setup" | "playing" | "finished";
+  readyCount: number;
+  playerCount: number;
+  guessCount: number;
+  hintCount: number;
+  averageSimilarity: number | null;
+  bestSimilarity: number | null;
+  elapsedSeconds: number | null;
+  finishedAt: string | null;
+  foundBy: Winner | null;
+  score: number | null;
+  grade: "S" | "A" | "B" | "C" | "D" | null;
+  playerStats: VersusPlayerStats[];
+}
+
+export interface OpponentGuessPoint {
+  id: string;
+  teamId: TeamId;
+  similarity: number;
+  position: VectorPosition;
+  isHint: boolean;
+  createdAt: string;
+}
+
+export interface VersusScoring {
+  guessPenaltySeconds: number;
+  hintPenaltySeconds: number;
+}
+
+export interface VersusResult {
+  winnerTeamId: TeamId;
+  loserTeamId: TeamId;
+  standings: VersusTeamSummary[];
+  targetWord: string;
+  scoring: VersusScoring;
+}
+
+export interface VersusState {
+  phase: VersusPhase;
+  teamId: TeamId;
+  hostParticipantId: string | null;
+  startedAt: string | null;
+  completedAt: string | null;
+  firstFinishTeamId: TeamId | null;
+  canStart: boolean;
+  readyCount: number;
+  totalCount: number;
+  teams: VersusTeamSummary[];
+  opponentPoints: OpponentGuessPoint[];
+  result: VersusResult | null;
+  scoring: VersusScoring;
 }
 
 export interface ActionError {
