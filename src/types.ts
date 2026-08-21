@@ -176,7 +176,6 @@ export interface VersusTeamSummary {
 export interface OpponentGuessPoint {
   id: string;
   teamId: TeamId;
-  playerId: string;
   similarity: number;
   position: VectorPosition;
   isHint: boolean;
