@@ -8,6 +8,7 @@ import { PostGameRecap } from "@/components/PostGameRecap";
 import { SemanticMap } from "@/components/SemanticMap";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { WinBanner } from "@/components/WinBanner";
+import { VersusExperience } from "@/components/VersusExperience";
 import {
   getPreferredPlayerName,
   savePreferredPlayerName,
@@ -16,12 +17,15 @@ import {
 import { presentGuessSubmission } from "@/lib/guessSubmission";
 import type {
   ActionError,
+  GameMode,
   GameState,
   GuessResult,
   GuessSubmissionResponse,
   LobbyPayload,
   Player,
   RematchState,
+  TeamId,
+  VersusState,
 } from "@/types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -42,6 +46,8 @@ export function GamePage() {
   const lobbyId = routeLobbyId?.toUpperCase();
   const navigate = useNavigate();
   const [gameState, setGameState] = useState<GameState>(EMPTY_GAME);
+  const [mode, setMode] = useState<GameMode>("classic");
+  const [versus, setVersus] = useState<VersusState | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [typingPlayerIds, setTypingPlayerIds] = useState<string[]>([]);
   const [connected, setConnected] = useState(socket.connected);
@@ -70,6 +76,8 @@ export function GamePage() {
     };
     const onDisconnect = () => setConnected(false);
     const onLobbyJoined = (payload: LobbyPayload) => {
+      setMode(payload.mode || "classic");
+      setVersus(payload.versus || null);
       setGameState(payload.gameState);
       setPlayers(payload.players);
       setTypingPlayerIds(payload.typingPlayerIds || []);
@@ -84,6 +92,26 @@ export function GamePage() {
           .find((guess) => guess.playerId === self.participantId);
         setFeaturedGuessId(latestOwnGuess?.id || null);
         setFeaturedGuessNotice(null);
+      }
+    };
+    const onVersusUpdated = (payload: LobbyPayload) => {
+      setMode("versus");
+      setGameState(payload.gameState);
+      setPlayers(payload.players);
+      setTypingPlayerIds(payload.typingPlayerIds || []);
+      setVersus(payload.versus || null);
+      setRematch(payload.rematch || null);
+      setFatalError(null);
+      const self = payload.players.find((player) => player.id === socket.id);
+      if (self) {
+        savePreferredPlayerName(self.name);
+        const latestOwnGuess = [...payload.gameState.guessHistory]
+          .reverse()
+          .find((guess) => guess.playerId === self.participantId);
+        if (latestOwnGuess) setFeaturedGuessId(latestOwnGuess.id);
+      }
+      if (payload.versus?.phase === "complete") {
+        setCelebrating(true);
       }
     };
     const onGameReady = (state: GameState) => setGameState(state);
@@ -153,6 +181,7 @@ export function GamePage() {
     socket.on("disconnect", onDisconnect);
     socket.on("lobbyJoined", onLobbyJoined);
     socket.on("gameReady", onGameReady);
+    socket.on("versusUpdated", onVersusUpdated);
     socket.on("playersUpdated", onPlayersUpdated);
     socket.on("typingUpdated", onTypingUpdated);
     socket.on("rematchUpdated", onRematchUpdated);
@@ -170,6 +199,7 @@ export function GamePage() {
       socket.off("disconnect", onDisconnect);
       socket.off("lobbyJoined", onLobbyJoined);
       socket.off("gameReady", onGameReady);
+      socket.off("versusUpdated", onVersusUpdated);
       socket.off("playersUpdated", onPlayersUpdated);
       socket.off("typingUpdated", onTypingUpdated);
       socket.off("rematchUpdated", onRematchUpdated);
@@ -277,6 +307,10 @@ export function GamePage() {
     socket.emit("requestRematch", { lobbyId });
   };
 
+  const setTeam = (teamId: TeamId) => socket.emit("setTeam", { lobbyId, teamId });
+  const randomizeTeams = () => socket.emit("randomizeTeams", { lobbyId });
+  const toggleReady = () => socket.emit("toggleReady", { lobbyId });
+
   if (fatalError) {
     return (
       <div className="app-shell grid min-h-dvh place-items-center px-4 text-center">
@@ -299,7 +333,7 @@ export function GamePage() {
           <button onClick={() => navigate("/")} className="flex min-w-0 items-center gap-2 text-left">
             <Neuronaut className="h-10 w-10 shrink-0" />
             <div className="hidden min-w-0 sm:block">
-              <div className="truncate text-lg font-extrabold leading-tight tracking-tight">Neuronauts</div>
+              <div className="truncate text-lg font-extrabold leading-tight tracking-tight">Neuronauts{mode === "versus" ? " VS" : ""}</div>
               <div className="mt-0.5 flex items-center gap-1.5 text-xs text-zinc-500 dark:text-zinc-400">
                 <span className={`mission-status-light ${connected ? "is-online" : "is-reconnecting"}`} aria-hidden="true" />
                 {connected ? "live mission" : "reconnecting"}
@@ -328,6 +362,31 @@ export function GamePage() {
               <p className="mt-1 text-sm text-zinc-500">Loading the navigator’s word map…</p>
             </div>
           </div>
+        ) : mode === "versus" && versus ? (
+          <VersusExperience
+            gameState={gameState}
+            versus={versus}
+            players={players}
+            typingPlayerIds={typingPlayerIds}
+            selfSocketId={socket.id}
+            selfParticipantId={selfParticipantId}
+            connected={connected}
+            featuredGuess={featuredGuess}
+            featuredGuessVersion={featuredGuessVersion}
+            featuredGuessNotice={featuredGuessNotice}
+            hoveredGuessId={hoveredGuessId}
+            hintSeconds={hintSeconds}
+            rematch={rematch}
+            playAgainBusy={playAgainBusy}
+            onSetTeam={setTeam}
+            onRandomizeTeams={randomizeTeams}
+            onToggleReady={toggleReady}
+            onGuess={submitGuess}
+            onTypingChange={handleTypingChange}
+            onRequestHint={() => socket.emit("requestHint", { lobbyId })}
+            onGuessHover={setHoveredGuessId}
+            onPlayAgain={playAgain}
+          />
         ) : gameState.status === "won" && gameState.recap && postGameView === "recap" ? (
           <main>
             <PostGameRecap

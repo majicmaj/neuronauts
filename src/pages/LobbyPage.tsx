@@ -1,7 +1,7 @@
 import { LobbyScreen } from "@/components/LobbyScreen";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { savePreferredPlayerName, socket } from "@/lib/socket";
-import type { LobbyPayload } from "@/types";
+import type { GameMode, LobbyPayload } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
@@ -44,10 +44,10 @@ export default function LobbyPage() {
     };
   }, [navigate]);
 
-  const createLobby = (preferredName: string) => {
+  const createLobby = (preferredName: string, mode: GameMode) => {
     setBusy(true);
     setError(null);
-    socket.emit("createLobby", { preferredName });
+    socket.emit("createLobby", { preferredName, mode });
   };
 
   const joinLobby = (lobbyId: string, preferredName: string) => {

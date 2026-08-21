@@ -5,6 +5,22 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("/fonts/barlow-condensed/BarlowCondensed-SemiBold.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: "Barlow Condensed";
+  src: url("/fonts/barlow-condensed/BarlowCondensed-Black.ttf") format("truetype");
+  font-display: swap;
+  font-style: normal;
+  font-weight: 900;
+}
+
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
@@ -41,6 +57,10 @@
   --player-9: #af4139;
   --player-10: #496f9e;
   --player-11: #7659a2;
+  --team-red: #c9474f;
+  --team-red-soft: #fae9ea;
+  --team-blue: #3f74bd;
+  --team-blue-soft: #e8f0fb;
 }
 
 .dark {
@@ -77,6 +97,10 @@
   --player-9: #ef8c83;
   --player-10: #8db2df;
   --player-11: #b9a0df;
+  --team-red: #ff646d;
+  --team-red-soft: #321d20;
+  --team-blue: #6ca5f5;
+  --team-blue-soft: #18283d;
 }
 
 @layer base {
@@ -1371,12 +1395,1310 @@
   }
 }
 
+/* VS mode — Airlock Arena, surface roll e15a8fb1. */
+.mission-mode-picker {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.mission-mode-picker legend {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.mission-mode-picker > button {
+  display: flex;
+  min-height: 5rem;
+  align-items: center;
+  gap: 0.65rem;
+  border: 1px solid var(--line-strong);
+  border-radius: 10px;
+  background: var(--surface-subtle);
+  padding: 0.75rem;
+  color: var(--muted);
+  text-align: left;
+  transition: border-color 150ms ease-out, background-color 150ms ease-out, color 150ms ease-out;
+}
+
+.mission-mode-picker > button:hover,
+.mission-mode-picker > button.is-selected {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.mission-mode-picker > button.is-versus.is-selected {
+  border-color: color-mix(in srgb, var(--team-red) 55%, var(--team-blue));
+  background: color-mix(in srgb, var(--team-red-soft) 50%, var(--team-blue-soft));
+}
+
+.mission-mode-picker strong,
+.mission-mode-picker small {
+  display: block;
+}
+
+.mission-mode-picker small {
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+  line-height: 1.25;
+}
+
+.mode-versus-mark {
+  display: grid;
+  flex: none;
+  grid-template-columns: 0.55rem auto 0.55rem;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+.mode-versus-mark i {
+  height: 1.35rem;
+  background: var(--team-red);
+  clip-path: polygon(0 0, 100% 18%, 100% 82%, 0 100%);
+}
+
+.mode-versus-mark i:last-child {
+  background: var(--team-blue);
+  clip-path: polygon(0 18%, 100% 0, 100% 100%, 0 82%);
+}
+
+.vs-setup-shell,
+.vs-live-shell,
+.vs-results-shell {
+  --vs-instrument: "Barlow Condensed", "Arial Narrow", sans-serif;
+  width: 100%;
+}
+
+.vs-setup-intro h1,
+.vs-team-heading h2,
+.vs-team-best,
+.vs-member-stats,
+.vs-team-telemetry,
+.vs-confrontation,
+.vs-progress-heading,
+.vs-team-state,
+.vs-results-hero h1,
+.vs-winning-grade,
+.vs-result-team h2,
+.vs-result-grade,
+.vs-result-metrics,
+.vs-score-equation {
+  font-family: var(--vs-instrument);
+}
+
+.vs-setup-intro {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin: 2rem 0 1.25rem;
+}
+
+.vs-setup-intro h1 {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 0.005em;
+  line-height: 1;
+}
+
+.vs-setup-intro p {
+  margin-top: 0.55rem;
+  color: var(--muted);
+}
+
+.vs-privacy-note {
+  display: flex;
+  max-width: 24rem;
+  align-items: center;
+  gap: 0.7rem;
+  border-bottom: 1px solid var(--line-strong);
+  padding: 0.65rem 0;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 650;
+}
+
+.vs-setup-arena,
+.vs-arena-grid {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.vs-setup-seam {
+  display: grid;
+  min-height: 5rem;
+  place-items: center;
+  color: var(--ink);
+  font-size: 1.35rem;
+  font-weight: 950;
+}
+
+.vs-setup-seam i {
+  display: none;
+}
+
+.vs-team-bay {
+  --team-color: var(--team-red);
+  position: relative;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--team-color) 72%, var(--line));
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.vs-team-bay.is-blue {
+  --team-color: var(--team-blue);
+}
+
+.vs-team-rail {
+  position: absolute;
+  z-index: 3;
+  inset-block: 0;
+  left: 0;
+  display: flex;
+  width: 1rem;
+  flex-direction: column;
+  justify-content: space-around;
+  overflow: hidden;
+  border-right: 1px solid var(--team-color);
+  background: color-mix(in srgb, var(--team-color) 7%, var(--surface));
+  padding-block: 0.45rem;
+}
+
+.vs-team-bay.is-blue .vs-team-rail {
+  right: 0;
+  left: auto;
+  border-right: 0;
+  border-left: 1px solid var(--team-color);
+}
+
+.vs-team-rail i {
+  display: block;
+  width: 1.55rem;
+  height: 0.22rem;
+  transform: translateX(-0.3rem) rotate(48deg);
+  background: var(--team-color);
+}
+
+.vs-team-bay.is-blue .vs-team-rail i {
+  width: 0.36rem;
+  height: 10%;
+  margin-inline: auto;
+  transform: none;
+}
+
+.vs-team-jaw {
+  position: absolute;
+  z-index: 4;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  width: 0.7rem;
+  grid-template-columns: 1fr;
+  grid-auto-rows: 1fr;
+  overflow: hidden;
+  background: var(--team-color);
+  transform-origin: center;
+}
+
+.vs-team-bay.is-blue .vs-team-jaw {
+  right: auto;
+  left: 0;
+}
+
+.vs-team-jaw i {
+  width: 0.65rem;
+  justify-self: end;
+  background: transparent;
+}
+
+.vs-team-bay.is-blue .vs-team-jaw i {
+  justify-self: start;
+}
+
+.vs-team-bay.is-finished .vs-team-jaw {
+  animation: vs-lock-engage 520ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.vs-team-bay.is-finished .vs-team-jaw i:nth-child(odd) {
+  background: var(--surface);
+}
+
+@keyframes vs-lock-engage {
+  from { transform: scaleY(0.82); }
+  to { transform: scaleY(1); }
+}
+
+.vs-team-heading {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 1px solid var(--line);
+  padding: 1.2rem 1.35rem 1.05rem 1.85rem;
+}
+
+.vs-team-bay.is-blue .vs-team-heading {
+  padding-right: 1.85rem;
+  padding-left: 1.35rem;
+}
+
+.vs-team-emblem {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  background: var(--team-color);
+  clip-path: polygon(50% 0, 100% 25%, 90% 78%, 50% 100%, 10% 78%, 0 25%);
+  color: var(--surface);
+  font-size: 0.8rem;
+  font-weight: 950;
+}
+
+.vs-team-heading h2 {
+  color: var(--team-color);
+  font-size: clamp(1.4rem, 2vw, 1.85rem);
+  font-weight: 900;
+  letter-spacing: 0.045em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.vs-team-heading p {
+  margin-top: 0.25rem;
+  color: color-mix(in srgb, var(--team-color) 62%, var(--muted));
+  font-size: 0.78rem;
+  font-weight: 650;
+}
+
+.vs-team-best {
+  display: grid;
+  justify-items: end;
+  color: var(--team-color);
+  font-variant-numeric: tabular-nums;
+  line-height: 0.85;
+}
+
+.vs-team-best span {
+  font-size: clamp(2.6rem, 4vw, 4.15rem);
+  font-weight: 900;
+}
+
+.vs-team-best small {
+  margin-top: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.vs-team-members {
+  flex: 1;
+  padding-inline: 1.85rem 1.35rem;
+}
+
+.vs-team-bay.is-blue .vs-team-members {
+  padding-inline: 1.35rem 1.85rem;
+}
+
+.vs-team-member {
+  display: grid;
+  grid-template-columns: 3.25rem minmax(5rem, 1fr) auto;
+  min-height: 5.15rem;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 1px solid var(--line);
+  padding-block: 0.55rem;
+}
+
+.vs-team-member:last-child {
+  border-bottom: 0;
+}
+
+.vs-team-member > .player-avatar {
+  width: 3.25rem;
+  height: 3.25rem;
+}
+
+.vs-team-member-name {
+  min-width: 0;
+}
+
+.vs-team-member-name strong,
+.vs-team-member-name span {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vs-team-member-name strong {
+  font-size: 0.92rem;
+}
+
+.vs-team-member-name span {
+  margin-top: 0.15rem;
+  color: color-mix(in srgb, var(--team-color) 70%, var(--muted));
+  font-size: 0.72rem;
+}
+
+.vs-member-stats {
+  display: grid;
+  grid-template-columns: repeat(3, auto);
+  gap: 0.55rem;
+  text-align: right;
+}
+
+.vs-member-stats div {
+  min-width: 2rem;
+}
+
+.vs-member-stats dt {
+  color: var(--muted);
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.vs-member-stats dd {
+  margin-top: 0.1rem;
+  font-size: 0.82rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 800;
+}
+
+.vs-ready-mark {
+  display: grid;
+  min-width: 2rem;
+  place-items: center;
+  color: var(--muted);
+}
+
+.vs-ready-mark.is-ready {
+  color: var(--team-color);
+}
+
+.vs-empty-bay {
+  display: grid;
+  min-height: 9rem;
+  place-items: center;
+  align-content: center;
+  color: var(--muted);
+  text-align: center;
+}
+
+.vs-empty-seat {
+  width: 2.5rem;
+  height: 2.5rem;
+  border: 1px dashed color-mix(in srgb, var(--team-color) 65%, var(--line));
+  clip-path: polygon(50% 0, 100% 25%, 90% 78%, 50% 100%, 10% 78%, 0 25%);
+}
+
+.vs-empty-bay p {
+  margin-top: 0.65rem;
+  font-weight: 750;
+}
+
+.vs-empty-bay span:last-child {
+  margin-top: 0.15rem;
+  font-size: 0.72rem;
+}
+
+.vs-join-team {
+  display: block;
+  width: calc(100% - 2.25rem);
+  min-height: 44px;
+  margin: 0.75rem 1rem 1rem 1.25rem;
+  border: 1px solid var(--team-color);
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--team-color) 10%, var(--surface));
+  color: var(--team-color);
+  font-weight: 800;
+}
+
+.vs-team-bay.is-blue .vs-join-team {
+  margin-inline: 1rem 1.25rem;
+}
+
+.vs-join-team:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--team-color) 18%, var(--surface));
+}
+
+.vs-join-team:disabled {
+  cursor: default;
+  opacity: 0.72;
+}
+
+.vs-launch-console {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  border-block: 1px solid var(--line-strong);
+  margin-top: 1rem;
+  padding: 1rem 0;
+}
+
+.vs-launch-console-mobile {
+  display: none;
+}
+
+.vs-launch-status {
+  min-width: 0;
+  flex: 1;
+}
+
+.vs-launch-status span {
+  font-size: 1.05rem;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+}
+
+.vs-launch-status p {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.vs-ready-button {
+  justify-content: center;
+}
+
+.vs-arena-center {
+  min-width: 0;
+  order: -1;
+  background: color-mix(in srgb, var(--canvas) 82%, var(--surface));
+}
+
+.semantic-map-shell.is-versus {
+  min-height: 0;
+  background: transparent;
+}
+
+.semantic-map-shell.is-versus .semantic-map-header {
+  display: block;
+  padding: 0.2rem 1rem 0;
+  text-align: center;
+}
+
+.semantic-map-shell.is-versus .semantic-map-header > div,
+.semantic-map-shell.is-versus .semantic-map-header > div > div {
+  justify-content: center;
+}
+
+.semantic-map-shell.is-versus .semantic-map-header .mission-glyph,
+.semantic-map-shell.is-versus .semantic-map-live {
+  display: none;
+}
+
+.semantic-map-shell.is-versus .semantic-map-header h2 {
+  font-family: var(--vs-instrument);
+  font-size: 1.15rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.semantic-map-shell.is-versus .semantic-map-header p {
+  max-width: 28rem;
+  margin-inline: auto;
+}
+
+.semantic-map-shell.is-versus > div:last-child {
+  padding: 0;
+}
+
+.vs-confrontation {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  padding: 1rem 1.2rem 0.8rem;
+}
+
+.vs-confrontation > div:not(.vs-mark) {
+  display: flex;
+  align-items: baseline;
+  gap: 0.4rem;
+}
+
+.vs-confrontation > div:last-child {
+  flex-direction: row-reverse;
+}
+
+.vs-confrontation strong {
+  font-size: clamp(1.65rem, 3vw, 2.5rem);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.035em;
+}
+
+.vs-confrontation span {
+  color: var(--muted);
+  font-size: 0.74rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vs-confrontation .is-red strong { color: var(--team-red); }
+.vs-confrontation .is-blue strong { color: var(--team-blue); }
+
+.vs-mark {
+  display: grid;
+  grid-template-columns: minmax(1rem, 2.5rem) auto minmax(1rem, 2.5rem);
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 1.8rem;
+  font-weight: 900;
+}
+
+.vs-mark i {
+  height: 1px;
+  background: var(--line-strong);
+}
+
+.vs-phase-strip {
+  border-top: 1px solid var(--line);
+  background: transparent;
+  padding: 0.65rem 0.9rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.guess-submit-button {
+  display: grid;
+  width: 3rem;
+  padding-inline: 0;
+  place-items: center;
+}
+
+.guess-submit-button.has-label {
+  display: inline-flex;
+  width: auto;
+  min-width: 10rem;
+  justify-content: center;
+  padding-inline: 1rem;
+  white-space: nowrap;
+}
+
+.vs-team-telemetry {
+  border-top: 1px solid var(--line);
+  padding: 1rem 1.35rem 1.15rem 1.85rem;
+}
+
+.vs-team-bay.is-blue .vs-team-telemetry {
+  padding-right: 1.85rem;
+  padding-left: 1.35rem;
+}
+
+.vs-team-telemetry > dl {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.4rem;
+}
+
+.vs-team-telemetry dt,
+.vs-console-heading dt {
+  color: var(--muted);
+  font-size: 0.66rem;
+  font-weight: 750;
+  letter-spacing: 0.045em;
+  text-transform: uppercase;
+}
+
+.vs-team-telemetry dd,
+.vs-console-heading dd {
+  margin-top: 0.15rem;
+  font-size: 0.92rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+}
+
+.vs-progress-heading {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.8rem;
+  color: var(--muted);
+  font-size: 0.6rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.vs-progress-heading strong {
+  color: var(--team-color);
+  font-variant-numeric: tabular-nums;
+}
+
+.vs-progress-track {
+  display: block;
+  width: 100%;
+  height: 0.45rem;
+  appearance: none;
+  margin-top: 0.35rem;
+  overflow: hidden;
+  border: 0;
+  background: var(--surface-subtle);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.vs-progress-track::-webkit-progress-bar {
+  background: var(--surface-subtle);
+}
+
+.vs-progress-track::-webkit-progress-value {
+  background: var(--team-color);
+}
+
+.vs-progress-track::-moz-progress-bar {
+  background: var(--team-color);
+}
+
+.vs-team-state {
+  display: flex;
+  min-height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid color-mix(in srgb, var(--team-color) 45%, var(--line));
+  margin-top: 0.75rem;
+  color: var(--team-color);
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.vs-team-bay.is-finished .vs-team-state {
+  background: color-mix(in srgb, var(--team-color) 11%, var(--surface));
+}
+
+.map-dot-opponent {
+  opacity: 0.72;
+  stroke: none;
+}
+
+.vs-workspace {
+  display: grid;
+  align-items: start;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.vs-transmit-console {
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  background: var(--surface);
+  padding: 1rem;
+}
+
+.vs-console-heading {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.9rem;
+}
+
+.vs-console-heading h2 {
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.vs-console-heading p {
+  margin-top: 0.2rem;
+  color: var(--muted);
+  font-size: 0.7rem;
+}
+
+.vs-console-heading dl {
+  display: flex;
+  gap: 1rem;
+  text-align: right;
+}
+
+.vs-console-actions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.vs-console-locked {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  color: var(--accent);
+}
+
+.vs-console-locked strong,
+.vs-console-locked span {
+  display: block;
+}
+
+.vs-console-locked span {
+  margin-top: 0.15rem;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.vs-score-rule {
+  margin-top: 0.75rem;
+  color: var(--muted);
+  font-size: 0.68rem;
+  line-height: 1.45;
+}
+
+.vs-private-log .neuron-card {
+  border-radius: 4px;
+}
+
+.vs-results-hero {
+  --team-color: var(--team-red);
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 1.25rem;
+  border-block: 1px solid var(--team-color);
+  background: color-mix(in srgb, var(--team-color) 8%, var(--surface));
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+}
+
+.vs-results-emblem {
+  display: grid;
+  width: clamp(3.4rem, 9vw, 6rem);
+  aspect-ratio: 1;
+  place-items: center;
+  background: var(--team-color);
+  clip-path: polygon(50% 0, 100% 25%, 90% 78%, 50% 100%, 10% 78%, 0 25%);
+  color: var(--surface);
+  font-size: clamp(1.3rem, 3vw, 2rem);
+  font-weight: 950;
+}
+
+.vs-results-hero p,
+.vs-results-hero span {
+  color: color-mix(in srgb, var(--team-color) 68%, var(--muted));
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.vs-results-hero h1 {
+  margin-bottom: 0.4rem;
+  color: var(--team-color);
+  font-size: clamp(2.5rem, 6vw, 5.4rem);
+  font-weight: 900;
+  letter-spacing: 0.005em;
+  line-height: 0.88;
+}
+
+.vs-results-hero .vs-results-meta {
+  max-width: 52rem;
+  line-height: 1.4;
+}
+
+.vs-winning-grade {
+  display: grid;
+  min-width: 6rem;
+  text-align: center;
+}
+
+.vs-winning-grade small {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.vs-winning-grade strong {
+  color: var(--team-color);
+  font-size: clamp(3.5rem, 8vw, 6.5rem);
+  line-height: 0.85;
+}
+
+.vs-score-explainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--line-strong);
+  padding: 1.25rem 0;
+}
+
+.vs-score-explainer h2 {
+  font-size: 1rem;
+  font-weight: 850;
+}
+
+.vs-score-explainer p {
+  margin-top: 0.25rem;
+  color: var(--muted);
+  font-size: 0.75rem;
+}
+
+.vs-score-equation {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.45rem;
+  font-size: 0.72rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.vs-score-equation span,
+.vs-score-equation strong {
+  border-bottom: 1px solid var(--line-strong);
+  padding: 0.4rem 0.25rem;
+}
+
+.vs-score-equation b {
+  color: var(--muted);
+}
+
+.vs-result-comparison {
+  display: grid;
+  gap: 0.75rem;
+  padding-block: 1rem;
+}
+
+.vs-result-team {
+  --team-color: var(--team-red);
+  position: relative;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--team-color) 70%, var(--line));
+  border-radius: 4px;
+  background: var(--surface);
+}
+
+.vs-result-team > header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  border-bottom: 1px solid var(--line);
+  padding: 1rem;
+}
+
+.vs-result-place {
+  display: block;
+  margin-top: 0.3rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 650;
+}
+
+.vs-result-team h2 {
+  color: var(--team-color);
+  font-size: 1.9rem;
+  font-weight: 900;
+  letter-spacing: 0.015em;
+}
+
+.vs-result-grade {
+  grid-column: 2;
+  color: var(--team-color);
+  font-size: 3.25rem;
+  line-height: 0.85;
+}
+
+.vs-result-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+
+.vs-result-metrics div {
+  border-right: 1px solid var(--line);
+  padding: 0.8rem 1rem;
+}
+
+.vs-result-metrics div:nth-child(3n) {
+  border-right: 0;
+}
+
+.vs-result-metrics dt {
+  color: var(--muted);
+  font-size: 0.62rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.vs-result-metrics dd {
+  margin-top: 0.15rem;
+  font-size: 1rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 850;
+}
+
+.vs-result-roster {
+  padding-inline: 1rem;
+}
+
+.vs-result-roster > div {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  border-bottom: 1px solid var(--line);
+  padding-block: 0.65rem;
+}
+
+.vs-result-roster > div:last-child {
+  border-bottom: 0;
+}
+
+.vs-result-roster .player-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.vs-result-roster span,
+.vs-result-roster strong,
+.vs-result-roster small {
+  display: block;
+}
+
+.vs-result-roster strong {
+  font-size: 0.78rem;
+}
+
+.vs-result-roster small {
+  margin-top: 0.1rem;
+  color: var(--muted);
+  font-size: 0.65rem;
+}
+
+.vs-result-divider {
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  font-size: 0.75rem;
+  font-weight: 950;
+}
+
+.vs-result-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 1px solid var(--line-strong);
+  padding-top: 1rem;
+}
+
+.vs-result-actions p {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+@media (min-width: 720px) {
+  .vs-setup-arena {
+    grid-template-columns: minmax(0, 1fr) 3.25rem minmax(0, 1fr);
+    align-items: stretch;
+  }
+
+  .vs-setup-seam {
+    min-height: 24rem;
+    align-content: center;
+  }
+
+  .vs-setup-seam i {
+    display: block;
+    width: 1px;
+    height: 75%;
+    margin-top: 1rem;
+    background: var(--line-strong);
+  }
+
+  .vs-workspace {
+    grid-template-columns: minmax(16rem, 0.7fr) minmax(22rem, 1.3fr);
+  }
+
+  .vs-transmit-console {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .vs-result-comparison {
+    grid-template-columns: minmax(0, 1fr) 3rem minmax(0, 1fr);
+  }
+}
+
+@media (min-width: 1180px) {
+  .vs-live-shell,
+  .vs-setup-shell {
+    width: min(1505px, calc(100vw - 1rem));
+    margin-left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .vs-arena-grid {
+    grid-template-columns: minmax(22rem, 1fr) minmax(24rem, 0.92fr) minmax(22rem, 1fr);
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .vs-setup-arena {
+    grid-template-columns: minmax(22rem, 1fr) 7rem minmax(22rem, 1fr);
+    gap: 0;
+  }
+
+  .vs-arena-center {
+    order: 0;
+  }
+
+  .semantic-map-shell.is-versus .semantic-map {
+    height: 31.5rem;
+    aspect-ratio: auto;
+  }
+
+  .vs-live-shell .vs-team-bay {
+    min-height: 39rem;
+  }
+
+  .vs-setup-shell .vs-team-bay {
+    min-height: 32rem;
+  }
+
+  .vs-team-members {
+    min-height: 18rem;
+  }
+
+  .vs-team-bay.is-red {
+    clip-path: polygon(0 0, 93% 0, 93% 7%, 100% 12%, 100% 28%, 93% 33%, 93% 58%, 100% 63%, 100% 84%, 93% 90%, 93% 100%, 0 100%);
+    padding-right: 7%;
+  }
+
+  .vs-team-bay.is-blue {
+    clip-path: polygon(7% 0, 100% 0, 100% 100%, 7% 100%, 7% 90%, 0 84%, 0 63%, 7% 58%, 7% 33%, 0 28%, 0 12%, 7% 7%);
+    padding-left: 7%;
+  }
+
+  .vs-team-jaw {
+    width: calc(7% + 0.65rem);
+  }
+
+  .vs-team-bay.is-blue .vs-team-jaw {
+    width: calc(7% + 0.65rem);
+  }
+
+  .vs-setup-arena .vs-join-team {
+    margin-top: auto;
+  }
+}
+
+@media (max-width: 1179px) and (min-width: 720px) {
+  .vs-arena-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vs-arena-center {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 719px) {
+  .mission-mode-picker {
+    grid-template-columns: 1fr;
+  }
+
+  .mission-mode-picker > button {
+    min-height: 4.25rem;
+  }
+
+  .vs-setup-intro,
+  .vs-score-explainer,
+  .vs-result-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .vs-privacy-note {
+    max-width: none;
+  }
+
+  .vs-team-member {
+    grid-template-columns: 2.6rem minmax(4rem, 1fr) auto;
+    min-height: 4.25rem;
+  }
+
+  .vs-team-member > .player-avatar {
+    width: 2.6rem;
+    height: 2.6rem;
+  }
+
+  .vs-team-heading {
+    padding: 1rem 1rem 0.9rem 1.25rem;
+  }
+
+  .vs-team-bay.is-blue .vs-team-heading {
+    padding-right: 1.25rem;
+    padding-left: 1rem;
+  }
+
+  .vs-team-heading h2 {
+    font-size: 1.35rem;
+  }
+
+  .vs-team-best span {
+    font-size: 2.25rem;
+  }
+
+  .vs-team-members {
+    padding-inline: 1.25rem 1rem;
+  }
+
+  .vs-team-bay.is-blue .vs-team-members {
+    padding-inline: 1rem 1.25rem;
+  }
+
+  .vs-team-telemetry {
+    padding: 0.85rem 1rem 1rem 1.25rem;
+  }
+
+  .vs-team-bay.is-blue .vs-team-telemetry {
+    padding-right: 1.25rem;
+    padding-left: 1rem;
+  }
+
+  .vs-team-rail {
+    width: 0.45rem;
+    padding: 0;
+  }
+
+  .vs-team-rail i {
+    display: none;
+  }
+
+  .vs-team-jaw {
+    width: 0.35rem;
+  }
+
+  .vs-member-stats {
+    gap: 0.35rem;
+  }
+
+  .vs-member-stats div {
+    min-width: 1.75rem;
+  }
+
+  .vs-console-actions {
+    flex-direction: column;
+  }
+
+  .guess-submit-button.has-label {
+    display: grid;
+    width: 3rem;
+    min-width: 3rem;
+    padding-inline: 0;
+    place-items: center;
+  }
+
+  .guess-submit-label {
+    display: none;
+  }
+
+  .vs-launch-console-desktop {
+    display: none;
+  }
+
+  .vs-launch-console-mobile {
+    position: sticky;
+    z-index: 12;
+    top: 0.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    margin-inline: -0.75rem;
+    margin-bottom: 0.85rem;
+    border: 1px solid var(--line-strong);
+    background: var(--canvas);
+    padding: 0.75rem;
+  }
+
+  .vs-launch-console-mobile .vs-launch-status {
+    grid-column: 1 / -1;
+  }
+
+  .vs-launch-console-mobile button {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+    padding-inline: 0.6rem;
+  }
+
+  .vs-launch-console-mobile:not(.has-randomize) .vs-ready-button {
+    grid-column: 1 / -1;
+  }
+
+  .vs-results-hero {
+    grid-template-columns: auto minmax(0, 1fr);
+  }
+
+  .vs-winning-grade {
+    grid-column: 1 / -1;
+    grid-template-columns: auto auto;
+    align-items: baseline;
+    justify-content: end;
+    gap: 0.5rem;
+  }
+
+  .vs-result-metrics {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .vs-result-metrics div:nth-child(3n) {
+    border-right: 1px solid var(--line);
+  }
+
+  .vs-result-metrics div:nth-child(2n) {
+    border-right: 0;
+  }
+
+  .vs-score-equation {
+    justify-content: flex-start;
+  }
+}
+
 .semantic-map {
   display: block;
   width: 100%;
   aspect-ratio: 1;
   overflow: visible;
   cursor: crosshair;
+}
+
+.semantic-map-shell.is-versus .semantic-map {
+  min-height: 21rem;
+}
+
+.semantic-map-shell.is-versus .map-ring,
+.semantic-map-shell.is-versus .map-axis {
+  stroke: var(--line-strong);
+  stroke-dasharray: 2 5;
+  opacity: 0.85;
+}
+
+.semantic-map-shell.is-versus .map-target {
+  fill: var(--canvas);
+  stroke-width: 2.5;
+}
+
+.semantic-map-shell.is-versus .map-dot {
+  stroke: var(--canvas);
+  stroke-width: 0.7;
 }
 
 .map-surface {

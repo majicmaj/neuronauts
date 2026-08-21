@@ -2,17 +2,19 @@ import { FormEvent, useState } from "react";
 import { getPreferredPlayerName, savePreferredPlayerName } from "../lib/socket";
 import { MissionGlyph } from "./MissionGlyph";
 import Neuronaut from "./Neuronaut";
+import type { GameMode } from "../types";
 
 interface LobbyScreenProps {
   connected: boolean;
   busy: boolean;
-  onCreateLobby: (preferredName: string) => void;
+  onCreateLobby: (preferredName: string, mode: GameMode) => void;
   onJoinLobby: (lobbyId: string, preferredName: string) => void;
 }
 
 export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: LobbyScreenProps) {
   const [lobbyId, setLobbyId] = useState("");
   const [preferredName, setPreferredName] = useState(getPreferredPlayerName);
+  const [mode, setMode] = useState<GameMode>("classic");
 
   const rememberName = () => {
     if (preferredName.trim()) savePreferredPlayerName(preferredName.trim());
@@ -28,7 +30,7 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
   const handleCreate = () => {
     if (!connected || busy) return;
     rememberName();
-    onCreateLobby(preferredName.trim());
+    onCreateLobby(preferredName.trim(), mode);
   };
 
   return (
@@ -62,12 +64,34 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
           className="mission-input mb-3 w-full"
         />
 
+        <fieldset className="mission-mode-picker">
+          <legend>Mission mode</legend>
+          <button
+            type="button"
+            className={mode === "classic" ? "is-selected" : ""}
+            aria-pressed={mode === "classic"}
+            onClick={() => setMode("classic")}
+          >
+            <MissionGlyph name="crew" className="h-6 w-6" />
+            <span><strong>Classic</strong><small>One crew, one shared search</small></span>
+          </button>
+          <button
+            type="button"
+            className={mode === "versus" ? "is-selected is-versus" : "is-versus"}
+            aria-pressed={mode === "versus"}
+            onClick={() => setMode("versus")}
+          >
+            <span className="mode-versus-mark" aria-hidden="true"><i />VS<i /></span>
+            <span><strong>VS mode</strong><small>Red vs blue, private flight logs</small></span>
+          </button>
+        </fieldset>
+
         <button
           onClick={handleCreate}
           disabled={!connected || busy}
           className="neuron-primary-button w-full justify-center py-3.5"
         >
-          {busy ? "Launching…" : "Create a mission"} <MissionGlyph name="launch" className="h-6 w-6" />
+          {busy ? "Launching…" : mode === "versus" ? "Create VS mission" : "Create a mission"} <MissionGlyph name="launch" className="h-6 w-6" />
         </button>
 
         <div className="my-5 flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">

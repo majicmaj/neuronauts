@@ -1,6 +1,6 @@
 import type { PointerEvent as ReactPointerEvent } from "react";
 import { playerColor } from "../lib/playerColors";
-import type { GuessResult } from "../types";
+import type { GuessResult, OpponentGuessPoint, TeamId } from "../types";
 import { MissionGlyph } from "./MissionGlyph";
 
 interface SemanticMapProps {
@@ -8,6 +8,9 @@ interface SemanticMapProps {
   targetWord?: string;
   hoveredGuessId?: string | null;
   onGuessHover?: (guessId: string | null) => void;
+  opponentPoints?: OpponentGuessPoint[];
+  teamId?: TeamId;
+  versus?: boolean;
 }
 
 const SIZE = 320;
@@ -19,6 +22,9 @@ export function SemanticMap({
   targetWord,
   hoveredGuessId,
   onGuessHover,
+  opponentPoints = [],
+  teamId,
+  versus = false,
 }: SemanticMapProps) {
   const plotted = guesses.filter((guess) => guess.position);
   const hoveredGuess = plotted.find((guess) => guess.id === hoveredGuessId);
@@ -56,19 +62,24 @@ export function SemanticMap({
     onGuessHover?.(nearest?.id ?? null);
   };
 
+  const ownTeamColor = teamId === "red" ? "var(--team-red)" : "var(--team-blue)";
+  const opponentTeamColor = teamId === "red" ? "var(--team-blue)" : "var(--team-red)";
+
   return (
-    <section className="neuron-card overflow-hidden" aria-labelledby="map-title">
-      <div className="flex items-start justify-between gap-3 px-4 pt-4">
+    <section className={versus ? "semantic-map-shell is-versus" : "neuron-card semantic-map-shell overflow-hidden"} aria-labelledby="map-title">
+      <div className="semantic-map-header flex items-start justify-between gap-3 px-4 pt-4">
         <div>
           <div className="flex items-center gap-2">
             <MissionGlyph name="orbit" className="h-6 w-6 text-teal-500" />
             <h2 id="map-title" className="font-semibold">Semantic space</h2>
           </div>
           <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400">
-            Stronger semantic matches sit closer. Colors track the crew.
+            {versus
+              ? "Both teams share this space. Only your crew’s points reveal words."
+              : "Stronger semantic matches sit closer. Colors track the crew."}
           </p>
         </div>
-        <span className="text-xs font-medium text-zinc-500 dark:text-zinc-400">Live</span>
+        <span className="semantic-map-live text-xs font-medium text-zinc-500 dark:text-zinc-400">Live</span>
       </div>
 
       <div className="p-3 pt-2">
@@ -80,12 +91,36 @@ export function SemanticMap({
           onPointerMove={handlePointerMove}
           onPointerLeave={() => onGuessHover?.(null)}
         >
-          <rect x="1" y="1" width="318" height="318" rx="12" className="map-surface" />
-          {[42, 84, 126].map((radius) => (
-            <circle key={radius} cx="160" cy="160" r={radius} className="map-ring" />
+          {versus ? (
+            <g className="map-versus-target-field" aria-hidden="true">
+              <circle cx="160" cy="160" r="28" className="map-ring" />
+              <line x1="160" y1="122" x2="160" y2="144" className="map-axis" />
+              <line x1="160" y1="176" x2="160" y2="198" className="map-axis" />
+              <line x1="122" y1="160" x2="144" y2="160" className="map-axis" />
+              <line x1="176" y1="160" x2="198" y2="160" className="map-axis" />
+            </g>
+          ) : (
+            <>
+              <rect x="1" y="1" width="318" height="318" rx="12" className="map-surface" />
+              {[42, 84, 126].map((radius) => (
+                <circle key={radius} cx="160" cy="160" r={radius} className="map-ring" />
+              ))}
+              <line x1="160" y1="25" x2="160" y2="295" className="map-axis" />
+              <line x1="25" y1="160" x2="295" y2="160" className="map-axis" />
+            </>
+          )}
+
+          {opponentPoints.map((point) => (
+            <circle
+              key={`opponent-${point.id}`}
+              cx={point.position.x * SIZE}
+              cy={point.position.y * SIZE}
+              r={point.isHint ? 2.5 : 2}
+              className="map-dot map-dot-opponent"
+              style={{ fill: opponentTeamColor }}
+              aria-hidden="true"
+            />
           ))}
-          <line x1="160" y1="25" x2="160" y2="295" className="map-axis" />
-          <line x1="25" y1="160" x2="295" y2="160" className="map-axis" />
 
           {plotted.map((guess) => {
             const x = pointX(guess);
@@ -97,7 +132,7 @@ export function SemanticMap({
                 cy={y}
                 r={guess.correct ? 4.5 : guess.isHint ? 2.75 : 2.25}
                 className={guess.isHint ? "map-dot map-dot-hint" : "map-dot"}
-                style={{ fill: playerColor(guess.colorIndex, guess.playerId) }}
+                style={{ fill: versus ? ownTeamColor : playerColor(guess.colorIndex, guess.playerId) }}
               />
             );
           })}
@@ -116,7 +151,7 @@ export function SemanticMap({
                 cy={pointY(hoveredGuess)}
                 r="7"
                 className="map-active-ring"
-                style={{ stroke: playerColor(hoveredGuess.colorIndex, hoveredGuess.playerId) }}
+                style={{ stroke: versus ? ownTeamColor : playerColor(hoveredGuess.colorIndex, hoveredGuess.playerId) }}
               />
               <rect
                 x={tooltipX - tooltipWidth / 2}
