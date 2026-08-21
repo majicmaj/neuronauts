@@ -351,7 +351,7 @@
     display: grid;
     gap: 0.75rem;
     border-bottom: 1px solid var(--line);
-    padding: 0.85rem 0.25rem;
+    padding: 0.85rem 1rem;
   }
 
   .guess-row:last-child {
@@ -368,6 +368,30 @@
 
   .guess-row-correct {
     background: var(--accent-soft);
+  }
+
+  .latest-guess {
+    animation: latest-guess-arrive 360ms cubic-bezier(0.2, 0.78, 0.3, 1);
+  }
+
+  .latest-guess-heading {
+    display: flex;
+    min-height: 3.25rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    border-bottom: 1px solid var(--line);
+    padding: 0.7rem 1rem;
+  }
+
+  .latest-guess-recall {
+    color: var(--muted);
+    font-size: 0.7rem;
+    font-weight: 700;
+  }
+
+  .latest-guess .guess-row {
+    border-bottom: 0;
   }
 
   .guess-word {
@@ -729,57 +753,216 @@
 
   .mission-debrief {
     display: grid;
-    gap: 1rem;
+    gap: 1.5rem;
     padding-bottom: 3rem;
   }
 
-  .debrief-hero {
+  .debrief-stage {
+    position: relative;
+    isolation: isolate;
     overflow: hidden;
     border: 1px solid var(--debrief-line);
     border-radius: 14px;
     background: var(--debrief);
     color: var(--debrief-ink);
+    box-shadow: 0 18px 44px rgb(7 26 22 / 0.18);
   }
 
-  .debrief-hero-main {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.5rem;
+  .debrief-stage::before,
+  .debrief-stage::after {
+    position: absolute;
+    z-index: -1;
+    border: 1px solid color-mix(in srgb, var(--grade-color) 30%, transparent);
+    border-radius: 50%;
+    content: "";
+    pointer-events: none;
+  }
+
+  .debrief-stage::before {
+    top: -13rem;
+    right: -8rem;
+    width: 30rem;
+    height: 30rem;
+  }
+
+  .debrief-stage::after {
+    top: -7rem;
+    right: -2rem;
+    width: 18rem;
+    height: 18rem;
+  }
+
+  .debrief-grade-lock {
+    display: grid;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.25rem;
+  }
+
+  .debrief-grade-mark {
+    display: grid;
+    width: min(11rem, 54vw);
+    aspect-ratio: 1;
+    place-items: center;
+    justify-self: center;
+    border: 2px solid color-mix(in srgb, var(--grade-color) 72%, white);
+    background: var(--grade-color);
+    clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
+    color: #10251f;
+    filter: drop-shadow(0 14px 18px rgb(4 18 15 / 0.26));
+    animation: debrief-grade-land 620ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+
+  .debrief-grade-column {
+    display: grid;
+    justify-items: center;
+    gap: 0.45rem;
+  }
+
+  .debrief-grade-help {
+    width: min(12rem, 70vw);
+    color: var(--debrief-muted);
+    font-size: 0.75rem;
+    line-height: 1.45;
+    text-align: center;
+  }
+
+  .debrief-grade-help summary {
+    min-height: 2.75rem;
+    cursor: pointer;
+    align-content: center;
+    color: color-mix(in srgb, var(--grade-color) 65%, var(--debrief-ink));
+    font-weight: 800;
+  }
+
+  .debrief-grade-help summary:hover {
+    color: var(--grade-color);
+  }
+
+  .debrief-grade-help p {
+    padding: 0.15rem 0 0.4rem;
+  }
+
+  .debrief-grade-mark span {
+    align-self: end;
+    font-size: 0.72rem;
+    font-weight: 900;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .debrief-grade-mark strong {
+    margin-block: -0.4rem -0.65rem;
+    font-size: clamp(5rem, 20vw, 7.5rem);
+    font-weight: 1000;
+    letter-spacing: -0.04em;
+    line-height: 1;
+  }
+
+  .debrief-grade-mark small {
+    align-self: start;
+    font-size: 0.75rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .debrief-lock-copy {
+    min-width: 0;
+    text-align: center;
   }
 
   .debrief-target-icon {
-    flex: none;
-    color: #7de3cd;
+    margin: 0 auto 0.65rem;
+    color: var(--grade-color);
   }
 
   .debrief-title {
-    max-width: 18ch;
-    font-size: clamp(1.8rem, 5vw, 3.75rem);
+    max-width: 20ch;
+    margin-inline: auto;
+    font-size: clamp(2rem, 6vw, 4.6rem);
     font-weight: 900;
     letter-spacing: -0.035em;
-    line-height: 1.02;
+    line-height: 0.98;
     text-wrap: balance;
   }
 
   .debrief-target {
     display: inline-block;
-    color: #7de3cd;
+    color: var(--grade-color);
     animation: debrief-lock 560ms cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
-  .debrief-hero-main p {
-    max-width: 62ch;
-    margin-top: 0.75rem;
+  .debrief-winner-line {
+    max-width: 55ch;
+    margin: 0.85rem auto 0;
     color: var(--debrief-muted);
     line-height: 1.55;
   }
 
+  .debrief-winner-line strong {
+    color: var(--debrief-ink);
+  }
+
+  .debrief-grade-verdict {
+    max-width: 54ch;
+    margin: 0.6rem auto 0;
+    color: color-mix(in srgb, var(--grade-color) 58%, var(--debrief-ink));
+    line-height: 1.5;
+  }
+
+  .debrief-grade-verdict strong {
+    color: var(--grade-color);
+  }
+
+  .debrief-grade-factors {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    border-block: 1px solid var(--debrief-line);
+  }
+
+  .debrief-grade-factors > div {
+    min-width: 0;
+    padding: 0.85rem 0.6rem 0.95rem;
+    border-right: 1px solid var(--debrief-line);
+    text-align: center;
+  }
+
+  .debrief-grade-factors > div:last-child {
+    border-right: 0;
+  }
+
+  .debrief-grade-factors dt {
+    color: var(--debrief-muted);
+    font-size: 0.65rem;
+    font-weight: 900;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+  }
+
+  .debrief-grade-factors dd {
+    margin-top: 0.2rem;
+    color: var(--debrief-ink);
+    font-size: clamp(1.1rem, 4vw, 1.55rem);
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+    line-height: 1.1;
+  }
+
+  .debrief-grade-factors span {
+    display: block;
+    margin-top: 0.25rem;
+    overflow: hidden;
+    color: color-mix(in srgb, var(--grade-color) 48%, var(--debrief-muted));
+    font-size: 0.7rem;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   .debrief-actions {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
     gap: 0.65rem;
-    padding: 0 1.5rem 1.5rem;
+    padding: 1rem 1.25rem 1.25rem;
   }
 
   .debrief-new-mission,
@@ -798,14 +981,14 @@
   }
 
   .debrief-new-mission {
-    border: 1px solid #7de3cd;
-    background: #7de3cd;
+    border: 1px solid var(--grade-color);
+    background: var(--grade-color);
     color: #10251f;
   }
 
   .debrief-new-mission:hover {
-    border-color: #a7f1e1;
-    background: #a7f1e1;
+    border-color: color-mix(in srgb, var(--grade-color) 78%, white);
+    background: color-mix(in srgb, var(--grade-color) 78%, white);
   }
 
   .debrief-review-button {
@@ -816,100 +999,99 @@
 
   .debrief-review-button:hover {
     border-color: var(--debrief-muted);
-    color: #7de3cd;
+    color: var(--grade-color);
   }
 
-  .debrief-summary {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    border-top: 1px solid var(--debrief-line);
-  }
-
-  .debrief-summary > div {
-    min-width: 0;
-    padding: 0.85rem 1.5rem 1rem;
-    border-right: 1px solid var(--debrief-line);
-    border-bottom: 1px solid var(--debrief-line);
-  }
-
-  .debrief-summary > div:nth-child(2n) {
-    border-right: 0;
-  }
-
-  .debrief-summary > div:nth-last-child(-n + 2) {
-    border-bottom: 0;
-  }
-
-  .debrief-summary dt,
-  .debrief-player-numbers dt {
-    color: var(--debrief-muted);
-    font-size: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-  }
-
-  .debrief-summary dd {
-    margin-top: 0.15rem;
-    font-size: 1.35rem;
-    font-weight: 900;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .debrief-section {
-    overflow: hidden;
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: var(--surface);
-  }
-
-  .debrief-section-heading {
+  .debrief-roster-heading {
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
-    padding: 1.15rem 1.25rem;
-    border-bottom: 1px solid var(--line-strong);
+    margin-bottom: 1.1rem;
     color: var(--accent);
   }
 
-  .debrief-section-heading h2 {
+  .debrief-roster-heading h2 {
     color: var(--ink);
-    font-size: 1.2rem;
+    font-size: clamp(1.45rem, 4vw, 2.1rem);
     font-weight: 900;
-    letter-spacing: -0.02em;
+    letter-spacing: -0.025em;
   }
 
-  .debrief-section-heading p {
+  .debrief-roster-heading p {
     margin-top: 0.2rem;
     color: var(--muted);
     font-size: 0.875rem;
   }
 
-  .debrief-player {
+  .debrief-player-grid {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15.5rem), 1fr));
+    align-items: stretch;
     gap: 1rem;
-    padding: 1.1rem 1.25rem;
-    border-bottom: 1px solid var(--line);
   }
 
-  .debrief-player:last-child {
-    border-bottom: 0;
-  }
-
-  .debrief-player-identity {
+  .debrief-player-card {
+    position: relative;
     display: flex;
+    overflow: hidden;
     min-width: 0;
-    align-items: center;
-    gap: 0.75rem;
+    flex-direction: column;
+    border: 1px solid color-mix(in srgb, var(--crew-color) 38%, var(--line));
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 12px 28px rgb(17 24 21 / 0.1);
   }
 
-  .debrief-avatar {
-    width: 3.25rem;
-    height: 3.25rem;
-    flex: none;
-    border: 1px solid color-mix(in srgb, var(--crew-color) 45%, var(--line));
-    border-radius: 12px;
+  .debrief-player-card.is-winner {
+    border-color: var(--crew-color);
+  }
+
+  .debrief-player-stage {
+    position: relative;
+    display: grid;
+    min-height: 13rem;
+    place-items: end center;
+    overflow: hidden;
+    background: color-mix(in srgb, var(--crew-color) 17%, var(--surface-subtle));
+    border-bottom: 1px solid color-mix(in srgb, var(--crew-color) 42%, var(--line));
+  }
+
+  .debrief-player-stage::before {
+    position: absolute;
+    bottom: 1rem;
+    width: 72%;
+    height: 1.2rem;
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--crew-color) 24%, transparent);
+    filter: blur(10px);
+    content: "";
+  }
+
+  .debrief-player-result {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    z-index: 2;
+    border-radius: 999px;
+    background: var(--surface);
+    padding: 0.3rem 0.55rem;
+    color: var(--crew-color);
+    font-size: 0.68rem;
+    font-weight: 900;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    box-shadow: 0 5px 12px rgb(17 24 21 / 0.12);
+  }
+
+  .debrief-card-avatar {
+    position: relative;
+    z-index: 1;
+    width: 12rem;
+    height: 12rem;
+    max-width: 86%;
+    border-radius: 0;
+    background-color: transparent;
   }
 
   .debrief-you {
@@ -923,145 +1105,156 @@
     text-transform: uppercase;
   }
 
-  .debrief-callsign {
-    margin-top: 0.1rem;
-    color: var(--crew-color);
-    font-size: 0.875rem;
-    font-weight: 800;
+  .debrief-player-heading {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 1rem 1rem 0.85rem;
   }
 
-  .debrief-player-numbers {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 0.75rem 1rem;
-  }
-
-  .debrief-player-numbers dt {
-    color: var(--muted);
-  }
-
-  .debrief-player-numbers dd {
-    margin-top: 0.1rem;
-    font-size: 1rem;
-    font-weight: 900;
-    font-variant-numeric: tabular-nums;
-  }
-
-  .debrief-player-numbers span {
-    display: block;
+  .debrief-player-heading h3 {
+    min-width: 0;
     overflow: hidden;
-    color: var(--muted);
-    font-size: 0.75rem;
+    font-size: 1.15rem;
+    font-weight: 900;
+    letter-spacing: -0.02em;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .debrief-player-footnote {
-    color: var(--muted);
-    font-size: 0.78rem;
-    line-height: 1.45;
+  .debrief-card-awards {
+    display: grid;
+    align-content: start;
+    padding: 0 1rem;
   }
 
-  .debrief-superlative-list {
-    display: grid;
-  }
-
-  .debrief-superlative-person {
-    display: grid;
-    gap: 1rem;
-    padding: 1.1rem 1.25rem;
+  .debrief-card-award {
+    position: relative;
     border-bottom: 1px solid var(--line);
   }
 
-  .debrief-superlative-person:last-child {
+  .debrief-card-award:last-child {
     border-bottom: 0;
   }
 
-  .debrief-superlative-identity {
-    display: flex;
-    min-width: 0;
-    align-items: center;
-    gap: 0.75rem;
-  }
-
-  .debrief-superlative-identity h3 {
-    font-weight: 900;
-    letter-spacing: -0.01em;
-  }
-
-  .debrief-superlative-identity p {
-    margin-top: 0.1rem;
-    color: var(--crew-color);
-    font-size: 0.75rem;
-    font-weight: 800;
-  }
-
-  .debrief-award-list {
-    min-width: 0;
-    border-top: 1px solid var(--line);
-  }
-
-  .debrief-award-citation {
-    border-bottom: 1px solid var(--line);
-  }
-
-  .debrief-award-citation:last-child {
-    border-bottom: 0;
-  }
-
-  .debrief-award-citation > button {
+  .debrief-card-award > button {
     display: grid;
     width: 100%;
-    min-height: 2.75rem;
+    min-height: 2.8rem;
     cursor: pointer;
     border: 0;
     background: transparent;
     grid-template-columns: auto minmax(0, 1fr);
     align-items: center;
     gap: 0.65rem;
-    padding: 0.6rem 0;
+    padding: 0.55rem 0;
     color: var(--ink);
     font: inherit;
     text-align: left;
   }
 
-  .debrief-award-citation > button:focus-visible {
+  .debrief-card-award > button:focus-visible {
     border-radius: 6px;
     outline: 2px solid var(--crew-color);
     outline-offset: 3px;
   }
 
-  .debrief-award-icon {
+  .debrief-card-award > button > svg {
     color: var(--crew-color);
   }
 
-  .debrief-award-title {
+  .debrief-card-award > button > span {
     min-width: 0;
+  }
+
+  .debrief-card-award strong,
+  .debrief-card-award small {
+    display: block;
     overflow: hidden;
-    font-size: 0.875rem;
-    font-weight: 900;
-    letter-spacing: -0.01em;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
 
-  .debrief-award-metric {
-    grid-column: 2;
+  .debrief-card-award strong {
+    font-size: 0.8rem;
+    font-weight: 900;
+    letter-spacing: -0.01em;
+  }
+
+  .debrief-card-award small {
+    margin-top: 0.05rem;
     color: var(--muted);
     font-size: 0.72rem;
     font-weight: 700;
   }
 
-  .debrief-award-detail {
-    max-width: 70ch;
-    padding: 0 0 0.85rem 1.9rem;
-    color: var(--muted);
-    font-size: 0.8rem;
+  .debrief-card-award-detail {
+    position: absolute;
+    top: calc(100% - 0.2rem);
+    left: 0;
+    z-index: 6;
+    width: min(16rem, calc(100vw - 3.5rem));
+    border: 1px solid color-mix(in srgb, var(--crew-color) 42%, var(--line));
+    border-radius: 10px;
+    background: var(--surface);
+    padding: 0.7rem 0.8rem;
+    color: var(--ink);
+    font-size: 0.75rem;
     line-height: 1.5;
+    box-shadow: 0 10px 24px rgb(17 24 21 / 0.18);
   }
 
-  .debrief-award-citation:not([data-open="true"]) > .debrief-award-detail {
+  .debrief-card-award:not([data-open="true"]) > .debrief-card-award-detail {
     display: none;
+  }
+
+  .debrief-card-stats {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: auto;
+    border-top: 1px solid var(--line-strong);
+    background: var(--surface-subtle);
+  }
+
+  .debrief-card-stats > div {
+    min-width: 0;
+    padding: 0.65rem 0.85rem;
+  }
+
+  .debrief-card-stats dt {
+    color: var(--muted);
+    font-size: 0.65rem;
+    font-weight: 850;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .debrief-card-stats dd {
+    margin-top: 0.1rem;
+    font-size: 1rem;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .debrief-card-stats span {
+    display: block;
+    overflow: hidden;
+    color: var(--crew-color);
+    font-size: 0.68rem;
+    font-weight: 750;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .debrief-card-footnote {
+    padding: 0.45rem 0.85rem 0.65rem;
+    background: var(--surface-subtle);
+    color: var(--muted);
+    font-size: 0.72rem;
+    line-height: 1.4;
+    text-align: center;
   }
 
   .debrief-return-button {
@@ -1087,6 +1280,20 @@
   }
 }
 
+@keyframes debrief-grade-land {
+  from {
+    clip-path: polygon(50% 12%, 88% 18%, 94% 50%, 88% 82%, 50% 88%, 12% 82%, 6% 50%, 12% 18%);
+    filter: blur(5px) drop-shadow(0 3px 5px rgb(4 18 15 / 0.08));
+    transform: scale(1.08) rotate(-3deg);
+  }
+
+  to {
+    clip-path: polygon(18% 0, 82% 0, 100% 18%, 100% 82%, 82% 100%, 18% 100%, 0 82%, 0 18%);
+    filter: blur(0) drop-shadow(0 14px 18px rgb(4 18 15 / 0.26));
+    transform: scale(1) rotate(0);
+  }
+}
+
 @keyframes mission-orbit {
   to {
     transform: rotate(360deg);
@@ -1103,6 +1310,20 @@
   30% {
     opacity: 1;
     transform: translateY(-0.14rem);
+  }
+}
+
+@keyframes latest-guess-arrive {
+  from {
+    clip-path: inset(0 0 12% 0 round 14px);
+    opacity: 0.72;
+    transform: translateY(-0.25rem);
+  }
+
+  to {
+    clip-path: inset(0 round 14px);
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -1229,60 +1450,69 @@
     align-items: center;
   }
 
-  .debrief-summary {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .debrief-grade-lock {
+    grid-template-columns: 10.5rem minmax(0, 1fr);
+    gap: 2rem;
+    padding: 2rem;
   }
 
-  .debrief-summary > div,
-  .debrief-summary > div:nth-child(2n) {
-    border-right: 1px solid var(--debrief-line);
-    border-bottom: 0;
+  .debrief-grade-mark {
+    width: 10.5rem;
   }
 
-  .debrief-summary > div:last-child {
-    border-right: 0;
+  .debrief-grade-column {
+    align-self: center;
   }
 
-  .debrief-player {
-    grid-template-columns: minmax(11rem, 1.2fr) minmax(20rem, 2fr);
-    align-items: center;
+  .debrief-lock-copy {
+    text-align: left;
   }
 
-  .debrief-player-numbers {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+  .debrief-target-icon,
+  .debrief-title,
+  .debrief-winner-line,
+  .debrief-grade-verdict {
+    margin-inline: 0;
   }
 
-  .debrief-player-footnote {
-    grid-column: 2;
+  .debrief-actions {
+    display: flex;
+    justify-content: flex-end;
+    padding: 1.25rem 2rem 1.5rem;
   }
+}
 
-  .debrief-superlative-person {
-    grid-template-columns: minmax(11rem, 1.2fr) minmax(20rem, 2fr);
-    align-items: start;
+@media (min-width: 1280px) {
+  .debrief-player-grid {
+    grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
   }
 }
 
 @media (min-width: 900px) {
-  .debrief-hero {
+  .debrief-stage {
     display: grid;
     grid-template-columns: minmax(0, 1fr) auto;
   }
 
-  .debrief-hero-main {
+  .debrief-grade-lock {
     grid-column: 1;
-    padding: 2rem;
+    grid-row: 1;
   }
 
   .debrief-actions {
     grid-column: 2;
+    grid-row: 1;
     align-content: center;
     align-items: stretch;
     flex-direction: column;
+    justify-content: center;
+    min-width: 13.5rem;
     padding: 2rem;
   }
 
-  .debrief-summary {
+  .debrief-grade-factors {
     grid-column: 1 / -1;
+    grid-row: 2;
   }
 }
 
