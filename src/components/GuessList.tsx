@@ -8,7 +8,7 @@ interface GuessListProps {
   players: Player[];
   featuredGuess?: GuessResult | null;
   featuredGuessVersion?: number;
-  featuredGuessIsRecall?: boolean;
+  featuredGuessNotice?: string | null;
   onGuessHover?: (guessId: string | null) => void;
 }
 
@@ -19,7 +19,7 @@ export function GuessList({
   players,
   featuredGuess,
   featuredGuessVersion = 0,
-  featuredGuessIsRecall = false,
+  featuredGuessNotice,
   onGuessHover,
 }: GuessListProps) {
   const [sort, setSort] = useState<SortMode>("similarity");
@@ -55,8 +55,8 @@ export function GuessList({
               <MissionGlyph name="signal" className="h-6 w-6 text-teal-700 dark:text-teal-300" />
               <h2 id="latest-guess-title" className="font-semibold">Latest guess</h2>
             </div>
-            {featuredGuessIsRecall && (
-              <span className="latest-guess-recall">Already guessed</span>
+            {featuredGuessNotice && (
+              <span className="latest-guess-recall">{featuredGuessNotice}</span>
             )}
           </div>
           <GuessItem

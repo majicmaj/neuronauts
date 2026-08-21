@@ -385,9 +385,12 @@
   }
 
   .latest-guess-recall {
+    max-width: min(65%, 30rem);
     color: var(--muted);
     font-size: 0.7rem;
     font-weight: 700;
+    line-height: 1.3;
+    text-align: right;
   }
 
   .latest-guess .guess-row {
@@ -1225,12 +1228,12 @@
   }
 
   .debrief-card-award-detail {
-    position: absolute;
-    top: calc(100% - 0.2rem);
-    left: 0;
-    z-index: 6;
-    width: min(16rem, calc(100vw - 3.5rem));
-    border: 1px solid color-mix(in srgb, var(--crew-color) 42%, var(--line));
+    position: fixed;
+    z-index: 100;
+    max-height: calc(100dvh - 1.5rem);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--line));
     border-radius: 10px;
     background: var(--surface);
     padding: 0.7rem 0.8rem;
@@ -1238,10 +1241,6 @@
     font-size: 0.75rem;
     line-height: 1.5;
     box-shadow: 0 10px 24px rgb(17 24 21 / 0.18);
-  }
-
-  .debrief-card-award:not([data-open="true"]) > .debrief-card-award-detail {
-    display: none;
   }
 
   .debrief-card-stats {

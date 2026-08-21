@@ -59,6 +59,11 @@ export default function GuessItem({
             {guess.isHint ? `${playerName} called the navigator` : `guessed by ${playerName}`}
             {guess.hintFrom ? ` · halfway from “${guess.hintFrom}”` : ""}
           </p>
+          {guess.submittedGuess && (
+            <p className="truncate text-xs text-zinc-500 dark:text-zinc-400">
+              Entered as “{guess.submittedGuess}”
+            </p>
+          )}
         </div>
       </div>
 

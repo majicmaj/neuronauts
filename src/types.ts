@@ -6,6 +6,9 @@ export interface VectorPosition {
 export interface GuessResult {
   id: string;
   guess: string;
+  conceptKey?: string;
+  submittedGuess?: string;
+  transformation?: GuessTransformation | null;
   similarity: number;
   cosineSimilarity?: number;
   rank?: number;
@@ -21,6 +24,28 @@ export interface GuessResult {
   position: VectorPosition;
   targetWord?: string;
   hintAvailableAt?: string;
+}
+
+export type GuessTransformation =
+  | "spelling-variant"
+  | "plural"
+  | "participle"
+  | "past"
+  | "agreement"
+  | "comparison"
+  | "irregular"
+  | "inflection";
+
+export interface GuessSubmissionResponse {
+  ok: boolean;
+  result?: GuessResult;
+  error?: string;
+  code?: string;
+  submittedGuess?: string;
+  resolvedGuess?: string;
+  transformed?: boolean;
+  transformation?: GuessTransformation | null;
+  existingResult?: GuessResult | null;
 }
 
 export interface Player {

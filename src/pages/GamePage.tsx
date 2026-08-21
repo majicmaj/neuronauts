@@ -13,15 +13,17 @@ import {
   savePreferredPlayerName,
   socket,
 } from "@/lib/socket";
+import { presentGuessSubmission } from "@/lib/guessSubmission";
 import type {
   ActionError,
   GameState,
   GuessResult,
+  GuessSubmissionResponse,
   LobbyPayload,
   Player,
   RematchState,
 } from "@/types";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EMPTY_GAME: GameState = {
@@ -51,11 +53,10 @@ export function GamePage() {
   const [hoveredGuessId, setHoveredGuessId] = useState<string | null>(null);
   const [featuredGuessId, setFeaturedGuessId] = useState<string | null>(null);
   const [featuredGuessVersion, setFeaturedGuessVersion] = useState(0);
-  const [featuredGuessIsRecall, setFeaturedGuessIsRecall] = useState(false);
+  const [featuredGuessNotice, setFeaturedGuessNotice] = useState<string | null>(null);
   const [postGameView, setPostGameView] = useState<"recap" | "flight-log">("recap");
   const [rematch, setRematch] = useState<RematchState | null>(null);
   const [playAgainBusy, setPlayAgainBusy] = useState(false);
-  const pendingGuess = useRef<string | null>(null);
 
   useEffect(() => {
     if (!lobbyId) return;
@@ -82,7 +83,7 @@ export function GamePage() {
           .reverse()
           .find((guess) => guess.playerId === self.participantId);
         setFeaturedGuessId(latestOwnGuess?.id || null);
-        setFeaturedGuessIsRecall(false);
+        setFeaturedGuessNotice(null);
       }
     };
     const onGameReady = (state: GameState) => setGameState(state);
@@ -100,12 +101,6 @@ export function GamePage() {
       navigate(`/game/${payload.lobbyId}`);
     };
     const onGuessResult = (result: GuessResult) => {
-      if (pendingGuess.current === result.guess) {
-        pendingGuess.current = null;
-        setFeaturedGuessId(result.id);
-        setFeaturedGuessIsRecall(false);
-        setFeaturedGuessVersion((version) => version + 1);
-      }
       setGameState((previous) => {
         if (previous.guessHistory.some((guess) => guess.id === result.id)) {
           return previous;
@@ -141,7 +136,6 @@ export function GamePage() {
       setClock(Date.now());
     };
     const onActionError = (error: ActionError) => {
-      pendingGuess.current = null;
       setPlayAgainBusy(false);
       setActionError(error.message);
       if (error.hintAvailableAt) {
@@ -250,21 +244,30 @@ export function GamePage() {
 
   const submitGuess = (rawGuess: string) => {
     const guess = rawGuess.trim().toLowerCase();
-    const existingGuess = gameState.guessHistory.find(
-      (entry) => entry.guess === guess
-    );
-
     setActionError(null);
-    if (existingGuess) {
-      pendingGuess.current = null;
-      setFeaturedGuessId(existingGuess.id);
-      setFeaturedGuessIsRecall(true);
-      setFeaturedGuessVersion((version) => version + 1);
-      return;
-    }
+    socket.timeout(5_000).emit(
+      "guess",
+      { lobbyId, guess },
+      (timeoutError: Error | null, response?: GuessSubmissionResponse) => {
+        if (timeoutError || !response) {
+          setActionError("The signal timed out. Try that guess again.");
+          return;
+        }
 
-    pendingGuess.current = guess;
-    socket.emit("guess", { lobbyId, guess });
+        const presentation = presentGuessSubmission(response);
+        const result = presentation.result;
+        if (result) {
+          setFeaturedGuessId(result.id);
+          setFeaturedGuessVersion((version) => version + 1);
+        }
+
+        setFeaturedGuessNotice(presentation.notice);
+        if (presentation.error) {
+          setActionError(presentation.error);
+          return;
+        }
+      }
+    );
   };
 
   const playAgain = () => {
@@ -403,7 +406,7 @@ export function GamePage() {
                   players={players}
                   featuredGuess={featuredGuess}
                   featuredGuessVersion={featuredGuessVersion}
-                  featuredGuessIsRecall={featuredGuessIsRecall}
+                  featuredGuessNotice={featuredGuessNotice}
                   onGuessHover={setHoveredGuessId}
                 />
               </div>
