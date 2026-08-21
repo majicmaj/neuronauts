@@ -1,8 +1,21 @@
 import { AVATARS, assignUniqueAvatarIds, type AvatarId } from "@/lib/avatars";
+import {
+  positionFloatingDisclosure,
+  type FloatingPosition,
+} from "@/lib/floatingDisclosure";
 import { calculateMissionGrade, type MissionGradeLetter } from "@/lib/missionGrade";
 import { playerColor } from "@/lib/playerColors";
 import type { GameState, PlayerRecap, RecapAward, RematchState } from "@/types";
-import { useId, useState, type CSSProperties } from "react";
+import {
+  useCallback,
+  useEffect,
+  useId,
+  useLayoutEffect,
+  useRef,
+  useState,
+  type CSSProperties,
+} from "react";
+import { createPortal } from "react-dom";
 import { AwardIcon } from "./AwardIcon";
 import { MissionGlyph } from "./MissionGlyph";
 import { PlayAgainButton } from "./PlayAgainButton";
@@ -102,10 +115,65 @@ function coolestAwards(player: PlayerRecap, awards: RecapAward[]): Citation[] {
 
 function AwardCitation({ award }: { award: Citation }) {
   const detailId = useId();
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const detailRef = useRef<HTMLParagraphElement>(null);
   const [isPinned, setIsPinned] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [isFocused, setIsFocused] = useState(false);
+  const [position, setPosition] = useState<FloatingPosition | null>(null);
   const isOpen = isPinned || isHovered || isFocused;
+
+  const updatePosition = useCallback(() => {
+    const button = buttonRef.current;
+    if (!button) return;
+    const anchor = button.getBoundingClientRect();
+    const detail = detailRef.current?.getBoundingClientRect();
+    setPosition(positionFloatingDisclosure(
+      anchor,
+      { width: detail?.width || 256, height: detail?.height || 0 },
+      { width: window.innerWidth, height: window.innerHeight }
+    ));
+  }, []);
+
+  useLayoutEffect(() => {
+    if (!isOpen) {
+      setPosition(null);
+      return;
+    }
+    updatePosition();
+  }, [isOpen, position?.width, updatePosition]);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const reposition = () => updatePosition();
+    window.addEventListener("resize", reposition);
+    window.addEventListener("scroll", reposition, true);
+    return () => {
+      window.removeEventListener("resize", reposition);
+      window.removeEventListener("scroll", reposition, true);
+    };
+  }, [isOpen, updatePosition]);
+
+  useEffect(() => {
+    if (!isPinned) return;
+    const dismiss = (event: PointerEvent) => {
+      const target = event.target as Node;
+      if (
+        buttonRef.current?.contains(target) ||
+        detailRef.current?.contains(target)
+      ) return;
+      setIsPinned(false);
+      setIsFocused(false);
+    };
+    document.addEventListener("pointerdown", dismiss, true);
+    return () => document.removeEventListener("pointerdown", dismiss, true);
+  }, [isPinned]);
+
+  const closeDisclosure = () => {
+    setIsPinned(false);
+    setIsHovered(false);
+    setIsFocused(false);
+  };
 
   return (
     <div
@@ -119,11 +187,21 @@ function AwardCitation({ award }: { award: Citation }) {
       }}
     >
       <button
+        ref={buttonRef}
         type="button"
         aria-controls={detailId}
         aria-expanded={isOpen}
-        aria-describedby={detailId}
-        onClick={() => setIsPinned((open) => !open)}
+        aria-describedby={isOpen ? detailId : undefined}
+        onClick={() => {
+          setIsPinned((open) => {
+            if (open) setIsFocused(false);
+            return !open;
+          });
+        }}
+        onKeyDown={(event) => {
+          if (event.key !== "Escape") return;
+          closeDisclosure();
+        }}
       >
         <AwardIcon awardId={award.id} />
         <span>
@@ -131,9 +209,23 @@ function AwardCitation({ award }: { award: Citation }) {
           <small>{award.metricLabel}</small>
         </span>
       </button>
-      <p id={detailId} className="debrief-card-award-detail">
-        {award.description}
-      </p>
+      {isOpen && typeof document !== "undefined" && createPortal(
+        <p
+          ref={detailRef}
+          id={detailId}
+          role="tooltip"
+          className="debrief-card-award-detail"
+          data-placement={position?.placement || "below"}
+          style={position ? {
+            left: position.left,
+            top: position.top,
+            width: position.width,
+          } : undefined}
+        >
+          {award.description}
+        </p>,
+        document.body
+      )}
     </div>
   );
 }
