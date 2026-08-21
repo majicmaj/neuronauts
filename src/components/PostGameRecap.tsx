@@ -1,7 +1,8 @@
 import { playerColor } from "@/lib/playerColors";
-import type { GameState, PlayerRecap } from "@/types";
-import type { CSSProperties } from "react";
+import type { GameState, PlayerRecap, RecapAward } from "@/types";
+import { useId, useState, type CSSProperties } from "react";
 import { MissionGlyph } from "./MissionGlyph";
+import { PlayerAvatar } from "./PlayerAvatar";
 
 interface PostGameRecapProps {
   gameState: GameState;
@@ -27,9 +28,7 @@ function PlayerStats({ player, isSelf }: { player: PlayerRecap; isSelf: boolean 
   return (
     <article className="debrief-player" style={{ "--crew-color": color } as CSSProperties}>
       <div className="debrief-player-identity">
-        <span className="debrief-avatar" aria-hidden="true">
-          {player.playerName.slice(0, 1).toUpperCase()}
-        </span>
+        <PlayerAvatar avatarId={player.avatarId} className="debrief-avatar" decorative />
         <div className="min-w-0">
           <div className="flex min-w-0 items-center gap-2">
             <h3 className="truncate font-extrabold">{player.playerName}</h3>
@@ -70,6 +69,78 @@ function PlayerStats({ player, isSelf }: { player: PlayerRecap; isSelf: boolean 
           </>
         )}
       </p>
+    </article>
+  );
+}
+
+type Citation = Pick<RecapAward, "title" | "metricLabel" | "description">;
+
+function AwardCitation({ award }: { award: Citation }) {
+  const detailId = useId();
+  const [isOpen, setIsOpen] = useState(false);
+
+  return (
+    <div className="debrief-award-citation" data-open={isOpen}>
+      <button
+        type="button"
+        aria-controls={detailId}
+        aria-expanded={isOpen}
+        aria-describedby={detailId}
+        onClick={() => setIsOpen((open) => !open)}
+      >
+        <MissionGlyph name="award" className="debrief-award-icon h-5 w-5" />
+        <span className="debrief-award-title">{award.title}</span>
+        <span className="debrief-award-metric">{award.metricLabel}</span>
+      </button>
+      <p id={detailId} className="debrief-award-detail">{award.description}</p>
+    </div>
+  );
+}
+
+function PlayerAwards({
+  player,
+  awards,
+  isSelf,
+}: {
+  player: PlayerRecap;
+  awards: RecapAward[];
+  isSelf: boolean;
+}) {
+  const color = playerColor(player.colorIndex, player.playerId);
+
+  return (
+    <article
+      className="debrief-superlative-person"
+      style={{ "--crew-color": color } as CSSProperties}
+    >
+      <div className="debrief-superlative-identity">
+        <PlayerAvatar avatarId={player.avatarId} className="debrief-avatar" decorative />
+        <div className="min-w-0">
+          <div className="flex min-w-0 items-center gap-2">
+            <h3 className="truncate">{player.playerName}</h3>
+            {isSelf && <span className="debrief-you">you</span>}
+          </div>
+          <p>
+            {awards.length
+              ? `${awards.length} ${awards.length === 1 ? "distinction" : "distinctions"}`
+              : "Crew citation"}
+          </p>
+        </div>
+      </div>
+
+      <div className="debrief-award-list">
+        {awards.length ? (
+          awards.map((award) => <AwardCitation key={award.id} award={award} />)
+        ) : (
+          <AwardCitation
+            award={{
+              title: player.title,
+              metricLabel: "Crew citation",
+              description: player.titleDetail,
+            }}
+          />
+        )}
+      </div>
     </article>
   );
 }
@@ -142,20 +213,14 @@ export function PostGameRecap({
           </div>
           <MissionGlyph name="award" className="h-8 w-8" />
         </div>
-        <div className="debrief-awards">
-          {recap.awards.map((award) => (
-            <article
-              key={award.id}
-              className="debrief-award"
-              style={{ "--crew-color": playerColor(award.colorIndex, award.playerId) } as CSSProperties}
-            >
-              <span className="debrief-award-mark" aria-hidden="true" />
-              <div className="min-w-0">
-                <h3>{award.title}</h3>
-                <p className="debrief-award-owner">{award.playerName} · {award.metricLabel}</p>
-                <p>{award.description}</p>
-              </div>
-            </article>
+        <div className="debrief-superlative-list">
+          {recap.players.map((player) => (
+            <PlayerAwards
+              key={player.playerId}
+              player={player}
+              awards={recap.awards.filter((award) => award.playerId === player.playerId)}
+              isSelf={player.playerId === selfParticipantId}
+            />
           ))}
         </div>
       </section>

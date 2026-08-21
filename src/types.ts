@@ -16,6 +16,7 @@ export interface GuessResult {
   playerId: string;
   playerName: string;
   colorIndex?: number;
+  avatarId?: string | null;
   createdAt: string;
   position: VectorPosition;
   targetWord?: string;
@@ -28,6 +29,7 @@ export interface Player {
   name: string;
   joinedAt: string;
   colorIndex?: number;
+  avatarId?: string | null;
 }
 
 export interface Winner {
@@ -55,6 +57,7 @@ export interface PlayerRecap {
   playerId: string;
   playerName: string;
   colorIndex: number;
+  avatarId: string | null;
   guessCount: number;
   wrongGuessCount: number;
   hintCount: number;
@@ -98,6 +101,7 @@ export interface LobbyPayload {
   gameState: GameState;
   players: Player[];
   playerCount: number;
+  typingPlayerIds?: string[];
 }
 
 export interface ActionError {
