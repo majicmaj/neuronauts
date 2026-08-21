@@ -182,8 +182,15 @@ export function GamePage() {
   const bestGuess = useMemo(
     () =>
       gameState.guessHistory.reduce<GuessResult | null>(
-        (best, guess) =>
-          !best || guess.similarity > best.similarity ? guess : best,
+        (best, guess) => {
+          const isBetter = !best ||
+            guess.similarity > best.similarity ||
+            (
+              guess.similarity === best.similarity &&
+              (guess.cosineSimilarity ?? -1) > (best.cosineSimilarity ?? -1)
+            );
+          return isBetter ? guess : best;
+        },
         null
       ),
     [gameState.guessHistory]

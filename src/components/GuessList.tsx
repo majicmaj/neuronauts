@@ -16,7 +16,10 @@ export function GuessList({ guesses, players, onGuessHover }: GuessListProps) {
   const sorted = useMemo(() => {
     const copy = [...guesses];
     return sort === "similarity"
-      ? copy.sort((a, b) => b.similarity - a.similarity)
+      ? copy.sort((a, b) =>
+          b.similarity - a.similarity ||
+          (b.cosineSimilarity ?? -1) - (a.cosineSimilarity ?? -1)
+        )
       : copy.reverse();
   }, [guesses, sort]);
 
