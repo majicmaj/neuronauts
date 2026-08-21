@@ -81,6 +81,13 @@ export interface GameRecap {
   players: PlayerRecap[];
 }
 
+export interface RematchState {
+  lobbyId: string | null;
+  readyCount: number;
+  totalCount: number;
+  readyParticipantIds: string[];
+}
+
 export type GameStatus = "loading" | "playing" | "won" | "error";
 
 export interface GameState {
@@ -102,6 +109,7 @@ export interface LobbyPayload {
   players: Player[];
   playerCount: number;
   typingPlayerIds?: string[];
+  rematch?: RematchState | null;
 }
 
 export interface ActionError {

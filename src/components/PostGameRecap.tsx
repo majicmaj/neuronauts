@@ -1,19 +1,24 @@
 import { AVATARS, assignUniqueAvatarIds, type AvatarId } from "@/lib/avatars";
 import { calculateMissionGrade, type MissionGradeLetter } from "@/lib/missionGrade";
 import { playerColor } from "@/lib/playerColors";
-import type { GameState, PlayerRecap, RecapAward } from "@/types";
+import type { GameState, PlayerRecap, RecapAward, RematchState } from "@/types";
 import { useId, useState, type CSSProperties } from "react";
+import { AwardIcon } from "./AwardIcon";
 import { MissionGlyph } from "./MissionGlyph";
+import { PlayAgainButton } from "./PlayAgainButton";
 import { PlayerAvatar } from "./PlayerAvatar";
 
 interface PostGameRecapProps {
   gameState: GameState;
   selfParticipantId?: string;
-  onNewGame: () => void;
+  rematch: RematchState | null;
+  playAgainBusy: boolean;
+  playAgainDisabled: boolean;
+  onPlayAgain: () => void;
   onReviewFlightLog: () => void;
 }
 
-type Citation = Pick<RecapAward, "title" | "metricLabel" | "description">;
+type Citation = Pick<RecapAward, "id" | "title" | "metricLabel" | "description">;
 
 const GRADE_COLORS: Record<MissionGradeLetter, string> = {
   S: "#7de3cd",
@@ -35,6 +40,13 @@ const AWARD_PRIORITY: Record<string, number> = {
   "furthest-guess": 55,
   "most-hints": 50,
   "most-wrong": 45,
+};
+
+const FALLBACK_AWARD_IDS: Record<string, string> = {
+  "Cosmic Wildcard": "fallback-cosmic-wildcard",
+  "Backup Brain": "fallback-backup-brain",
+  "Dark Matter Department": "fallback-dark-matter",
+  "Moon-Shot Mechanic": "fallback-moon-shot",
 };
 
 function formatDuration(seconds: number | null) {
@@ -81,6 +93,7 @@ function coolestAwards(player: PlayerRecap, awards: RecapAward[]): Citation[] {
   return selected.length
     ? selected
     : [{
+        id: FALLBACK_AWARD_IDS[player.title] || "fallback",
         title: player.title,
         metricLabel: "Crew citation",
         description: player.titleDetail,
@@ -112,7 +125,7 @@ function AwardCitation({ award }: { award: Citation }) {
         aria-describedby={detailId}
         onClick={() => setIsPinned((open) => !open)}
       >
-        <MissionGlyph name="award" className="h-5 w-5" />
+        <AwardIcon awardId={award.id} />
         <span>
           <strong>{award.title}</strong>
           <small>{award.metricLabel}</small>
@@ -193,7 +206,10 @@ function PlayerResultCard({
 export function PostGameRecap({
   gameState,
   selfParticipantId,
-  onNewGame,
+  rematch,
+  playAgainBusy,
+  playAgainDisabled,
+  onPlayAgain,
   onReviewFlightLog,
 }: PostGameRecapProps) {
   const recap = gameState.recap;
@@ -269,9 +285,15 @@ export function PostGameRecap({
         </dl>
 
         <div className="debrief-actions">
-          <button onClick={onNewGame} className="debrief-new-mission">
-            New mission <MissionGlyph name="launch" className="h-6 w-6" />
-          </button>
+          <PlayAgainButton
+            rematch={rematch}
+            totalPlayers={recap.playerCount}
+            selfParticipantId={selfParticipantId}
+            busy={playAgainBusy}
+            disabled={playAgainDisabled}
+            className="debrief-new-mission"
+            onClick={onPlayAgain}
+          />
           <button onClick={onReviewFlightLog} className="debrief-review-button">
             Review flight log <MissionGlyph name="flight-log" className="h-6 w-6" />
           </button>
