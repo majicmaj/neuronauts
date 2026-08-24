@@ -2719,6 +2719,691 @@
   stroke-dasharray: 2 9;
 }
 
+/* VS live match: the scores and shared energy field lead; roster bays recede. */
+.vs-power-board {
+  --red-share: 50%;
+  --clash-position: clamp(5rem, var(--red-share), calc(100% - 5rem));
+  --clash-speed: 2.25s;
+  position: relative;
+  margin: 0 auto 1rem;
+  padding: 0.5rem 0.75rem 0.75rem;
+}
+
+.vs-scoreboard-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(5.5rem, auto) minmax(0, 1fr);
+  align-items: center;
+  gap: clamp(0.75rem, 2.5vw, 2.5rem);
+  padding-block: 0.55rem 1.15rem;
+}
+
+.vs-power-score {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.16rem;
+  padding-block: 0.25rem;
+  font-family: var(--vs-instrument);
+  font-variant-numeric: tabular-nums;
+}
+
+.vs-power-score.is-blue {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.vs-power-score span {
+  color: var(--team-red);
+  font-size: clamp(0.9rem, 1.55vw, 1.3rem);
+  font-weight: 900;
+  letter-spacing: 0.05em;
+  line-height: 1.05;
+  text-transform: uppercase;
+}
+
+.vs-power-score.is-blue span {
+  color: var(--team-blue);
+}
+
+.vs-power-score strong {
+  display: block;
+  max-width: 100%;
+  padding-block: 0.08em 0.11em;
+  color: var(--team-red);
+  font-size: clamp(3.6rem, 6.2vw, 5.6rem);
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  line-height: 0.88;
+  white-space: nowrap;
+}
+
+.vs-power-score.is-blue strong {
+  color: var(--team-blue);
+}
+
+.vs-power-score small {
+  color: color-mix(in srgb, var(--team-red) 62%, var(--muted));
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.055em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+.vs-power-score.is-blue small {
+  color: color-mix(in srgb, var(--team-blue) 62%, var(--muted));
+}
+
+.vs-match-clock {
+  display: grid;
+  min-width: 5.5rem;
+  place-items: center;
+  align-self: center;
+  gap: 0.18rem;
+  border-inline: 1px solid var(--line);
+  padding: 0.35rem 0.85rem 0.45rem;
+  color: var(--muted);
+  font-family: var(--vs-instrument);
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.vs-match-clock span {
+  font-size: 0.64rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.vs-match-clock time {
+  color: var(--ink);
+  font-size: clamp(1.25rem, 2vw, 1.65rem);
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.vs-energy-meter {
+  --meter-ground: #0c1412;
+  position: relative;
+  height: 5.25rem;
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--line-strong) 74%, var(--meter-ground));
+  border-radius: 4px;
+  background: var(--meter-ground);
+  isolation: isolate;
+}
+
+.vs-energy-meter::after {
+  position: absolute;
+  z-index: 5;
+  inset: 0;
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: inherit;
+  content: "";
+  pointer-events: none;
+}
+
+.vs-energy-beam {
+  position: absolute;
+  z-index: 1;
+  top: 1.45rem;
+  bottom: 1.45rem;
+  overflow: hidden;
+  width: 100%;
+  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vs-energy-beam.is-red {
+  left: 0;
+  background: color-mix(in srgb, var(--team-red) 84%, var(--meter-ground));
+  transform: scaleX(var(--red-scale));
+  transform-origin: left;
+}
+
+.vs-energy-beam.is-blue {
+  left: 0;
+  background: color-mix(in srgb, var(--team-blue) 84%, var(--meter-ground));
+  transform: scaleX(var(--blue-scale));
+  transform-origin: right;
+}
+
+.vs-energy-beam i {
+  position: absolute;
+  top: 50%;
+  right: 0.75rem;
+  left: 0;
+  height: 2px;
+  transform: translateY(-50%);
+  background: color-mix(in srgb, white 72%, var(--team-red));
+  opacity: 0.82;
+}
+
+.vs-energy-beam.is-blue i {
+  right: 0;
+  left: 0.75rem;
+  background: color-mix(in srgb, white 72%, var(--team-blue));
+}
+
+.vs-energy-laser {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: var(--clash-position);
+  width: clamp(7.5rem, 14vw, 11.5rem);
+  height: 4.4rem;
+  transition: left 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.vs-energy-laser.is-red {
+  transform: translate(-91%, -50%);
+}
+
+.vs-energy-laser.is-blue {
+  transform: translate(-9%, -50%);
+}
+
+.vs-energy-laser img {
+  --laser-direction: 1;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  animation: vs-laser-drive var(--clash-speed) cubic-bezier(0.37, 0, 0.63, 1) infinite alternate;
+  filter: saturate(0.94) brightness(1.08);
+}
+
+.vs-energy-laser.is-blue img {
+  --laser-direction: -1;
+  animation-direction: alternate-reverse;
+  filter: hue-rotate(196deg) saturate(1.18) brightness(1.12);
+}
+
+.vs-power-board.heat-4 .vs-energy-beam {
+  top: 1.25rem;
+  bottom: 1.25rem;
+}
+
+.vs-energy-clash {
+  position: absolute;
+  z-index: 4;
+  top: 50%;
+  left: var(--clash-position);
+  display: grid;
+  width: 7.4rem;
+  height: 5.1rem;
+  place-items: center;
+  transform: translate(-50%, -50%);
+  transition: left 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
+.vs-energy-clash picture,
+.vs-energy-clash img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.vs-energy-clash img {
+  object-fit: contain;
+  image-rendering: pixelated;
+}
+
+.vs-energy-clash b {
+  position: absolute;
+  z-index: 2;
+  bottom: 0.28rem;
+  left: 50%;
+  border: 1px solid rgb(255 255 255 / 0.38);
+  border-radius: 4px;
+  padding: 0.15rem 0.28rem 0.12rem;
+  transform: translateX(-50%);
+  background: var(--meter-ground);
+  color: white;
+  font-family: var(--vs-instrument);
+  font-size: 0.65rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1;
+}
+
+.vs-energy-clash.is-gain,
+.vs-energy-clash.is-breakthrough,
+.vs-energy-clash.is-solve {
+  --impact-peak: 1.18;
+  animation: vs-artist-impact 820ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.vs-energy-clash.is-gain {
+  width: 7.8rem;
+  height: 5.2rem;
+}
+
+.vs-energy-clash.is-breakthrough,
+.vs-energy-clash.is-solve {
+  --impact-peak: 1.25;
+  animation-duration: 1.05s;
+}
+
+.vs-energy-clash.is-breakthrough {
+  width: 8.5rem;
+  height: 5.45rem;
+}
+
+.vs-energy-clash.is-solve {
+  --impact-peak: 1.32;
+  width: 9.2rem;
+  height: 5.75rem;
+}
+
+.vs-power-event {
+  min-height: 1.2rem;
+  padding-top: 0.5rem;
+  color: var(--muted);
+  font-size: 0.72rem;
+  font-weight: 700;
+  line-height: 1.3;
+  text-align: center;
+}
+
+@keyframes vs-laser-drive {
+  from { opacity: 0.76; transform: translateX(-0.16rem) scaleX(var(--laser-direction)) scale(0.96); }
+  to { opacity: 1; transform: translateX(0.16rem) scaleX(var(--laser-direction)) scale(1.03); }
+}
+
+@keyframes vs-artist-impact {
+  0% { opacity: 0.45; transform: translate(-50%, -50%) scale(0.76); }
+  28% { opacity: 1; transform: translate(-50%, -50%) scale(var(--impact-peak)); }
+  100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.vs-live-shell .vs-arena-grid {
+  align-items: stretch;
+  gap: 0.75rem;
+}
+
+.vs-live-shell .vs-team-bay {
+  min-height: 100%;
+  border-color: color-mix(in srgb, var(--team-color) 42%, var(--line));
+  clip-path: none;
+  padding: 0;
+}
+
+.vs-live-shell .vs-team-bay::before {
+  position: absolute;
+  z-index: 2;
+  inset-block: 0;
+  left: 0;
+  width: 2px;
+  background: var(--team-color);
+  content: "";
+}
+
+.vs-live-shell .vs-team-bay.is-blue::before {
+  right: 0;
+  left: auto;
+}
+
+.vs-live-shell .vs-team-heading,
+.vs-live-shell .vs-team-bay.is-blue .vs-team-heading {
+  gap: 0.55rem;
+  padding: 0.85rem 0.85rem 0.75rem;
+}
+
+.vs-live-shell .vs-team-emblem {
+  width: 1.5rem;
+  height: 1.5rem;
+  font-size: 0.62rem;
+}
+
+.vs-live-shell .vs-team-heading h2 {
+  font-size: 1.12rem;
+  letter-spacing: 0.04em;
+}
+
+.vs-live-shell .vs-team-heading p {
+  margin-top: 0.12rem;
+  font-size: 0.66rem;
+}
+
+.vs-live-shell .vs-team-best {
+  line-height: 1;
+}
+
+.vs-live-shell .vs-team-best span {
+  font-size: 1.55rem;
+}
+
+.vs-live-shell .vs-team-best small {
+  margin-top: 0.12rem;
+  font-size: 0.54rem;
+}
+
+.vs-live-shell .vs-team-members,
+.vs-live-shell .vs-team-bay.is-blue .vs-team-members {
+  min-height: 10rem;
+  padding-inline: 0.75rem;
+}
+
+.vs-live-shell .vs-team-member {
+  grid-template-columns: 2.5rem minmax(0, 1fr);
+  min-height: 5.2rem;
+  gap: 0.55rem;
+  padding-block: 0.55rem;
+}
+
+.vs-live-shell .vs-team-member > .player-avatar {
+  width: 2.5rem;
+  height: 2.5rem;
+}
+
+.vs-live-shell .vs-team-member-name strong {
+  font-size: 0.78rem;
+}
+
+.vs-live-shell .vs-team-member-name span {
+  font-size: 0.63rem;
+}
+
+.vs-live-shell .vs-member-stats {
+  grid-column: 2;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0.3rem;
+  margin-top: -0.25rem;
+  text-align: left;
+}
+
+.vs-live-shell .vs-member-stats div {
+  min-width: 0;
+}
+
+.vs-live-shell .vs-member-stats dt {
+  font-size: 0.52rem;
+  letter-spacing: 0.03em;
+}
+
+.vs-live-shell .vs-member-stats dd {
+  overflow: hidden;
+  margin-top: 0;
+  font-size: 0.68rem;
+  text-overflow: ellipsis;
+}
+
+.vs-live-shell .vs-player-rank dd {
+  color: var(--team-color);
+}
+
+.vs-team-contribution {
+  position: absolute;
+  z-index: 5;
+  top: 3.7rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: var(--surface);
+  color: var(--team-color);
+  font-size: 0.62rem;
+  font-weight: 800;
+  pointer-events: none;
+  animation: vs-contribution-note 1.65s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.vs-team-contribution i {
+  width: 1rem;
+  height: 2px;
+  background: var(--team-color);
+}
+
+.vs-team-contribution.is-breakthrough,
+.vs-team-contribution.is-solve {
+  font-size: 0.7rem;
+}
+
+@keyframes vs-contribution-note {
+  0% { opacity: 0; transform: translateY(0.5rem); }
+  18%, 72% { opacity: 1; transform: translateY(0); }
+  100% { opacity: 0; transform: translateY(-0.3rem); }
+}
+
+.vs-live-shell .vs-team-telemetry,
+.vs-live-shell .vs-team-bay.is-blue .vs-team-telemetry {
+  margin-top: auto;
+  padding: 0.75rem;
+}
+
+.vs-live-shell .vs-team-telemetry > dl {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.vs-live-shell .vs-team-telemetry dt {
+  font-size: 0.54rem;
+}
+
+.vs-live-shell .vs-team-telemetry dd {
+  font-size: 0.78rem;
+}
+
+.vs-live-shell .vs-team-state {
+  min-height: 2.1rem;
+  margin-top: 0.6rem;
+  border-color: var(--line);
+  font-size: 0.6rem;
+}
+
+.vs-live-shell .vs-arena-center {
+  display: grid;
+  min-width: 0;
+  align-content: start;
+  gap: 0.75rem;
+  background: transparent;
+}
+
+.vs-live-shell .semantic-map-shell.is-versus {
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--canvas) 82%, var(--surface));
+}
+
+.vs-live-shell .semantic-map-shell.is-versus .semantic-map-header {
+  padding-top: 0.75rem;
+}
+
+.vs-live-shell .vs-phase-strip {
+  margin-top: -0.75rem;
+  border: 1px solid var(--line);
+  border-top: 0;
+}
+
+.vs-live-shell .vs-transmit-console {
+  position: static;
+  border-color: var(--line-strong);
+  padding: 0.85rem;
+}
+
+.vs-live-shell .vs-console-heading {
+  padding-bottom: 0.65rem;
+}
+
+.vs-live-shell .vs-console-heading h2 {
+  font-size: 0.92rem;
+}
+
+.vs-live-shell .vs-console-actions {
+  margin-top: 0.75rem;
+}
+
+.vs-live-shell .vs-score-rule {
+  margin-top: 0.55rem;
+}
+
+.vs-live-shell .vs-private-log .space-y-3 {
+  display: grid;
+  gap: 0.75rem;
+}
+
+@media (min-width: 1180px) {
+  .vs-live-shell {
+    width: min(1640px, calc(100vw - 1rem));
+  }
+
+  .vs-live-shell .vs-arena-grid {
+    grid-template-columns: minmax(14rem, 17.5rem) minmax(34rem, 1fr) minmax(14rem, 17.5rem);
+  }
+
+  .vs-live-shell .vs-arena-center {
+    order: 0;
+  }
+
+  .vs-live-shell .semantic-map-shell.is-versus .semantic-map {
+    height: clamp(22rem, 31vw, 29rem);
+    min-height: 22rem;
+  }
+}
+
+@media (max-width: 1179px) {
+  .vs-live-shell .vs-arena-center {
+    order: -1;
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 719px) {
+  .vs-power-board {
+    --clash-position: clamp(3.5rem, var(--red-share), calc(100% - 3.5rem));
+    margin-top: 0;
+    padding: 0.25rem 0.25rem 0.65rem;
+  }
+
+  .vs-scoreboard-row {
+    grid-template-columns: minmax(0, 1fr) minmax(4.15rem, auto) minmax(0, 1fr);
+    gap: 0.35rem;
+    padding-block: 0.45rem 0.85rem;
+  }
+
+  .vs-power-score {
+    gap: 0.12rem;
+    padding-block: 0.2rem;
+  }
+
+  .vs-power-score span,
+  .vs-power-score.is-blue span {
+    font-size: clamp(0.68rem, 3vw, 0.8rem);
+  }
+
+  .vs-power-score strong,
+  .vs-power-score.is-blue strong {
+    font-size: clamp(2.25rem, 11vw, 2.85rem);
+  }
+
+  .vs-power-score small,
+  .vs-power-score.is-blue small {
+    font-size: clamp(0.5rem, 2.25vw, 0.58rem);
+    letter-spacing: 0.035em;
+  }
+
+  .vs-match-clock {
+    min-width: 4.15rem;
+    padding: 0.3rem 0.4rem 0.36rem;
+  }
+
+  .vs-match-clock span {
+    font-size: 0.53rem;
+  }
+
+  .vs-match-clock time {
+    font-size: 1.14rem;
+  }
+
+  .vs-energy-meter {
+    height: 4.25rem;
+  }
+
+  .vs-energy-beam {
+    top: 1.15rem;
+    bottom: 1.15rem;
+  }
+
+  .vs-energy-laser {
+    width: 7rem;
+    height: 3.65rem;
+  }
+
+  .vs-energy-clash {
+    width: 5.5rem;
+    height: 4.1rem;
+  }
+
+  .vs-energy-clash.is-gain {
+    width: 5.75rem;
+    height: 4.15rem;
+  }
+
+  .vs-energy-clash.is-breakthrough {
+    width: 6.25rem;
+    height: 4.35rem;
+  }
+
+  .vs-energy-clash.is-solve {
+    width: 6.85rem;
+    height: 4.6rem;
+  }
+
+  .vs-energy-clash b {
+    bottom: 0.18rem;
+    font-size: 0.58rem;
+  }
+
+  .vs-live-shell .vs-arena-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .vs-live-shell .vs-arena-center {
+    grid-column: 1;
+  }
+
+  .vs-live-shell .semantic-map-shell.is-versus .semantic-map {
+    height: auto;
+    min-height: 18rem;
+  }
+
+  .vs-live-shell .vs-team-bay {
+    min-height: 0;
+  }
+
+  .vs-live-shell .vs-console-heading {
+    align-items: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vs-energy-beam,
+  .vs-energy-laser,
+  .vs-energy-clash,
+  .vs-energy-laser img {
+    transition-duration: 1ms;
+  }
+
+  .vs-energy-laser img,
+  .vs-energy-clash,
+  .vs-team-contribution {
+    animation: none;
+  }
+
+  .vs-energy-laser img {
+    transform: scaleX(var(--laser-direction));
+  }
+
+  .vs-team-contribution {
+    display: none;
+  }
+}
+
 .map-dot {
   fill: var(--accent);
   stroke: color-mix(in srgb, var(--surface) 80%, transparent);
