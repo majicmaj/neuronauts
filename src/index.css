@@ -2724,6 +2724,7 @@
   --red-share: 50%;
   --clash-position: clamp(5rem, var(--red-share), calc(100% - 5rem));
   --clash-speed: 2.25s;
+  --half-beam-gap: clamp(0.35rem, 0.6vw, 0.55rem);
   position: relative;
   margin: 0 auto 1rem;
   padding: 0.5rem 0.75rem 0.75rem;
@@ -2741,17 +2742,18 @@
   display: flex;
   min-width: 0;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
   justify-content: center;
   gap: 0.16rem;
   padding-block: 0.25rem;
   font-family: var(--vs-instrument);
   font-variant-numeric: tabular-nums;
+  text-align: right;
 }
 
 .vs-power-score.is-blue {
-  align-items: flex-end;
-  text-align: right;
+  align-items: flex-start;
+  text-align: left;
 }
 
 .vs-power-score span {
@@ -2854,22 +2856,20 @@
   top: 1.45rem;
   bottom: 1.45rem;
   overflow: hidden;
-  width: 100%;
-  transition: transform 900ms cubic-bezier(0.16, 1, 0.3, 1);
+  transition: left 900ms cubic-bezier(0.16, 1, 0.3, 1),
+    right 900ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .vs-energy-beam.is-red {
   left: 0;
+  right: calc(100% - var(--clash-position) + var(--half-beam-gap));
   background: color-mix(in srgb, var(--team-red) 84%, var(--meter-ground));
-  transform: scaleX(var(--red-scale));
-  transform-origin: left;
 }
 
 .vs-energy-beam.is-blue {
-  left: 0;
+  right: 0;
+  left: calc(var(--clash-position) + var(--half-beam-gap));
   background: color-mix(in srgb, var(--team-blue) 84%, var(--meter-ground));
-  transform: scaleX(var(--blue-scale));
-  transform-origin: right;
 }
 
 .vs-energy-beam i {
@@ -2893,7 +2893,6 @@
   position: absolute;
   z-index: 2;
   top: 50%;
-  left: var(--clash-position);
   width: clamp(7.5rem, 14vw, 11.5rem);
   height: 4.4rem;
   transition: left 900ms cubic-bezier(0.16, 1, 0.3, 1);
@@ -2901,11 +2900,13 @@
 }
 
 .vs-energy-laser.is-red {
-  transform: translate(-91%, -50%);
+  left: calc(var(--clash-position) - var(--half-beam-gap));
+  transform: translate(-82%, -50%);
 }
 
 .vs-energy-laser.is-blue {
-  transform: translate(-9%, -50%);
+  left: calc(var(--clash-position) + var(--half-beam-gap));
+  transform: translate(-18%, -50%);
 }
 
 .vs-energy-laser img {
@@ -2919,6 +2920,7 @@
 
 .vs-energy-laser.is-blue img {
   --laser-direction: -1;
+  transform: scaleX(-1);
   animation-direction: alternate-reverse;
   filter: hue-rotate(196deg) saturate(1.18) brightness(1.12);
 }
@@ -3012,8 +3014,8 @@
 }
 
 @keyframes vs-laser-drive {
-  from { opacity: 0.76; transform: translateX(-0.16rem) scaleX(var(--laser-direction)) scale(0.96); }
-  to { opacity: 1; transform: translateX(0.16rem) scaleX(var(--laser-direction)) scale(1.03); }
+  from { opacity: 0.68; }
+  to { opacity: 1; }
 }
 
 @keyframes vs-artist-impact {
