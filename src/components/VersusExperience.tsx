@@ -247,8 +247,6 @@ function VersusPowerMeter({
     : currentStateText;
   const style = {
     "--red-share": `${redShare}%`,
-    "--red-scale": redShare / 100,
-    "--blue-scale": (100 - redShare) / 100,
     "--clash-speed": `${Math.max(0.7, 2.25 - heat * 0.3)}s`,
   } as CSSProperties;
 
