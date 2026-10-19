@@ -3598,7 +3598,7 @@
 }
 
 .mission-category-picker { margin: 1.25rem 0; }
-.mission-category-picker select { min-height: 44px; cursor: pointer; color-scheme: light dark; }
+.mission-category-picker select { min-height: 44px; cursor: pointer; }
 .mission-category-picker select:disabled { cursor: default; opacity: .65; }
 .mission-category-context { color: var(--accent); }
 .mission-category-context > span:first-of-type { color: var(--muted); }

@@ -85,7 +85,7 @@ export function GamePage() {
       setTypingPlayerIds(payload.typingPlayerIds || []);
       setRematch(payload.rematch || null);
       setPlayAgainBusy(false);
-      setFatalError(null);
+      setFatalError(payload.gameState.status === "error" ? payload.gameState.error || "This mission is unavailable. Return home to start another." : null);
       const self = payload.players.find((player) => player.id === socket.id);
       if (self) {
         savePreferredPlayerName(self.name);
@@ -104,7 +104,7 @@ export function GamePage() {
       setTypingPlayerIds(payload.typingPlayerIds || []);
       setVersus(payload.versus || null);
       setRematch(payload.rematch || null);
-      setFatalError(null);
+      setFatalError(payload.gameState.status === "error" ? payload.gameState.error || "This mission is unavailable. Return home to start another." : null);
       const self = payload.players.find((player) => player.id === socket.id);
       if (self) {
         savePreferredPlayerName(self.name);
@@ -169,6 +169,7 @@ export function GamePage() {
     const onActionError = (error: ActionError) => {
       setPlayAgainBusy(false);
       setActionError(error.message);
+      if (error.code === "game_unavailable") setFatalError(error.message);
       if (error.hintAvailableAt) {
         setGameState((previous) => ({
           ...previous,
@@ -358,7 +359,7 @@ export function GamePage() {
         </header>
 
         {category && (
-          <div className="mission-category-context mb-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" aria-label="Mission category">
+          <div className="mission-category-context mb-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" role="note" aria-label="Mission category">
             <MissionGlyph name="signal" className="h-5 w-5" />
             <strong>{category.label}</strong>
             <span className="capitalize">{category.difficulty}</span>

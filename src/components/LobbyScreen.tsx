@@ -1,3 +1,4 @@
+import { DIFFICULTY_LABELS, groupMissionCategories, resolveMissionCategory } from "../lib/missionCategory";
 import { FormEvent, useState } from "react";
 import { getPreferredPlayerName, savePreferredPlayerName } from "../lib/socket";
 import { MissionGlyph } from "./MissionGlyph";
@@ -16,8 +17,10 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
   const [lobbyId, setLobbyId] = useState("");
   const [preferredName, setPreferredName] = useState(getPreferredPlayerName);
   const [categoryId, setCategoryId] = useState("all");
-  const selectedCategory = categories.find((category) => category.id === categoryId);
   const [mode, setMode] = useState<GameMode>("classic");
+  const selectedCategory = resolveMissionCategory(categories, categoryId);
+  const allCategory = resolveMissionCategory(categories, "all");
+  const categoryGroups = groupMissionCategories(categories);
 
   const rememberName = () => {
     if (preferredName.trim()) savePreferredPlayerName(preferredName.trim());
@@ -33,7 +36,7 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
   const handleCreate = () => {
     if (!connected || busy) return;
     rememberName();
-    onCreateLobby(preferredName.trim(), mode, categoryId);
+    onCreateLobby(preferredName.trim(), mode, selectedCategory.id);
   };
 
   return (
@@ -95,26 +98,26 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
           </label>
           <select
             id="mission-category"
-            value={categoryId}
+            value={selectedCategory.id}
             onChange={(event) => setCategoryId(event.target.value)}
             disabled={busy || !categories.length}
             aria-describedby="category-description"
             className="mission-input w-full"
           >
-            <option value="all">All words · Hardest</option>
-            {(["easy", "medium", "hard"] as const).map((difficulty) => (
-              <optgroup key={difficulty} label={difficulty === "easy" ? "Easy" : difficulty === "medium" ? "Medium" : "Hard"}>
-                {categories.filter((category) => category.difficulty === difficulty).map((category) => (
-                  <option key={category.id} value={category.id}>{category.label}</option>
+            <option value="all">{allCategory.label} · {DIFFICULTY_LABELS[allCategory.difficulty]}</option>
+            {categoryGroups.map((group) => (
+              <optgroup key={group.difficulty} label={group.label}>
+                {group.categories.map((category) => (
+                  <option key={category.id} value={category.id}>{category.label} · {DIFFICULTY_LABELS[category.difficulty]}</option>
                 ))}
               </optgroup>
             ))}
           </select>
           <p id="category-description" className="mt-2 text-sm leading-5 text-zinc-600 dark:text-zinc-300">
-            {selectedCategory?.description || "The full word map. No topic to narrow the search."}
-            {categoryId !== "all" && " Any dictionary word still counts as a guess."}
+            {selectedCategory.description}
+            {selectedCategory.id !== "all" && " Any dictionary word still counts as a guess."}
           </p>
-          <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">New missions only. Joining follows the host’s category.</p>
+          <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">{categories.length ? "New missions only. Joining follows the host’s category." : "Topic choices aren’t available yet. You can still play All words."}</p>
         </div>
 
         <button
