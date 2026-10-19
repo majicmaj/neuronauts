@@ -3212,7 +3212,8 @@
   .vs-setup-shell .vs-team-bay { min-height: 12rem; }
   .vs-launch-console-desktop { flex-wrap: wrap; }
   .vs-launch-status { flex-basis: 100%; }
-  .vs-launch-console-desktop > button { flex: 1; justify-content: center; }
+  .vs-launch-console-desktop > button { flex: 1 1 calc(50% - 0.75rem); justify-content: center; }
+  .vs-launch-console-desktop > .vs-start-button { flex-basis: 100%; }
   .vs-roster > summary { flex-wrap: wrap; gap: 0.15rem 0.4rem; padding: 0.65rem 0.75rem; }
   .vs-roster > summary > span:last-child { font-size: 0.65rem; }
   .vs-live-shell .vs-team-member { grid-template-columns: 2rem minmax(0, 1fr); }

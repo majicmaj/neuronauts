@@ -212,6 +212,7 @@ export interface VersusState {
   completedAt: string | null;
   firstFinishTeamId: TeamId | null;
   canStart: boolean;
+  canHostStart?: boolean;
   readyCount: number;
   totalCount: number;
   teams: VersusTeamSummary[];
