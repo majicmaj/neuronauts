@@ -483,7 +483,6 @@ function ResultTeam({ team, winner, isOwnTeam }: { team: VersusTeamSummary; winn
         <div><dt>Average</dt><dd>{percent(team.averageSimilarity)}</dd></div>
         <div><dt>Best</dt><dd>{percent(team.bestSimilarity)}</dd></div>
       </dl>
-
     </article>
   );
 }
@@ -539,7 +538,9 @@ function VersusResults(props: VersusExperienceProps) {
         <header className="debrief-roster-heading">
           <div>
             <h2 id="vs-crew-results-title">Crew results</h2>
-            <p>Each neuronaut’s distinctions and mission stats. Awards compare crewmates within their team.</p>
+            <p>{crewResults.every(({ recap }) => recap)
+              ? "Each neuronaut’s distinctions and mission stats. Awards compare crewmates within their team."
+              : "Mission stats for both teams. Your player card is marked You."}</p>
           </div>
           <MissionGlyph name="crew" className="h-8 w-8" />
         </header>

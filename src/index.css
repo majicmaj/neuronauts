@@ -2265,43 +2265,6 @@
   font-weight: 850;
 }
 
-.vs-result-roster {
-  padding-inline: 1rem;
-}
-
-.vs-result-roster > div {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  border-bottom: 1px solid var(--line);
-  padding-block: 0.65rem;
-}
-
-.vs-result-roster > div:last-child {
-  border-bottom: 0;
-}
-
-.vs-result-roster .player-avatar {
-  width: 2.5rem;
-  height: 2.5rem;
-}
-
-.vs-result-roster span,
-.vs-result-roster strong,
-.vs-result-roster small {
-  display: block;
-}
-
-.vs-result-roster strong {
-  font-size: 0.78rem;
-}
-
-.vs-result-roster small {
-  margin-top: 0.1rem;
-  color: var(--muted);
-  font-size: 0.65rem;
-}
-
 .vs-result-divider {
   display: grid;
   place-items: center;
@@ -3136,7 +3099,7 @@
 .classic-guess-console > div:first-child { margin: 0; display: block; font-size: 0.75rem; }
 .classic-guess-console > div:first-child > span { display: block; margin-block: 0.15rem; }
 .classic-guess-console > div:last-child { display: flex; flex-direction: row; }
-.game-shell .vs-results-hero, .game-shell .vs-result-team, .game-shell .vs-result-team > header, .game-shell .vs-result-metrics, .game-shell .vs-result-metrics div, .game-shell .vs-result-roster > div, .game-shell .vs-score-explainer, .game-shell .vs-result-actions, .game-shell .vs-score-equation span, .game-shell .vs-score-equation strong { border: 0; }
+.game-shell .vs-results-hero, .game-shell .vs-result-team, .game-shell .vs-result-team > header, .game-shell .vs-result-metrics, .game-shell .vs-result-metrics div, .game-shell .vs-score-explainer, .game-shell .vs-result-actions, .game-shell .vs-score-equation span, .game-shell .vs-score-equation strong { border: 0; }
 .game-shell .vs-results-hero, .game-shell .vs-result-team { border-radius: 12px; }
 .game-shell .vs-results-hero h1 { font-size: clamp(2rem, 5vw, 4rem); line-height: 1.1; letter-spacing: -0.035em; }
 .game-shell .vs-result-team h2 { font-size: 1.25rem; letter-spacing: -0.02em; }

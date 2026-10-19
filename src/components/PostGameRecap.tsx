@@ -234,9 +234,9 @@ function AwardCitation({ award }: { award: Citation }) {
 }
 
 type PlayerCardStats = Pick<PlayerRecap,
-  "playerId" | "playerName" | "colorIndex" | "guessCount" | "hintCount" |
+  "playerId" | "playerName" | "guessCount" | "hintCount" |
   "averageSimilarity" | "bestGuess" | "foundTarget"
-> & Partial<Pick<PlayerRecap, "breakthroughs" | "wrongGuessCount">>;
+> & Partial<Pick<PlayerRecap, "colorIndex" | "breakthroughs" | "wrongGuessCount">>;
 
 function PlayerResultCard({
   player,
@@ -336,6 +336,7 @@ export function CrewSummaryCards({ team, players, selfParticipantId }: {
   players: Player[];
   selfParticipantId?: string;
 }) {
+  const colors = new Map(players.map(member => [member.participantId || member.id, member.colorIndex]));
   const avatars = assignUniqueAvatarIds(team.playerStats.map(player => ({
     key: player.playerId, avatarId: player.avatarId,
   })));
@@ -345,7 +346,7 @@ export function CrewSummaryCards({ team, players, selfParticipantId }: {
         const foundTarget = stats.playerId === team.foundBy?.playerId;
         const player: PlayerCardStats = {
           ...stats,
-          colorIndex: players.find(member => member.participantId === stats.playerId)?.colorIndex ?? 0,
+          colorIndex: colors.get(stats.playerId),
           bestGuess: stats.bestSimilarity === null ? null : { similarity: stats.bestSimilarity, rank: null },
           foundTarget,
         };
@@ -353,7 +354,7 @@ export function CrewSummaryCards({ team, players, selfParticipantId }: {
           key={stats.playerId}
           player={player}
           avatarId={avatars.get(stats.playerId) || AVATARS[0].id}
-          awards={foundTarget ? [{ id: "signal-finder", title: "Target finder", metricLabel: "Target acquired", description: "Found the target for their team." }] : []}
+          awards={[]}
           isSelf={stats.playerId === selfParticipantId}
           headingLevel={4}
         />;
