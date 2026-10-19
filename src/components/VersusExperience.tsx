@@ -20,7 +20,7 @@ import { GuessList } from "./GuessList";
 import { MissionGlyph } from "./MissionGlyph";
 import { PlayAgainButton } from "./PlayAgainButton";
 import { PlayerAvatar } from "./PlayerAvatar";
-import { CrewResultCards } from "./PostGameRecap";
+import { CrewResultCards, CrewSummaryCards } from "./PostGameRecap";
 import { SemanticMap } from "./SemanticMap";
 
 interface VersusExperienceProps {
@@ -464,12 +464,13 @@ function VersusLive(props: VersusExperienceProps) {
   );
 }
 
-function ResultTeam({ team, winner, recapAvailable }: { team: VersusTeamSummary; winner: boolean; recapAvailable: boolean }) {
+function ResultTeam({ team, winner, isOwnTeam }: { team: VersusTeamSummary; winner: boolean; isOwnTeam: boolean }) {
   return (
     <article className={`vs-result-team is-${team.id} ${winner ? "is-winner" : "is-runner-up"}`} style={teamStyle(team.id)}>
       <header>
         <div>
           <h2>{TEAM_COPY[team.id].label}</h2>
+          <span className="vs-result-affiliation">{isOwnTeam ? "Your team" : "Other team"}</span>
           <span className="vs-result-place">{winner ? "Mission winner" : "Second signal"}</span>
         </div>
         <strong className="vs-result-grade">{team.grade}</strong>
@@ -482,14 +483,6 @@ function ResultTeam({ team, winner, recapAvailable }: { team: VersusTeamSummary;
         <div><dt>Average</dt><dd>{percent(team.averageSimilarity)}</dd></div>
         <div><dt>Best</dt><dd>{percent(team.bestSimilarity)}</dd></div>
       </dl>
-      {!recapAvailable && <div className="vs-result-roster">
-        {team.playerStats.map((player) => (
-          <div key={player.playerId}>
-            <PlayerAvatar avatarId={player.avatarId} decorative />
-            <span><strong>{player.playerName}</strong><small>{player.guessCount} guesses · {percent(player.bestSimilarity)} best · {player.hintCount} hints</small></span>
-          </div>
-        ))}
-      </div>}
     </article>
   );
 }
@@ -536,31 +529,35 @@ function VersusResults(props: VersusExperienceProps) {
       </section>
 
       <div className="vs-result-comparison">
-        <ResultTeam team={winner} winner recapAvailable={Boolean(result.teamRecaps?.[winner.id] || (winner.id === versus.teamId && props.gameState.recap))} />
+        <ResultTeam team={winner} winner isOwnTeam={winner.id === versus.teamId} />
         <div className="vs-result-divider" aria-hidden="true">VS</div>
-        <ResultTeam team={loser} winner={false} recapAvailable={Boolean(result.teamRecaps?.[loser.id] || (loser.id === versus.teamId && props.gameState.recap))} />
+        <ResultTeam team={loser} winner={false} isOwnTeam={loser.id === versus.teamId} />
       </div>
 
-      {crewResults.some(({ recap }) => recap) && <section className="vs-crew-results" aria-labelledby="vs-crew-results-title">
+      <section className="vs-crew-results" aria-labelledby="vs-crew-results-title">
         <header className="debrief-roster-heading">
           <div>
             <h2 id="vs-crew-results-title">Crew results</h2>
-            <p>Each neuronaut’s distinctions and mission stats. Awards compare crewmates within their team.</p>
+            <p>{crewResults.every(({ recap }) => recap)
+              ? "Each neuronaut’s distinctions and mission stats. Awards compare crewmates within their team."
+              : "Mission stats for both teams. Your player card is marked You."}</p>
           </div>
           <MissionGlyph name="crew" className="h-8 w-8" />
         </header>
         <div className="vs-crew-results-comparison">
         {crewResults.map(({ team, recap }) => {
-          if (!recap) return null;
           return (
             <section key={team.id} className="vs-crew-results-team" style={teamStyle(team.id)} aria-labelledby={`crew-results-${team.id}`}>
-              <h3 id={`crew-results-${team.id}`}>{TEAM_COPY[team.id].label}{team.id === versus.teamId ? " · your crew" : " · rival crew"}</h3>
-              <CrewResultCards recap={recap} selfParticipantId={selfParticipantId} headingLevel={4} />
+              <h3 id={`crew-results-${team.id}`}>{TEAM_COPY[team.id].label}{team.id === versus.teamId ? " · Your team" : " · Other team"}</h3>
+              {recap
+                ? <CrewResultCards recap={recap} selfParticipantId={selfParticipantId} headingLevel={4} />
+                : <CrewSummaryCards team={team} players={props.players} selfParticipantId={selfParticipantId} />
+              }
             </section>
           );
         })}
         </div>
-      </section>}
+      </section>
 
       <footer className="vs-result-actions">
         <p>Same crew, fresh target, one shared rematch lobby.</p>
