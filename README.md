@@ -64,8 +64,18 @@ The deploy command builds with `VITE_API_URL=https://semantle.hobbyhood.app`
 and publishes to the existing `neuronauts-web-edge` Worker and custom domain.
 Deployment is explicit; a Git push alone does not publish a release. The
 backend remains a separately deployed service, so a frontend release does
-not restart the backend or clear its rooms. The old Netlify URL is a legacy
-deployment and will no longer receive updates from this flow.
+not restart the backend or clear its rooms.
+
+The old `https://semantle.netlify.app` address permanently redirects to
+Hobbyhood, preserving paths and query strings. Its redirect-only artifact is
+in `hosting/netlify-redirect/`, outside the application build. The legacy
+Netlify site (`416fbf15-a397-48d1-8511-9a60b7b12591`) has its published
+deployment locked so connected Git builds cannot replace the redirect.
+Keep it locked during normal app releases. To replace the redirect, prepare
+an isolated artifact, unlock the old deploy through Netlify, publish only
+`hosting/netlify-redirect/` to that site, and lock the new published deploy.
+Do not copy its `_redirects` into `public/` or `dist/`; the Hobbyhood app uses
+Cloudflare's native routing.
 
 Cooperative missions use `PostGameRecap` for player awards and mission grades.
 VS missions use the separate `VersusResults` in `VersusExperience.tsx` for
