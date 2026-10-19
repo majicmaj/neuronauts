@@ -46,6 +46,7 @@ export function GamePage() {
   const lobbyId = routeLobbyId?.toUpperCase();
   const navigate = useNavigate();
   const [gameState, setGameState] = useState<GameState>(EMPTY_GAME);
+  const [category, setCategory] = useState<LobbyPayload["category"]>();
   const [mode, setMode] = useState<GameMode>("classic");
   const [versus, setVersus] = useState<VersusState | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
@@ -78,6 +79,7 @@ export function GamePage() {
     const onLobbyJoined = (payload: LobbyPayload) => {
       setMode(payload.mode || "classic");
       setVersus(payload.versus || null);
+      setCategory(payload.category);
       setGameState(payload.gameState);
       setPlayers(payload.players);
       setTypingPlayerIds(payload.typingPlayerIds || []);
@@ -96,6 +98,7 @@ export function GamePage() {
     };
     const onVersusUpdated = (payload: LobbyPayload) => {
       setMode("versus");
+      setCategory(payload.category);
       setGameState(payload.gameState);
       setPlayers(payload.players);
       setTypingPlayerIds(payload.typingPlayerIds || []);
@@ -353,6 +356,15 @@ export function GamePage() {
             <ThemeToggle />
           </div>
         </header>
+
+        {category && (
+          <div className="mission-category-context mb-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" aria-label="Mission category">
+            <MissionGlyph name="signal" className="h-5 w-5" />
+            <strong>{category.label}</strong>
+            <span className="capitalize">{category.difficulty}</span>
+            <span className="basis-full text-zinc-500 dark:text-zinc-400 sm:ml-1 sm:basis-auto">{category.description}</span>
+          </div>
+        )}
 
         {gameState.status === "loading" ? (
           <div className="grid min-h-[70vh] place-items-center">

@@ -2,18 +2,21 @@ import { FormEvent, useState } from "react";
 import { getPreferredPlayerName, savePreferredPlayerName } from "../lib/socket";
 import { MissionGlyph } from "./MissionGlyph";
 import Neuronaut from "./Neuronaut";
-import type { GameMode } from "../types";
+import type { GameMode, MissionCategory } from "../types";
 
 interface LobbyScreenProps {
+  categories: MissionCategory[];
   connected: boolean;
   busy: boolean;
-  onCreateLobby: (preferredName: string, mode: GameMode) => void;
+  onCreateLobby: (preferredName: string, mode: GameMode, categoryId: string) => void;
   onJoinLobby: (lobbyId: string, preferredName: string) => void;
 }
 
-export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: LobbyScreenProps) {
+export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoinLobby }: LobbyScreenProps) {
   const [lobbyId, setLobbyId] = useState("");
   const [preferredName, setPreferredName] = useState(getPreferredPlayerName);
+  const [categoryId, setCategoryId] = useState("all");
+  const selectedCategory = categories.find((category) => category.id === categoryId);
   const [mode, setMode] = useState<GameMode>("classic");
 
   const rememberName = () => {
@@ -30,7 +33,7 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
   const handleCreate = () => {
     if (!connected || busy) return;
     rememberName();
-    onCreateLobby(preferredName.trim(), mode);
+    onCreateLobby(preferredName.trim(), mode, categoryId);
   };
 
   return (
@@ -85,6 +88,34 @@ export function LobbyScreen({ connected, busy, onCreateLobby, onJoinLobby }: Lob
             <span><strong>VS mode</strong><small>Red vs blue, private flight logs</small></span>
           </button>
         </fieldset>
+
+        <div className="mission-category-picker">
+          <label htmlFor="mission-category" className="mb-2 block text-sm font-semibold">
+            Category <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span>
+          </label>
+          <select
+            id="mission-category"
+            value={categoryId}
+            onChange={(event) => setCategoryId(event.target.value)}
+            disabled={busy || !categories.length}
+            aria-describedby="category-description"
+            className="mission-input w-full"
+          >
+            <option value="all">All words · Hardest</option>
+            {(["easy", "medium", "hard"] as const).map((difficulty) => (
+              <optgroup key={difficulty} label={difficulty === "easy" ? "Easy" : difficulty === "medium" ? "Medium" : "Hard"}>
+                {categories.filter((category) => category.difficulty === difficulty).map((category) => (
+                  <option key={category.id} value={category.id}>{category.label}</option>
+                ))}
+              </optgroup>
+            ))}
+          </select>
+          <p id="category-description" className="mt-2 text-sm leading-5 text-zinc-600 dark:text-zinc-300">
+            {selectedCategory?.description || "The full word map. No topic to narrow the search."}
+            {categoryId !== "all" && " Any dictionary word still counts as a guess."}
+          </p>
+          <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">New missions only. Joining follows the host’s category.</p>
+        </div>
 
         <button
           onClick={handleCreate}

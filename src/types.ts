@@ -130,7 +130,15 @@ export interface GameState {
   recap?: GameRecap | null;
 }
 
+export interface MissionCategory {
+  id: string;
+  label: string;
+  difficulty: "easy" | "medium" | "hard" | "hardest";
+  description: string;
+}
+
 export interface LobbyPayload {
+  category?: MissionCategory;
   lobbyId: string;
   mode?: GameMode;
   gameState: GameState;

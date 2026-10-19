@@ -1,19 +1,21 @@
 import { LobbyScreen } from "@/components/LobbyScreen";
 import { ThemeToggle } from "@/components/ThemeToggle";
 import { savePreferredPlayerName, socket } from "@/lib/socket";
-import type { GameMode, LobbyPayload } from "@/types";
+import type { GameMode, LobbyPayload, MissionCategory } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 export default function LobbyPage() {
   const navigate = useNavigate();
   const [connected, setConnected] = useState(socket.connected);
+  const [categories, setCategories] = useState<MissionCategory[]>([]);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const onConnect = () => {
       setConnected(true);
+      socket.emit("getCategories");
       setError(null);
     };
     const onDisconnect = () => {
@@ -30,6 +32,8 @@ export default function LobbyPage() {
       setError(message);
     };
 
+    const onCategories = (catalog: MissionCategory[]) => setCategories(catalog);
+    socket.on("categoryCatalog", onCategories);
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("lobbyCreated", onCreated);
@@ -37,6 +41,7 @@ export default function LobbyPage() {
     if (socket.connected) onConnect();
 
     return () => {
+      socket.off("categoryCatalog", onCategories);
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("lobbyCreated", onCreated);
@@ -44,10 +49,10 @@ export default function LobbyPage() {
     };
   }, [navigate]);
 
-  const createLobby = (preferredName: string, mode: GameMode) => {
+  const createLobby = (preferredName: string, mode: GameMode, categoryId: string) => {
     setBusy(true);
     setError(null);
-    socket.emit("createLobby", { preferredName, mode });
+    socket.emit("createLobby", { preferredName, mode, categoryId });
   };
 
   const joinLobby = (lobbyId: string, preferredName: string) => {
@@ -60,6 +65,7 @@ export default function LobbyPage() {
       <div className="absolute right-4 top-4 z-20"><ThemeToggle /></div>
       <main className="grid min-h-dvh place-items-center px-4 py-10 sm:px-6 sm:py-16">
         <LobbyScreen
+          categories={categories}
           connected={connected}
           busy={busy}
           onCreateLobby={createLobby}
