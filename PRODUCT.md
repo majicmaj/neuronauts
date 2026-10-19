@@ -23,7 +23,7 @@ The game combines calibrated semantic closeness, a spatial map of the search, sh
 - A host creates a six-character browser lobby and shares its code.
 - Players choose call signs and avatars and may reconnect with the same identity.
 - Classic missions are cooperative and expose the crew's complete flight log.
-- VS missions begin in a team-setup room where players can switch sides, randomize teams, and ready up. The host may start immediately, including with unready players or an empty team. During play, the host admits late join requests to a chosen team; waiting visitors receive no game state.
+- VS missions begin in a team-setup room where players can switch sides, randomize teams, and ready up. The host may start immediately, with unready players once both teams have at least one player. During play, the host admits late join requests to a chosen team; waiting visitors receive no game state.
 - During VS play, teammates share guesses; opponents reveal only roster presence, typing, guess count, average closeness, best closeness, and anonymized map points.
 - The first team to find the target records its finish but does not end the other team's run. Final standings are decided after both teams finish.
 

@@ -255,7 +255,7 @@ function LaunchConsole({
     <div className={`${className}${isHost ? " has-randomize" : ""}`}>
       <div className="vs-launch-status">
         <span>{versus.readyCount} / {versus.totalCount} ready</span>
-        <p>{isHost ? "Start whenever you like, or wait for everyone to ready up." : versus.canStart ? "Starts when everyone is ready, or when the host starts." : "Waiting for teammates or the host to start."}</p>
+        <p>{isHost ? versus.canStart ? "Start now, or wait for everyone to ready up." : "Each team needs at least one player." : versus.canStart ? "Starts when everyone is ready, or when the host starts." : "Waiting for teammates or the host to start."}</p>
       </div>
       {isHost && (
         <button type="button" className="neuron-secondary-button px-4" onClick={onRandomizeTeams}>
@@ -299,6 +299,7 @@ function VersusSetup({
   const isHost = selfParticipantId === versus.hostParticipantId;
   const teams = new Map(versus.teams.map((team) => [team.id, team]));
   const canReady = connected && (versus.canStart || Boolean(self?.ready));
+  const canHostStart = connected && Boolean(versus.canHostStart);
 
   return (
     <main className="vs-setup-shell">
@@ -319,7 +320,7 @@ function VersusSetup({
         selfReady={Boolean(self?.ready)}
         isHost={isHost}
         canReady={canReady}
-        canHostStart={connected && Boolean(versus.canHostStart)}
+        canHostStart={canHostStart}
         onRandomizeTeams={onRandomizeTeams}
         onToggleReady={onToggleReady}
         onStartMatch={onStartMatch}
@@ -354,7 +355,7 @@ function VersusSetup({
         selfReady={Boolean(self?.ready)}
         isHost={isHost}
         canReady={canReady}
-        canHostStart={connected && Boolean(versus.canHostStart)}
+        canHostStart={canHostStart}
         onRandomizeTeams={onRandomizeTeams}
         onToggleReady={onToggleReady}
         onStartMatch={onStartMatch}

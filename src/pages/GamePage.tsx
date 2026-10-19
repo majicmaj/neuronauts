@@ -74,6 +74,9 @@ export function GamePage() {
     if (!lobbyId) return;
 
     const joinLobby = () => {
+      setJoinPending(false);
+      setJoinRequests([]);
+      setFatalError(null);
       setConnected(true);
       socket.emit("joinLobby", {
         lobbyId,
@@ -105,6 +108,7 @@ export function GamePage() {
       }
     };
     const onVersusUpdated = (payload: LobbyPayload) => {
+      setJoinPending(false);
       saveLobbyResumeToken(payload);
       setMode("versus");
       setCategory(payload.category);
@@ -188,7 +192,9 @@ export function GamePage() {
     };
     const onLobbyError = (message: string) => { setJoinPending(false); setFatalError(message); };
     const onJoinPending = () => { setFatalError(null); setJoinPending(true); };
-    const onJoinRequests = (payload: { requests: { id: string; name: string }[] }) => setJoinRequests(payload.requests);
+    const onJoinRequests = (payload: { lobbyId: string; requests: { id: string; name: string }[] }) => {
+      if (payload.lobbyId === lobbyId) setJoinRequests(payload.requests);
+    };
     const onNameChanged = ({ name }: { name: string }) =>
       savePreferredPlayerName(name);
 
@@ -330,8 +336,12 @@ export function GamePage() {
   const randomizeTeams = () => socket.emit("randomizeTeams", { lobbyId });
   const toggleReady = () => socket.emit("toggleReady", { lobbyId });
   const startMatch = () => socket.emit("startMatch", { lobbyId });
+  const reviewJoinRequest = (requestId: string, teamId?: TeamId) => {
+    setJoinRequests(requests => requests.filter(request => request.id !== requestId));
+    socket.emit("reviewJoinRequest", { lobbyId, requestId, teamId, reject: !teamId });
+  };
 
-  if (joinPending) {
+  if (joinPending && !fatalError) {
     return (
       <div className="app-shell game-shell grid min-h-dvh place-items-center px-4 text-center">
         <main className="neuron-card max-w-md p-8" aria-live="polite">
@@ -387,16 +397,16 @@ export function GamePage() {
           </div>
         </header>
 
-        {selfParticipantId === versus?.hostParticipantId && joinRequests.length > 0 && (
+        {selfParticipantId && selfParticipantId === versus?.hostParticipantId && joinRequests.length > 0 && (
           <section className="neuron-card mb-4 p-4" aria-label="Join requests" aria-live="polite">
             <h2 className="font-bold">Waiting to join</h2>
             <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Admit people you recognize. They will see their team’s word history.</p>
             {joinRequests.map(request => (
               <div key={request.id} className="mt-3 flex flex-wrap items-center gap-2">
                 <strong className="mr-auto min-w-0 break-words">{request.name}</strong>
-                <button className="neuron-secondary-button" onClick={() => socket.emit("reviewJoinRequest", { lobbyId, requestId: request.id, teamId: "red" })}>Admit to Red Shift</button>
-                <button className="neuron-secondary-button" onClick={() => socket.emit("reviewJoinRequest", { lobbyId, requestId: request.id, teamId: "blue" })}>Admit to Blue Orbit</button>
-                <button className="neuron-secondary-button" onClick={() => socket.emit("reviewJoinRequest", { lobbyId, requestId: request.id, reject: true })}>Decline</button>
+                <button className="neuron-secondary-button" onClick={() => reviewJoinRequest(request.id, "red")}>Admit to Red Shift</button>
+                <button className="neuron-secondary-button" onClick={() => reviewJoinRequest(request.id, "blue")}>Admit to Blue Orbit</button>
+                <button className="neuron-secondary-button" onClick={() => reviewJoinRequest(request.id)}>Decline</button>
               </div>
             ))}
           </section>
