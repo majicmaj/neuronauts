@@ -3331,3 +3331,7 @@
 @media (min-width: 1000px) {
   .game-shell .vs-crew-results-comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
+
+.game-shell .vs-result-affiliation { display: block; margin-top: .25rem; font-size: .875rem; font-weight: 700; color: var(--team-color); }
+.game-shell .debrief-player-card.is-self .debrief-player-heading { background: var(--accent-soft); }
+.game-shell .debrief-player-card.is-self .debrief-you { background: var(--accent); color: var(--accent-contrast); }

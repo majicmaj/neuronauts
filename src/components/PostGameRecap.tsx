@@ -6,7 +6,7 @@ import {
 } from "@/lib/floatingDisclosure";
 import { calculateMissionGrade, type MissionGradeLetter } from "@/lib/missionGrade";
 import { playerColor } from "@/lib/playerColors";
-import type { GameRecap, GameState, PlayerRecap, RecapAward, RematchState } from "@/types";
+import type { GameRecap, GameState, Player, PlayerRecap, RecapAward, RematchState, VersusTeamSummary } from "@/types";
 import {
   useCallback,
   useEffect,
@@ -233,6 +233,11 @@ function AwardCitation({ award }: { award: Citation }) {
   );
 }
 
+type PlayerCardStats = Pick<PlayerRecap,
+  "playerId" | "playerName" | "colorIndex" | "guessCount" | "hintCount" |
+  "averageSimilarity" | "bestGuess" | "foundTarget"
+> & Partial<Pick<PlayerRecap, "breakthroughs" | "wrongGuessCount">>;
+
 function PlayerResultCard({
   player,
   avatarId,
@@ -240,7 +245,7 @@ function PlayerResultCard({
   isSelf,
   headingLevel = 3,
 }: {
-  player: PlayerRecap;
+  player: PlayerCardStats;
   avatarId: AvatarId;
   awards: Citation[];
   isSelf: boolean;
@@ -251,7 +256,7 @@ function PlayerResultCard({
 
   return (
     <article
-      className={`debrief-player-card ${player.foundTarget ? "is-winner" : ""}`}
+      className={`debrief-player-card ${player.foundTarget ? "is-winner" : ""} ${isSelf ? "is-self" : ""}`}
       style={{ "--crew-color": color } as CSSProperties}
     >
       <div className="debrief-player-stage">
@@ -266,11 +271,11 @@ function PlayerResultCard({
         {isSelf && <span className="debrief-you">you</span>}
       </header>
 
-      <div className="debrief-card-awards" aria-label={`${player.playerName} distinctions`}>
+      {awards.length > 0 && <div className="debrief-card-awards" aria-label={`${player.playerName} distinctions`}>
         {awards.map((award) => (
           <AwardCitation key={`${award.title}-${award.metricLabel}`} award={award} />
         ))}
-      </div>
+      </div>}
 
       <dl className="debrief-card-stats">
         <div>
@@ -292,11 +297,11 @@ function PlayerResultCard({
         </div>
       </dl>
 
-      <p className="debrief-card-footnote">
+      {player.breakthroughs !== undefined && player.wrongGuessCount !== undefined && <p className="debrief-card-footnote">
         {player.breakthroughs} crew-best {player.breakthroughs === 1 ? "signal" : "signals"}
         <span aria-hidden="true"> · </span>
         {player.wrongGuessCount} wrong {player.wrongGuessCount === 1 ? "turn" : "turns"}
-      </p>
+      </p>}
     </article>
   );
 }
@@ -321,6 +326,38 @@ export function CrewResultCards({ recap, selfParticipantId, headingLevel = 3 }: 
           headingLevel={headingLevel}
         />
       ))}
+    </div>
+  );
+}
+
+/** Older completed rooms still have public per-player stats, even without award recaps. */
+export function CrewSummaryCards({ team, players, selfParticipantId }: {
+  team: VersusTeamSummary;
+  players: Player[];
+  selfParticipantId?: string;
+}) {
+  const avatars = assignUniqueAvatarIds(team.playerStats.map(player => ({
+    key: player.playerId, avatarId: player.avatarId,
+  })));
+  return (
+    <div className="debrief-player-grid">
+      {team.playerStats.map((stats) => {
+        const foundTarget = stats.playerId === team.foundBy?.playerId;
+        const player: PlayerCardStats = {
+          ...stats,
+          colorIndex: players.find(member => member.participantId === stats.playerId)?.colorIndex ?? 0,
+          bestGuess: stats.bestSimilarity === null ? null : { similarity: stats.bestSimilarity, rank: null },
+          foundTarget,
+        };
+        return <PlayerResultCard
+          key={stats.playerId}
+          player={player}
+          avatarId={avatars.get(stats.playerId) || AVATARS[0].id}
+          awards={foundTarget ? [{ id: "signal-finder", title: "Target finder", metricLabel: "Target acquired", description: "Found the target for their team." }] : []}
+          isSelf={stats.playerId === selfParticipantId}
+          headingLevel={4}
+        />;
+      })}
     </div>
   );
 }
