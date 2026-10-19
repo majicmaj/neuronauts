@@ -1,4 +1,6 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { Link, Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import { AppErrorBoundary } from "./components/AppErrorBoundary";
+import { StatusScreen } from "./components/StatusScreen";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { lazy, Suspense } from "react";
 
@@ -12,18 +14,19 @@ function App() {
   return (
     <ThemeProvider>
       <Router>
+        <AppErrorBoundary>
         <Suspense
           fallback={
-            <div className="app-shell grid min-h-dvh place-items-center text-sm font-semibold text-zinc-500 dark:text-zinc-400">
-              Opening mission…
-            </div>
+            <StatusScreen title="Opening mission…" description="Getting your workspace ready." busy />
           }
         >
           <Routes>
             <Route path="/" element={<LobbyPage />} />
             <Route path="/game/:lobbyId" element={<GamePage />} />
+            <Route path="*" element={<StatusScreen title="Page not found" description="This link doesn’t lead to a mission. Start a new one or enter a lobby code from home."><Link to="/" className="neuron-primary-button">Return home</Link></StatusScreen>} />
           </Routes>
         </Suspense>
+        </AppErrorBoundary>
       </Router>
     </ThemeProvider>
   );

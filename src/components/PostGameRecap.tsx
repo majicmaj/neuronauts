@@ -1,3 +1,4 @@
+import { useTheme } from "@/contexts/theme";
 import { AVATARS, assignUniqueAvatarIds, type AvatarId } from "@/lib/avatars";
 import {
   positionFloatingDisclosure,
@@ -40,6 +41,8 @@ const GRADE_COLORS: Record<MissionGradeLetter, string> = {
   C: "#f0bb64",
   D: "#f29a5b",
 };
+
+const LIGHT_GRADE_COLORS: Record<MissionGradeLetter, string> = { S: "#087568", A: "#176da8", B: "#6559bd", C: "#8c5900", D: "#a3451c" };
 
 const AWARD_PRIORITY: Record<string, number> = {
   "signal-finder": 100,
@@ -304,6 +307,7 @@ export function PostGameRecap({
   onPlayAgain,
   onReviewFlightLog,
 }: PostGameRecapProps) {
+  const { effectiveTheme } = useTheme();
   const recap = gameState.recap;
   if (!recap || !gameState.targetWord) return null;
 
@@ -319,7 +323,7 @@ export function PostGameRecap({
     }))
   );
   const gradeStyle = {
-    "--grade-color": GRADE_COLORS[grade.letter],
+    "--grade-color": (effectiveTheme === "dark" ? GRADE_COLORS : LIGHT_GRADE_COLORS)[grade.letter],
   } as CSSProperties;
 
   return (

@@ -9,11 +9,12 @@ interface LobbyScreenProps {
   categories: MissionCategory[];
   connected: boolean;
   busy: boolean;
+  error: string | null;
   onCreateLobby: (preferredName: string, mode: GameMode, categoryId: string) => void;
   onJoinLobby: (lobbyId: string, preferredName: string) => void;
 }
 
-export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoinLobby }: LobbyScreenProps) {
+export function LobbyScreen({ categories, connected, busy, error, onCreateLobby, onJoinLobby }: LobbyScreenProps) {
   const [lobbyId, setLobbyId] = useState("");
   const [preferredName, setPreferredName] = useState(getPreferredPlayerName);
   const [categoryId, setCategoryId] = useState("all");
@@ -40,12 +41,12 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
   };
 
   return (
-    <div className="grid w-full max-w-4xl items-center gap-8 md:grid-cols-[0.9fr_1.1fr] md:gap-16">
-      <div>
+    <div className="lobby-workspace">
+      <div className="lobby-intro">
         <Neuronaut className="mb-3 h-16 w-16 sm:mb-5 sm:h-20 sm:w-20" />
-        <h1 className="text-4xl font-extrabold tracking-[-0.035em] sm:text-6xl">Neuronauts</h1>
+        <h1 className="text-4xl font-extrabold tracking-[-0.035em] sm:text-6xl">Find the hidden word.</h1>
         <p className="mt-3 max-w-md text-base leading-7 text-zinc-600 dark:text-zinc-300 sm:mt-4 sm:text-lg">
-          Chart word space with your crew and close in on one hidden signal.
+          Follow semantic clues with your crew, or split into red and blue teams.
         </p>
 
         <ul className="mt-5 grid gap-2.5 text-sm text-zinc-700 dark:text-zinc-200 sm:mt-8 sm:gap-3">
@@ -55,9 +56,9 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
         </ul>
       </div>
 
-      <div>
-        <div className="neuron-card p-5 sm:p-6">
-          <h2 className="mb-5 text-xl font-bold tracking-tight">Start or join a mission</h2>
+      <div className="lobby-form-column">
+        <div className="neuron-card lobby-form">
+          <h2 className="mb-5 text-xl font-bold tracking-tight">Start a mission</h2>
           <label htmlFor="player-name" className="mb-2 block text-sm font-semibold">
           Call sign <span className="font-normal text-zinc-500 dark:text-zinc-400">(optional)</span>
         </label>
@@ -67,6 +68,7 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
           onChange={(event) => setPreferredName(event.target.value)}
           maxLength={24}
           placeholder="We’ll assign one if you leave this blank"
+          autoComplete="nickname"
           className="mission-input mb-3 w-full"
         />
 
@@ -120,6 +122,8 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
           <p className="mt-1 text-xs leading-5 text-zinc-500 dark:text-zinc-400">{categories.length ? "New missions only. Joining follows the host’s category." : "Topic choices aren’t available yet. You can still play All words."}</p>
         </div>
 
+        {error && <p className="form-error" role="alert">{error}</p>}
+
         <button
           onClick={handleCreate}
           disabled={!connected || busy}
@@ -128,11 +132,11 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
           {busy ? "Launching…" : mode === "versus" ? "Create VS mission" : "Create a mission"} <MissionGlyph name="launch" className="h-6 w-6" />
         </button>
 
-        <div className="my-5 flex items-center gap-3 text-sm text-zinc-500 dark:text-zinc-400">
-          <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-700" /> Have a lobby code? <span className="h-px flex-1 bg-zinc-200 dark:bg-zinc-700" />
+        <div className="lobby-join-label">
+          Have a lobby code?
         </div>
 
-        <form onSubmit={handleJoin} className="flex gap-2">
+        <form onSubmit={handleJoin} className="lobby-join-form">
           <label htmlFor="lobby-code" className="sr-only">Lobby code</label>
           <input
             id="lobby-code"
@@ -154,7 +158,7 @@ export function LobbyScreen({ categories, connected, busy, onCreateLobby, onJoin
 
         <div className="mt-3 flex items-center justify-center gap-2 text-sm text-zinc-500 dark:text-zinc-400">
           <span className={`h-2 w-2 rounded-full ${connected ? "bg-emerald-600" : "bg-amber-500"}`} />
-          {connected ? "Navigator online" : "Connecting to navigator…"}
+          {connected ? "Navigator online" : "Waiting for a connection"}
         </div>
       </div>
     </div>

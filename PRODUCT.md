@@ -43,7 +43,7 @@ The game combines calibrated semantic closeness, a spatial map of the search, sh
 - Voice: concise, playful mission-control language without obscuring game state.
 - Existing Neuronaut avatars, custom Pixelarticons glyphs, and unique 3D award artwork remain part of the identity.
 - The interface uses a restrained mission-control system; VS mode extends it with clearly differentiated red and blue team identities.
-- The game route follows the user-pinned Linear direction: neutral borderless surfaces, compact red/blue signals, full-screen use, mobile support, and a bottom-pinned guess input in cooperative and VS play. Home and lobby retain their established visual system.
+- The game route follows the user-pinned Linear direction: neutral borderless surfaces, compact red/blue signals, full-screen use, mobile support, and a bottom-pinned guess input in cooperative and VS play. Home, lobby, Classic, loading, recovery, and error screens share this visual system. Network interruptions preserve draft guesses and expose explicit retry controls.
 
 ## Evidence on Hand
 

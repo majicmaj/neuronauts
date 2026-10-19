@@ -13,13 +13,16 @@ export const socket = io(apiUrl, {
 });
 
 const PLAYER_NAME_KEY = "neuronauts.playerName";
+let rememberedName = "";
 
 export function getPreferredPlayerName() {
-  return localStorage.getItem(PLAYER_NAME_KEY) || "";
+  try { return localStorage.getItem(PLAYER_NAME_KEY) || rememberedName; }
+  catch { return rememberedName; }
 }
 
 export function savePreferredPlayerName(name: string) {
-  localStorage.setItem(PLAYER_NAME_KEY, name);
+  rememberedName = name;
+  try { localStorage.setItem(PLAYER_NAME_KEY, name); } catch { /* Keep the call sign in memory when storage is blocked. */ }
 }
 
 // Per-tab, per-lobby credentials never enter URLs or the public roster.
