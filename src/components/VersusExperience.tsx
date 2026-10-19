@@ -8,15 +8,12 @@ import type {
   VersusTeamSummary,
 } from "@/types";
 import {
-  impactIntensity,
   sortPlayerStats,
   versusCurrentStateText,
   versusElapsedSeconds,
-  versusEnergyLevel,
-  versusEnergyShare,
-  type VersusImpact,
 } from "@/lib/versusEnergy";
-import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { useEffect, useState, type CSSProperties } from "react";
+import { GuessDock } from "./GuessDock";
 import { GuessInput } from "./GuessInput";
 import { GuessList } from "./GuessList";
 import { MissionGlyph } from "./MissionGlyph";
@@ -82,7 +79,6 @@ function TeamBay({
   typingPlayerIds,
   selfSocketId,
   setup = false,
-  impact = null,
   onJoin,
 }: {
   team: VersusTeamSummary;
@@ -90,7 +86,6 @@ function TeamBay({
   typingPlayerIds: string[];
   selfSocketId?: string;
   setup?: boolean;
-  impact?: VersusImpact | null;
   onJoin?: () => void;
 }) {
   const unsortedTeamPlayers = players.filter((player) => player.teamId === team.id);
@@ -111,16 +106,6 @@ function TeamBay({
       style={teamStyle(team.id)}
       aria-labelledby={`team-${team.id}-title`}
     >
-      {setup && (
-        <>
-          <div className="vs-team-rail" aria-hidden="true">
-            {Array.from({ length: 8 }, (_, index) => <i key={index} />)}
-          </div>
-          <div className="vs-team-jaw" aria-hidden="true">
-            {Array.from({ length: 18 }, (_, index) => <i key={index} />)}
-          </div>
-        </>
-      )}
       <header className="vs-team-heading">
         <span className="vs-team-emblem" aria-hidden="true">{TEAM_COPY[team.id].emblem}</span>
         <div>
@@ -135,13 +120,6 @@ function TeamBay({
         )}
       </header>
 
-      {!setup && impact?.teamId === team.id && (
-        <div key={impact.id} className={`vs-team-contribution is-${impact.intensity}`} aria-hidden="true">
-          <i />
-          <span>{impact.intensity === "solve" ? "Target locked" : impact.intensity === "breakthrough" ? "Major advance" : impact.intensity === "gain" ? "Signal gained" : "Guess plotted"}</span>
-        </div>
-      )}
-
       <div className="vs-team-members">
         {teamPlayers.map((player) => {
           const stats = statsByPlayer.get(player.participantId || player.id);
@@ -155,7 +133,7 @@ function TeamBay({
                 <span role="status" aria-live="polite">
                   {isSelf && "you · "}
                   {setup
-                    ? player.ready ? "ready" : "choosing side"
+                    ? player.ready ? "ready" : "not ready"
                     : isTyping ? "plotting a guess" : team.status === "finished" ? "signal locked" : "on comms"}
                 </span>
               </div>
@@ -178,7 +156,7 @@ function TeamBay({
         {teamPlayers.length === 0 && (
           <div className="vs-empty-bay">
             <span className="vs-empty-seat" aria-hidden="true" />
-            <p>Open airlock</p>
+            <p>Open team</p>
             <span>Waiting for a neuronaut</span>
           </div>
         )}
@@ -209,96 +187,45 @@ function TeamBay({
   );
 }
 
-function VersusPowerMeter({
-  red,
-  blue,
-  startedAt,
-  impact,
-}: {
+function VersusPowerMeter({ red, blue, startedAt }: {
   red: VersusTeamSummary;
   blue: VersusTeamSummary;
   startedAt: string | null;
-  impact: VersusImpact | null;
 }) {
   const [now, setNow] = useState(() => Date.now());
-
   useEffect(() => {
     if (!startedAt) return;
-    setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 1_000);
     return () => window.clearInterval(timer);
   }, [startedAt]);
-
   const elapsedSeconds = versusElapsedSeconds(startedAt, now);
-  const redShare = versusEnergyShare(red.bestSimilarity, blue.bestSimilarity);
-  const heat = versusEnergyLevel(red.guessCount + blue.guessCount);
-  const gainText = impact && impact.gain > 0
-    ? `+${(impact.gain * 100).toFixed(1)}`
-    : null;
-  const currentStateText = versusCurrentStateText(red.status === "finished", blue.status === "finished");
-  const eventText = impact
-    ? impact.intensity === "solve"
-      ? `${TEAM_COPY[impact.teamId].label} found the target`
-      : impact.intensity === "breakthrough"
-        ? `${TEAM_COPY[impact.teamId].label} made a major advance${gainText ? `, ${gainText} points` : ""}`
-        : impact.intensity === "gain"
-          ? `${TEAM_COPY[impact.teamId].label} gained${gainText ? ` ${gainText} points` : " ground"}`
-          : `${TEAM_COPY[impact.teamId].label} plotted a guess`
-    : currentStateText;
-  const style = {
-    "--red-share": `${redShare}%`,
-    "--clash-speed": `${Math.max(0.7, 2.25 - heat * 0.3)}s`,
-  } as CSSProperties;
-
   return (
-    <section className={`vs-power-board heat-${heat}`} style={style} aria-label="Team semantic progress">
-      <div className="vs-scoreboard-row">
-        <div className="vs-power-score is-red">
-          <span>Red Shift</span>
-          <strong>{percent(red.bestSimilarity)}</strong>
-          <small>{red.status === "finished" ? "target locked" : `${red.guessCount} guesses`}</small>
+    <section className="vs-progress-board" aria-label="Team semantic progress">
+      {[red, blue].map((team) => (
+        <div key={team.id} className="vs-progress-team" style={teamStyle(team.id)}>
+          <div className="vs-progress-label"><span>{TEAM_COPY[team.id].label}</span><strong>{percent(team.bestSimilarity)}</strong></div>
+          <progress className="vs-progress-track" max={1} value={team.bestSimilarity ?? 0} aria-label={`${TEAM_COPY[team.id].label} best signal`} />
+          <small>{team.status === "finished" ? "Target found" : `${team.guessCount} guesses`}</small>
         </div>
-        <div className="vs-match-clock">
-          <span>Elapsed</span>
-          <time dateTime={elapsedSeconds === null ? undefined : `PT${elapsedSeconds}S`}>
-            {duration(elapsedSeconds)}
-          </time>
-        </div>
-        <div className="vs-power-score is-blue">
-          <span>Blue Orbit</span>
-          <strong>{percent(blue.bestSimilarity)}</strong>
-          <small>{blue.status === "finished" ? "target locked" : `${blue.guessCount} guesses`}</small>
-        </div>
-      </div>
-
-      <div
-        className="vs-energy-meter"
-        role="img"
-        aria-label={`Red Shift controls ${redShare.toFixed(1)} percent of the energy field. Blue Orbit controls ${(100 - redShare).toFixed(1)} percent.`}
-      >
-        <div className="vs-energy-beam is-red"><i /></div>
-        <div className="vs-energy-beam is-blue"><i /></div>
-        <span className="vs-energy-laser is-red" aria-hidden="true">
-          <img src="/vfx/wenrexa-laser-red.png" alt="" />
-        </span>
-        <span className="vs-energy-laser is-blue" aria-hidden="true">
-          <img src="/vfx/wenrexa-laser-red.png" alt="" />
-        </span>
-        <span
-          key={impact?.id ?? "idle"}
-          className={`vs-energy-clash${impact ? ` is-${impact.teamId} is-${impact.intensity}` : ""}`}
-          aria-hidden="true"
-        >
-          <picture>
-            <source media="(prefers-reduced-motion: reduce)" srcSet="/vfx/luis-zuno-charged-still.png" />
-            <img src="/vfx/luis-zuno-charged.gif" alt="" />
-          </picture>
-          <b>VS</b>
-        </span>
-      </div>
-      <p className="vs-power-event" aria-live="polite">{eventText}</p>
+      ))}
+      <div className="vs-match-clock"><span>Elapsed</span><time dateTime={elapsedSeconds === null ? undefined : `PT${elapsedSeconds}S`}>{duration(elapsedSeconds)}</time></div>
+      <p className="sr-only" role="status">{versusCurrentStateText(red.status === "finished", blue.status === "finished")}</p>
     </section>
   );
+}
+
+function TeamRoster(props: Parameters<typeof TeamBay>[0]) {
+  const [expanded, setExpanded] = useState(() => window.matchMedia("(min-width: 1100px)").matches);
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1100px)");
+    const update = () => setExpanded(media.matches);
+    media.addEventListener("change", update);
+    return () => media.removeEventListener("change", update);
+  }, []);
+  return <details className="vs-roster" open={expanded} onToggle={(event) => setExpanded(event.currentTarget.open)} style={teamStyle(props.team.id)}>
+    <summary><span>{TEAM_COPY[props.team.id].label}</span><span>{props.team.playerCount} crew</span></summary>
+    <TeamBay {...props} />
+  </details>;
 }
 
 function LaunchConsole({
@@ -322,7 +249,7 @@ function LaunchConsole({
     <div className={`${className}${isHost ? " has-randomize" : ""}`}>
       <div className="vs-launch-status">
         <span>{versus.readyCount} / {versus.totalCount} ready</span>
-        <p>{versus.canStart ? "Launches automatically when every neuronaut is ready." : "Place at least one neuronaut in each airlock."}</p>
+        <p>{versus.canStart ? "Launches automatically when every neuronaut is ready." : "Each team needs at least one player."}</p>
       </div>
       {isHost && (
         <button type="button" className="neuron-secondary-button px-4" onClick={onRandomizeTeams}>
@@ -365,12 +292,12 @@ function VersusSetup({
     <main className="vs-setup-shell">
       <div className="vs-setup-intro">
         <div>
-          <h1>Choose your airlock</h1>
-          <p>Teams share one target. Your words stay inside your bay.</p>
+          <h1>Choose your team</h1>
+          <p>Find the same hidden word. Share guesses with your team.</p>
         </div>
         <div className="vs-privacy-note">
           <MissionGlyph name="signal" className="h-6 w-6" />
-          Opponents see your progress—not your guesses.
+          Your guesses stay private to your team.
         </div>
       </div>
 
@@ -443,61 +370,15 @@ function VersusLive(props: VersusExperienceProps) {
   const typingNames = players
     .filter((player) => typingPlayerIds.includes(player.id))
     .map((player) => player.name);
-  const impactSequence = useRef(0);
-  const previousTeams = useRef({
-    redGuesses: redTeam.guessCount,
-    blueGuesses: blueTeam.guessCount,
-    redBest: redTeam.bestSimilarity,
-    blueBest: blueTeam.bestSimilarity,
-  });
-  const [impact, setImpact] = useState<VersusImpact | null>(null);
-
-  useEffect(() => {
-    const previous = previousTeams.current;
-    const candidates = ([
-      {
-        teamId: "red" as const,
-        guessDelta: redTeam.guessCount - previous.redGuesses,
-        previousBest: previous.redBest,
-        nextBest: redTeam.bestSimilarity,
-      },
-      {
-        teamId: "blue" as const,
-        guessDelta: blueTeam.guessCount - previous.blueGuesses,
-        previousBest: previous.blueBest,
-        nextBest: blueTeam.bestSimilarity,
-      },
-    ]).filter((candidate) => candidate.guessDelta > 0);
-
-    if (candidates.length) {
-      const candidate = candidates.sort((a, b) =>
-        ((b.nextBest ?? 0) - (b.previousBest ?? 0)) - ((a.nextBest ?? 0) - (a.previousBest ?? 0))
-      )[0];
-      impactSequence.current += 1;
-      setImpact({
-        id: impactSequence.current,
-        teamId: candidate.teamId,
-        intensity: impactIntensity(candidate.previousBest, candidate.nextBest),
-        gain: Math.max(0, (candidate.nextBest ?? 0) - (candidate.previousBest ?? 0)),
-      });
-    }
-
-    previousTeams.current = {
-      redGuesses: redTeam.guessCount,
-      blueGuesses: blueTeam.guessCount,
-      redBest: redTeam.bestSimilarity,
-      blueBest: blueTeam.bestSimilarity,
-    };
-  }, [redTeam.guessCount, redTeam.bestSimilarity, blueTeam.guessCount, blueTeam.bestSimilarity]);
 
   return (
     <main className="vs-live-shell">
       <p className="sr-only" role="status" aria-live="polite">
         {typingNames.length ? `${typingNames.join(", ")} ${typingNames.length === 1 ? "is" : "are"} typing.` : "No one is typing."}
       </p>
-      <VersusPowerMeter red={redTeam} blue={blueTeam} startedAt={versus.startedAt} impact={impact} />
+      <VersusPowerMeter red={redTeam} blue={blueTeam} startedAt={versus.startedAt} />
       <div className="vs-arena-grid">
-        <TeamBay team={redTeam} players={players} typingPlayerIds={typingPlayerIds} selfSocketId={selfSocketId} impact={impact} />
+        <TeamRoster team={redTeam} players={players} typingPlayerIds={typingPlayerIds} selfSocketId={selfSocketId} />
 
         <section className="vs-arena-center" aria-label="Head-to-head semantic space">
           <SemanticMap
@@ -513,41 +394,9 @@ function VersusLive(props: VersusExperienceProps) {
             {ownFinished
               ? `${TEAM_COPY[ownTeam.id].label} locked the signal. ${TEAM_COPY[opponent.id].label} is still searching.`
               : opponent.status === "finished"
-                ? `${TEAM_COPY[opponent.id].label} finished first. Your airlock stays open.`
+                ? `${TEAM_COPY[opponent.id].label} finished first. Keep searching.`
                 : `Same ${gameState.targetLength}-letter target · private flight logs`}
           </div>
-          <section className="vs-transmit-console" aria-labelledby="transmit-title">
-            <div className="vs-console-heading">
-              <div>
-                <h2 id="transmit-title">Search console</h2>
-                <p>{TEAM_COPY[versus.teamId].label} · your words stay private</p>
-              </div>
-              <dl>
-                <div><dt>Best</dt><dd>{percent(ownTeam.bestSimilarity)}</dd></div>
-                <div><dt>Guesses</dt><dd>{ownTeam.guessCount}</dd></div>
-              </dl>
-            </div>
-            {ownFinished ? (
-              <div className="vs-console-locked">
-                <MissionGlyph name="confirm" className="h-7 w-7" />
-                <div><strong>Signal locked</strong><span>You’re done. The rival team can keep searching.</span></div>
-              </div>
-            ) : (
-              <div className="vs-console-actions">
-                <GuessInput
-                  onGuess={onGuess}
-                  onTypingChange={onTypingChange}
-                  disabled={!canGuess}
-                  submitLabel="Transmit guess"
-                />
-                <button type="button" className="hint-button" onClick={onRequestHint} disabled={!canHint}>
-                  <MissionGlyph name="navigator" className="h-6 w-6" />
-                  {hintSeconds > 0 ? `Hint in ${hintSeconds}s` : "Halfway hint"}
-                </button>
-              </div>
-            )}
-            <p className="vs-score-rule">2s per guess · 60s per hint · lowest adjusted time wins</p>
-          </section>
 
           <div className="vs-private-log">
             <GuessList
@@ -561,8 +410,36 @@ function VersusLive(props: VersusExperienceProps) {
           </div>
         </section>
 
-        <TeamBay team={blueTeam} players={players} typingPlayerIds={typingPlayerIds} selfSocketId={selfSocketId} impact={impact} />
+        <TeamRoster team={blueTeam} players={players} typingPlayerIds={typingPlayerIds} selfSocketId={selfSocketId} />
       </div>
+      <GuessDock className={`vs-transmit-console is-${versus.teamId}`} label="Team guess controls">
+        <div className="vs-console-heading">
+          <div>
+            <h2 id="transmit-title">{TEAM_COPY[versus.teamId].label}</h2>
+            <p>{gameState.targetLength}-letter target · team guesses</p>
+          </div>
+        </div>
+        {ownFinished ? (
+          <div className="vs-console-locked">
+            <MissionGlyph name="confirm" className="h-7 w-7" />
+            <div><strong>Signal locked</strong><span>You’re done. The rival team can keep searching.</span></div>
+          </div>
+        ) : (
+          <div className="vs-console-actions">
+            <GuessInput
+              onGuess={onGuess}
+              onTypingChange={onTypingChange}
+              disabled={!canGuess}
+              submitLabel="Guess"
+            />
+            <button type="button" className="hint-button" onClick={onRequestHint} disabled={!canHint}>
+              <MissionGlyph name="navigator" className="h-6 w-6" />
+              {hintSeconds > 0 ? `Hint in ${hintSeconds}s` : "Hint +60s"}
+            </button>
+          </div>
+        )}
+        <p className="vs-score-rule">2s per guess · 60s per hint · lowest adjusted time wins</p>
+      </GuessDock>
     </main>
   );
 }

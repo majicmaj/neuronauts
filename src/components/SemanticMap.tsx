@@ -45,9 +45,13 @@ export function SemanticMap({
     : 0;
 
   const handlePointerMove = (event: ReactPointerEvent<SVGSVGElement>) => {
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const cursorX = ((event.clientX - bounds.left) / bounds.width) * SIZE;
-    const cursorY = ((event.clientY - bounds.top) / bounds.height) * SIZE;
+    // SVG may be letterboxed inside a wide or tall workspace. Screen CTM
+    // accounts for preserveAspectRatio, unlike ratios of the CSS rectangle.
+    const matrix = event.currentTarget.getScreenCTM();
+    if (!matrix) return;
+    const cursor = new DOMPoint(event.clientX, event.clientY).matrixTransform(matrix.inverse());
+    const cursorX = cursor.x;
+    const cursorY = cursor.y;
     let nearest: GuessResult | undefined;
     let nearestDistance = 9 ** 2;
 
@@ -86,13 +90,14 @@ export function SemanticMap({
         <svg
           viewBox={`0 0 ${SIZE} ${SIZE}`}
           className="semantic-map"
-          role="img"
+          role="group"
           aria-label="Two-dimensional projection of guesses around the target word"
           onPointerMove={handlePointerMove}
-          onPointerLeave={() => onGuessHover?.(null)}
+          onPointerDown={handlePointerMove}
+          onPointerLeave={(event) => { if (event.pointerType !== "touch") onGuessHover?.(null); }}
         >
           {versus ? (
-            <g className="map-versus-target-field" aria-hidden="true">
+            <g className="map-versus-target-field" aria-hidden="true" pointerEvents="none">
               <circle cx="160" cy="160" r="28" className="map-ring" />
               <line x1="160" y1="122" x2="160" y2="144" className="map-axis" />
               <line x1="160" y1="176" x2="160" y2="198" className="map-axis" />
@@ -128,6 +133,19 @@ export function SemanticMap({
             return (
               <circle
                 key={guess.id}
+                tabIndex={0}
+                role="button"
+                aria-label={`${guess.guess}, ${(guess.similarity * 100).toFixed(1)} percent`}
+                onFocus={() => onGuessHover?.(guess.id)}
+                onBlur={() => onGuessHover?.(null)}
+                onPointerDown={() => onGuessHover?.(guess.id)}
+                onKeyDown={(event) => {
+                  if (event.key === "Escape") onGuessHover?.(null);
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    onGuessHover?.(guess.id);
+                  }
+                }}
                 cx={x}
                 cy={y}
                 r={guess.correct ? 4.5 : guess.isHint ? 2.75 : 2.25}
@@ -137,10 +155,10 @@ export function SemanticMap({
             );
           })}
 
-          <g>
+          <g pointerEvents="none">
             <circle cx="160" cy="160" r="6" className="map-target" />
           </g>
-          <text x="160" y="181" textAnchor="middle" className="map-target-label">
+          <text x="160" y="181" textAnchor="middle" className="map-target-label" pointerEvents="none">
             {targetWord || "target"}
           </text>
 
