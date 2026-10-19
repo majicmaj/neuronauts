@@ -253,7 +253,7 @@ function PlayerResultCard({
     >
       <div className="debrief-player-stage">
         <span className="debrief-player-result">
-          {player.foundTarget ? "Target finder" : `${player.guessCount} transmissions`}
+          {player.foundTarget ? "Target finder" : `${player.guessCount} ${player.guessCount === 1 ? "transmission" : "transmissions"}`}
         </span>
         <PlayerAvatar avatarId={avatarId} className="debrief-card-avatar" decorative />
       </div>

@@ -464,7 +464,7 @@ function VersusLive(props: VersusExperienceProps) {
   );
 }
 
-function ResultTeam({ team, winner }: { team: VersusTeamSummary; winner: boolean }) {
+function ResultTeam({ team, winner, recapAvailable }: { team: VersusTeamSummary; winner: boolean; recapAvailable: boolean }) {
   return (
     <article className={`vs-result-team is-${team.id} ${winner ? "is-winner" : "is-runner-up"}`} style={teamStyle(team.id)}>
       <header>
@@ -482,14 +482,14 @@ function ResultTeam({ team, winner }: { team: VersusTeamSummary; winner: boolean
         <div><dt>Average</dt><dd>{percent(team.averageSimilarity)}</dd></div>
         <div><dt>Best</dt><dd>{percent(team.bestSimilarity)}</dd></div>
       </dl>
-      <div className="vs-result-roster">
+      {!recapAvailable && <div className="vs-result-roster">
         {team.playerStats.map((player) => (
           <div key={player.playerId}>
             <PlayerAvatar avatarId={player.avatarId} decorative />
             <span><strong>{player.playerName}</strong><small>{player.guessCount} guesses · {percent(player.bestSimilarity)} best · {player.hintCount} hints</small></span>
           </div>
         ))}
-      </div>
+      </div>}
     </article>
   );
 }
@@ -528,9 +528,9 @@ function VersusResults(props: VersusExperienceProps) {
       </section>
 
       <div className="vs-result-comparison">
-        <ResultTeam team={winner} winner />
+        <ResultTeam team={winner} winner recapAvailable={Boolean(result.teamRecaps?.[winner.id] || (winner.id === versus.teamId && props.gameState.recap))} />
         <div className="vs-result-divider" aria-hidden="true">VS</div>
-        <ResultTeam team={loser} winner={false} />
+        <ResultTeam team={loser} winner={false} recapAvailable={Boolean(result.teamRecaps?.[loser.id] || (loser.id === versus.teamId && props.gameState.recap))} />
       </div>
 
       <section className="vs-crew-results" aria-labelledby="vs-crew-results-title">
