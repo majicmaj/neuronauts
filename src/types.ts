@@ -65,7 +65,8 @@ export interface Winner {
 }
 
 export interface RecapGuess {
-  word: string;
+  /** Rival recaps intentionally omit private words. */
+  word?: string;
   similarity: number;
   rank: number | null;
 }
@@ -200,6 +201,7 @@ export interface VersusResult {
   winnerTeamId: TeamId;
   loserTeamId: TeamId;
   standings: VersusTeamSummary[];
+  teamRecaps?: Partial<Record<TeamId, GameRecap>>;
   targetWord: string;
   scoring: VersusScoring;
 }

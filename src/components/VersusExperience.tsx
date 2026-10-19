@@ -1,4 +1,5 @@
 import type {
+  GameRecap,
   GameState,
   GuessResult,
   Player,
@@ -19,6 +20,7 @@ import { GuessList } from "./GuessList";
 import { MissionGlyph } from "./MissionGlyph";
 import { PlayAgainButton } from "./PlayAgainButton";
 import { PlayerAvatar } from "./PlayerAvatar";
+import { CrewResultCards } from "./PostGameRecap";
 import { SemanticMap } from "./SemanticMap";
 
 interface VersusExperienceProps {
@@ -530,6 +532,30 @@ function VersusResults(props: VersusExperienceProps) {
         <div className="vs-result-divider" aria-hidden="true">VS</div>
         <ResultTeam team={loser} winner={false} />
       </div>
+
+      <section className="vs-crew-results" aria-labelledby="vs-crew-results-title">
+        <header className="debrief-roster-heading">
+          <div>
+            <h2 id="vs-crew-results-title">Crew results</h2>
+            <p>Each neuronaut’s distinctions and mission stats. Awards compare crewmates within their team.</p>
+          </div>
+          <MissionGlyph name="crew" className="h-8 w-8" />
+        </header>
+        <div className="vs-crew-results-comparison">
+        {[winner, loser].map((team) => {
+          const recap: GameRecap | null | undefined = team.id === versus.teamId
+            ? props.gameState.recap || result.teamRecaps?.[team.id]
+            : result.teamRecaps?.[team.id];
+          if (!recap) return null;
+          return (
+            <section key={team.id} className="vs-crew-results-team" style={teamStyle(team.id)} aria-labelledby={`crew-results-${team.id}`}>
+              <h3 id={`crew-results-${team.id}`}>{TEAM_COPY[team.id].label}{team.id === versus.teamId ? " · your crew" : " · rival crew"}</h3>
+              <CrewResultCards recap={recap} selfParticipantId={selfParticipantId} />
+            </section>
+          );
+        })}
+        </div>
+      </section>
 
       <footer className="vs-result-actions">
         <p>Same crew, fresh target, one shared rematch lobby.</p>

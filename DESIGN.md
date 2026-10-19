@@ -254,6 +254,8 @@ One fixed measured dock holds the active guess form and hint action. Team labeli
 
 ### Results
 
+Classic and VS share the rich per-player cards, existing award artwork and interactive citations. VS groups cards under explicit team names after the team score comparison. Award comparisons are within each crew. Own-team cards may include guess words; rival cards show only numeric signals and word-free citations, including after completion. Team groups stack on mobile.
+
 Preserve winner/runner-up language, grades, the adjusted-time equation, raw time, guess and hint penalties, team/player contributions, and rematch. Present these in borderless 12px surfaces with the same workhorse typography and explicit red/blue team identity.
 
 ## Do's and Don'ts

@@ -6,7 +6,7 @@ import {
 } from "@/lib/floatingDisclosure";
 import { calculateMissionGrade, type MissionGradeLetter } from "@/lib/missionGrade";
 import { playerColor } from "@/lib/playerColors";
-import type { GameState, PlayerRecap, RecapAward, RematchState } from "@/types";
+import type { GameRecap, GameState, PlayerRecap, RecapAward, RematchState } from "@/types";
 import {
   useCallback,
   useEffect,
@@ -281,7 +281,7 @@ function PlayerResultCard({
         <div>
           <dt>Best signal</dt>
           <dd>{percent(player.bestGuess?.similarity ?? null)}</dd>
-          {player.bestGuess && <span>{player.bestGuess.word}</span>}
+          {player.bestGuess?.word && <span>{player.bestGuess.word}</span>}
         </div>
         <div>
           <dt>Hints</dt>
@@ -295,6 +295,28 @@ function PlayerResultCard({
         {player.wrongGuessCount} wrong {player.wrongGuessCount === 1 ? "turn" : "turns"}
       </p>
     </article>
+  );
+}
+
+export function CrewResultCards({ recap, selfParticipantId }: {
+  recap: GameRecap;
+  selfParticipantId?: string;
+}) {
+  const avatarAssignments = assignUniqueAvatarIds(
+    recap.players.map((player) => ({ key: player.playerId, avatarId: player.avatarId }))
+  );
+  return (
+    <div className="debrief-player-grid">
+      {recap.players.map((player) => (
+        <PlayerResultCard
+          key={player.playerId}
+          player={player}
+          avatarId={avatarAssignments.get(player.playerId) || AVATARS[0].id}
+          awards={coolestAwards(player, recap.awards)}
+          isSelf={player.playerId === selfParticipantId}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -316,12 +338,6 @@ export function PostGameRecap({
     totalGuesses: recap.totalGuesses,
     totalHints: recap.totalHints,
   });
-  const avatarAssignments = assignUniqueAvatarIds(
-    recap.players.map((player) => ({
-      key: player.playerId,
-      avatarId: player.avatarId,
-    }))
-  );
   const gradeStyle = {
     "--grade-color": (effectiveTheme === "dark" ? GRADE_COLORS : LIGHT_GRADE_COLORS)[grade.letter],
   } as CSSProperties;
@@ -405,17 +421,7 @@ export function PostGameRecap({
           <MissionGlyph name="crew" className="h-8 w-8" />
         </header>
 
-        <div className="debrief-player-grid">
-          {recap.players.map((player) => (
-            <PlayerResultCard
-              key={player.playerId}
-              player={player}
-              avatarId={avatarAssignments.get(player.playerId) || AVATARS[0].id}
-              awards={coolestAwards(player, recap.awards)}
-              isSelf={player.playerId === selfParticipantId}
-            />
-          ))}
-        </div>
+        <CrewResultCards recap={recap} selfParticipantId={selfParticipantId} />
       </section>
     </div>
   );
