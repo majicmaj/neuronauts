@@ -1,6 +1,6 @@
 import { LobbyScreen } from "@/components/LobbyScreen";
 import { ThemeToggle } from "@/components/ThemeToggle";
-import { savePreferredPlayerName, socket } from "@/lib/socket";
+import { saveLobbyResumeToken, savePreferredPlayerName, socket } from "@/lib/socket";
 import type { GameMode, LobbyPayload, MissionCategory } from "@/types";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -23,6 +23,7 @@ export default function LobbyPage() {
       setBusy(false);
     };
     const onCreated = (payload: LobbyPayload) => {
+      saveLobbyResumeToken(payload);
       const self = payload.players.find((player) => player.id === socket.id);
       if (self) savePreferredPlayerName(self.name);
       navigate(`/game/${payload.lobbyId}`);

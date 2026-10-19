@@ -1,4 +1,5 @@
 import { Celebration } from "@/components/Celebration";
+import { GuessDock } from "@/components/GuessDock";
 import { GuessInput } from "@/components/GuessInput";
 import { GuessList } from "@/components/GuessList";
 import { MissionGlyph } from "@/components/MissionGlyph";
@@ -11,6 +12,8 @@ import { WinBanner } from "@/components/WinBanner";
 import { VersusExperience } from "@/components/VersusExperience";
 import {
   getPreferredPlayerName,
+  getLobbyResumeToken,
+  saveLobbyResumeToken,
   savePreferredPlayerName,
   socket,
 } from "@/lib/socket";
@@ -73,10 +76,12 @@ export function GamePage() {
       socket.emit("joinLobby", {
         lobbyId,
         preferredName: getPreferredPlayerName(),
+        resumeToken: getLobbyResumeToken(lobbyId),
       });
     };
     const onDisconnect = () => setConnected(false);
     const onLobbyJoined = (payload: LobbyPayload) => {
+      saveLobbyResumeToken(payload);
       setMode(payload.mode || "classic");
       setVersus(payload.versus || null);
       setCategory(payload.category);
@@ -97,6 +102,7 @@ export function GamePage() {
       }
     };
     const onVersusUpdated = (payload: LobbyPayload) => {
+      saveLobbyResumeToken(payload);
       setMode("versus");
       setCategory(payload.category);
       setGameState(payload.gameState);
@@ -329,10 +335,10 @@ export function GamePage() {
   }
 
   return (
-    <div className="app-shell min-h-dvh overflow-hidden">
+    <div className="app-shell game-shell min-h-dvh">
       <Celebration active={celebrating} />
 
-      <div className="mx-auto w-full max-w-7xl px-3 py-3 sm:px-5 sm:py-5">
+      <div className="game-page-content w-full px-3 py-3 sm:px-6 sm:py-4">
         <header className="mission-header mb-5 flex items-center justify-between gap-3 pb-3">
           <button onClick={() => navigate("/")} className="flex min-w-0 items-center gap-2 text-left">
             <Neuronaut className="h-10 w-10 shrink-0" />
@@ -435,7 +441,7 @@ export function GamePage() {
               />
 
               {gameState.status !== "won" && (
-                <section className="neuron-card p-4 sm:p-5">
+                <GuessDock className="classic-guess-console" label="Guess controls">
                   <div className="mb-3 flex flex-col items-start gap-1.5 text-sm text-zinc-500 dark:text-zinc-400 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
                     <span>
                       Target signal: <strong className="text-zinc-800 dark:text-zinc-200">{gameState.targetLength} letters</strong>
@@ -467,7 +473,7 @@ export function GamePage() {
                       {hintSeconds > 0 ? `Hint in ${hintSeconds}s` : "Halfway hint"}
                     </button>
                   </div>
-                </section>
+                </GuessDock>
               )}
 
               </div>

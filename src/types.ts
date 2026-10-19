@@ -138,6 +138,7 @@ export interface MissionCategory {
 }
 
 export interface LobbyPayload {
+  resumeToken?: string;
   category?: MissionCategory;
   lobbyId: string;
   mode?: GameMode;

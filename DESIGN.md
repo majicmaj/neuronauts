@@ -1,6 +1,6 @@
 ---
 name: Neuronauts
-description: Restrained matte mission control for a social semantic-search game.
+description: Quiet full-screen game surfaces with clear red and blue team signals.
 colors:
   canvas: "#eef2f0"
   surface: "#ffffff"
@@ -50,6 +50,24 @@ colors:
   dark-team-red-soft: "#321d20"
   dark-team-blue: "#6ca5f5"
   dark-team-blue-soft: "#18283d"
+  game-canvas: "#f3f4f6"
+  game-surface: "#ffffff"
+  game-surface-subtle: "#eceef1"
+  game-ink: "#202228"
+  game-muted: "#626773"
+  game-line: "#e2e4e8"
+  game-line-strong: "#c8ccd4"
+  game-accent: "#287c70"
+  game-accent-hover: "#20685e"
+  dark-game-canvas: "#101113"
+  dark-game-surface: "#191a1e"
+  dark-game-surface-subtle: "#222429"
+  dark-game-ink: "#eceef2"
+  dark-game-muted: "#a4a9b3"
+  dark-game-line: "#2c2e35"
+  dark-game-line-strong: "#4a4e58"
+  dark-game-accent: "#7ad3bf"
+  dark-game-accent-hover: "#9adfce"
 typography:
   display:
     fontFamily: "Avenir Next, Segoe UI, ui-sans-serif, system-ui, sans-serif"
@@ -81,25 +99,19 @@ typography:
     fontWeight: 700
     lineHeight: 1.3
     letterSpacing: "0.06em"
-  vs-display:
-    fontFamily: "Barlow Condensed, Arial Narrow, sans-serif"
-    fontSize: "clamp(2.65rem, 7vw, 6rem)"
-    fontWeight: 900
-    lineHeight: 0.88
-    letterSpacing: "0.005em"
-  vs-heading:
-    fontFamily: "Barlow Condensed, Arial Narrow, sans-serif"
-    fontSize: "clamp(1.4rem, 2vw, 1.85rem)"
-    fontWeight: 900
-    lineHeight: 1.05
-    letterSpacing: "0.045em"
-  vs-instrument:
-    fontFamily: "Barlow Condensed, Arial Narrow, sans-serif"
-    fontSize: "0.75rem"
-    fontWeight: 600
-    lineHeight: 1.2
-    letterSpacing: "0.08em"
+  game-heading:
+    fontFamily: "Avenir Next, Segoe UI, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.9rem"
+    fontWeight: 700
+    lineHeight: 1.35
+    letterSpacing: "-0.02em"
+  game-instrument:
+    fontFamily: "Avenir Next, Segoe UI, ui-sans-serif, system-ui, sans-serif"
+    fontSize: "0.8rem"
+    fontWeight: 650
+    letterSpacing: "normal"
 rounded:
+  game-surface: "12px"
   structural: "4px"
   compact: "7px"
   action: "10px"
@@ -142,214 +154,124 @@ components:
     backgroundColor: "{colors.surface}"
     textColor: "{colors.ink}"
     rounded: "{rounded.panel}"
-  vs-team-bay-red:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.structural}"
-  vs-team-bay-blue:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.structural}"
-  vs-transmit-console:
-    backgroundColor: "{colors.surface}"
-    textColor: "{colors.ink}"
-    rounded: "{rounded.structural}"
-    padding: "1rem"
+  game-team-surface:
+    backgroundColor: "{colors.game-surface}"
+    textColor: "{colors.game-ink}"
+    rounded: "{rounded.game-surface}"
+  game-progress-board:
+    backgroundColor: "{colors.game-surface}"
+    textColor: "{colors.game-ink}"
+    rounded: "{rounded.game-surface}"
+    padding: "1rem 1.25rem"
+  game-guess-dock:
+    backgroundColor: "{colors.game-surface}"
+    textColor: "{colors.game-ink}"
+    padding: "0.85rem 1.5rem"
 ---
 
 # Design System: Neuronauts
 
 ## Overview
 
-**Creative North Star: "The Matte Flight Deck"**
+**Creative North Star: "The Quiet Match Workspace"**
 
-Neuronauts is a restrained mission-control interface built for quick social play. Its world is practical rather than cinematic: pale mineral fields or deep green-black fields, compact information density, one-pixel rules, a heavy workhorse sans, crisp custom Pixelarticons glyphs, and small 3D neuronauts that carry the character. Copy is concise and playful, but state is never disguised by atmosphere.
+Neuronauts uses concise mission-control language, custom Pixelarticons glyphs, and small 3D neuronaut avatars to support social semantic search. Home and lobby keep their incumbent mineral-green palette and rounded, ruled components.
 
-The default system is calm, rounded, and cooperative. VS mode is a durable extension of that world, not a replacement: self-hosted Barlow Condensed turns team names, grades, percentages, and labels into instrumentation; Red Shift and Blue Orbit meet in dominant opposing scores and a bounded relative energy beam; narrow roster rails flank a central search lane. Restrained airlock geometry remains appropriate in setup, where choosing teams is the task, but it is not the live-match focal structure.
+The game route follows the user-pinned Linear direction: a quiet, full-width workspace with neutral light/dark surfaces, one workhorse sans, compact red/blue denoters, and a persistent bottom guess input. Setup, live play, and results share this calmer grammar. Team names, emblems, and progress communicate competition while the map and private log carry the active task.
 
 **Key Characteristics:**
 
-- Matte light and dark themes driven by semantic CSS properties.
-- Flat tonal layering with structural one-pixel rules and sparing overlay shadows.
-- Avenir-like workhorse typography, with condensed instrumentation reserved for VS telemetry.
-- Custom Pixelarticons glyphs and compact 3D neuronaut assets as identity anchors.
-- Red/blue competition reinforced by names, initials, roster rails, opposing score placement, and status language.
-- A three-region VS instrument protects opposing score percentages, the centered ticking elapsed clock, and the relative energy meter from one another.
-- Responsive layouts that preserve task order and 44px minimum interactive targets.
+- Neutral light/dark tokens scoped to `.game-shell`; incumbent home/lobby styling remains separate.
+- Borderless 12px game surfaces, compact spacing, and one workhorse sans.
+- Red/blue team names, R/B emblems, small progress bars, and explicit statuses.
+- Full-width game content with responsive roster disclosures and desktop map/log columns.
+- Measured, keyboard-aware bottom guess controls in both cooperative and VS play.
+- Existing Pixelarticons glyphs and neuronaut avatars preserve product identity.
 
 ## Colors
 
-The palette uses mineral green neutrals, a teal navigation signal, amber hint telemetry, and deliberately paired red/blue competitive channels; dark mode remaps every semantic role rather than inverting the page.
+Frontmatter tokens without a `game-` prefix describe incumbent home/lobby and shared semantic colors. The `game-*` and `dark-game-*` tokens document the local overrides in `.game-shell`; they are not global replacements. The game field is cool neutral gray, with white or charcoal working surfaces and a slightly stronger subordinate surface. Text hierarchy uses ink and muted roles.
 
-### Primary
+Navigator Teal remains the action, focus, and semantic-target signal. Amber denotes hints; danger color denotes actual errors. Red Shift and Blue Orbit retain the incumbent `team-red` / `team-blue` light and dark tokens, used sparingly in emblems, team labels, progress, and map points. Tokenized line colors remain available for functional details such as focus or scrollbars; they do not authorize decorative game frames.
 
-- **Navigator Teal:** The default action, selection, focus, semantic target, online signal, and successful-state color. Its light and dark values are the `accent` tokens in the frontmatter.
-- **Navigator Teal Soft:** The restrained selected-row and selected-control field. It supports the accent without turning whole screens teal.
-
-### Secondary
-
-- **Red Shift Signal:** The red team’s rail, emblem, heading, progress, points, and finished-state border. Pair it with the words “Red Shift” or “Red,” the `R` emblem, and the red-side geometry.
-- **Blue Orbit Signal:** The blue team’s corresponding identity. Pair it with “Blue Orbit” or “Blue,” the `B` emblem, and the blue-side geometry.
-
-### Tertiary
-
-- **Halfway Amber:** Reserved for hints and their borders, labels, and actions. It communicates a special competitive cost, not a general secondary action.
-- **Debrief Green:** A dark celebratory stage used by classic mission debriefs with its own ink, muted, and line roles.
-- **Danger Red:** Used for actual error or destructive states, never as a substitute for Red Shift team identity.
-
-### Neutral
-
-- **Mineral Canvas:** The page field. It is slightly green in both themes, avoiding pure neutral gray.
-- **Instrument Surface:** The main control and card plane.
-- **Subtle Surface:** The lower-contrast field for secondary controls, avatar wells, selected contexts, and track backgrounds.
-- **Flight Ink:** Primary copy and glyph color.
-- **Telemetry Muted:** Supporting copy, labels, inactive controls, and timestamps.
-- **Structural Line / Strong Structural Line:** One-pixel separation and control outlines. The stronger role frames actionable or major boundaries.
-
-### Named Rules
-
-**The Signal Has a Job Rule.** Teal means navigation, action, focus, or semantic success; amber means hints; red and blue mean team identity. Do not use these colors as decoration without that state relationship.
-
-**The Two-Factor Team Rule.** Every red/blue distinction also needs a name, emblem, placement, geometry, or status phrase. Color alone never carries team identity.
+**The Two-Factor Team Rule.** Pair team color with a name, emblem, placement, or status. Color alone never carries team identity.
 
 ## Typography
 
-**Display Font:** Avenir Next (with Segoe UI and system sans fallbacks)
+**Display and Body Font:** Avenir Next, Segoe UI, ui-sans-serif, system-ui, sans-serif.
 
-**Body Font:** Avenir Next (with Segoe UI and system sans fallbacks)
-**VS Instrument Font:** Self-hosted Barlow Condensed (with Arial Narrow and sans-serif fallbacks)
+Home and lobby retain the frontmatter's incumbent display/body hierarchy. The game route uses the same workhorse face throughout. Setup headings are `clamp(1.6rem, 3vw, 2rem)` at weight 650; team headings are 0.9rem with restrained negative tracking; progress labels are 0.8rem; supporting telemetry is approximately 0.6–0.75rem. The input remains 1rem. Results can use a larger `clamp(2rem, 5vw, 4rem)` statement without changing font family. Metrics and the elapsed clock use tabular numerals.
 
-**Character:** The base face is sturdy, friendly, and fast to scan. Barlow Condensed makes competitive numbers and labels feel calibrated and space-efficient without turning ordinary body copy into a themed prop.
-
-### Hierarchy
-
-- **Display** (800, fluid 2.25–3.75rem, 1 line-height): Product-name moments and major entry headings.
-- **Headline** (900, 1.5rem, 1.2 line-height): Mission errors, debrief headings, and prominent section statements.
-- **Title** (700, 1.25rem, 1.25 line-height): Card and workflow headings.
-- **Body** (400, 1rem, 1.75 line-height): Instructions and explanatory copy; use compact 0.7–0.875rem supporting text where the implementation is telemetry-dense.
-- **Label** (700, 0.75rem, 0.06em tracking): Statuses, compact labels, and instrument captions; uppercase only where the interface is explicitly labeling a measurement or state.
-- **VS Display** (900, fluid 2.65–6rem, 0.88 line-height): Winner statements and dominant competitive readouts, including the live best-signal scores.
-- **VS Heading** (900, fluid 1.4–1.85rem, 1.05 line-height, 0.045em tracking): Uppercase team names and result headings.
-- **VS Instrument** (600 or 900, usually 0.62–0.92rem): Tabular metrics, grades, progress, and energy-clash labels. Use the two shipped font files—SemiBold 600 and Black 900—as the durable weight anchors.
-
-### Named Rules
-
-**The Workhorse First Rule.** Keep navigation, instructions, forms, player names, and normal card copy in the base sans. Introduce Barlow Condensed only when content is functioning as VS instrumentation or a competitive headline.
-
-**The Numbers Lock Rule.** Metrics, timers, counts, ranks, grades, and percentages use tabular numerals and compact alignment so live updates do not destabilize the layout.
+**The Workhorse Rule.** Use Avenir Next and its system sans fallbacks throughout the game route, including VS names, scores, grades, and labels.
 
 ## Layout
 
-The application begins at a 320px minimum width. Global mission content sits in a centered `max-w-7xl` shell with 12px mobile gutters and 20px gutters from the small breakpoint. The ordinary game is a single ordered flow on narrow screens, then becomes a main workspace plus a sticky 23rem rail at 1024px. Cards and controls generally follow an 8px sub-rhythm inside a 16px section rhythm, with 20–32px reserved for page-level separation.
+The game route fills the available screen width with 12px mobile gutters and 24px gutters from 640px. Its `.game-shell` scope covers cooperative play, VS setup, live VS, and results. Setup content caps at 1000px for readable team selection; it uses two surface columns from 720px and stacks them below that width. Ready/launch actions remain near the setup content and wrap on mobile.
 
-VS setup and live play use separate responsive grammars. Setup may retain the facing bay–seam–bay airlock at 720px and widens to `min(1505px, calc(100vw - 1rem))` at 1180px because choosing teams is the active task. Live play always leads with the two best-signal scores and their energy clash. From 1180px, quiet roster rails (`14–17.5rem`) flank a central lane (`min-width: 34rem`) inside a shell that may widen to `min(1640px, calc(100vw - 1rem))`. Between 720px and 1179px, the central lane spans above the two roster rails.
+Live VS begins with two compact independent best-similarity progress bars and the elapsed clock. Below 720px the clock occupies a small centered row beneath the bars. The semantic map and private log precede the two roster disclosures in the central flow. From 1100px, 11–14rem roster columns flank the flexible central workspace; from 1280px, the center splits into a map and a minimum 19rem private log. Map height follows viewport space rather than a fixed square. Rosters use native `details` / `summary` disclosures with explicit expand/collapse signs.
 
-Below 720px, live play keeps the active task first: energy clash, semantic map and phase state, search console, then latest guess and private flight log. Red Shift and Blue Orbit roster rails stack afterward. The meter compresses vertically but retains both scores and the collision; the VS map keeps an 18rem minimum height. Mobile setup keeps ready controls near the top, uses the full available width, and retains 44px targets. Mobile result metrics collapse from three to two columns.
+Both cooperative and VS play pin `GuessDock` across the bottom of the screen. A ResizeObserver measures its height for page and toast clearance; VisualViewport resize/scroll events position it above the software keyboard. Safe-area padding protects touch controls. The dock uses a two-column desktop layout and a single mobile column; the mobile submit action retains its 44px target. Content must remain usable at 320px.
 
-**The Task-Order Rule.** Responsive changes may reorder regions, but live VS must preserve energy state → semantic map → search console → latest guess/private flight log before roster telemetry; setup must preserve readiness before long team rosters on mobile.
-
-**The Three-Region Instrument Rule.** Opposing score percentages, the centered ticking elapsed clock, and the energy meter remain separate, whitespace-protected layout regions. At the 320px minimum width, both score regions must fit exact `100.0%` values while the clock stays centered and the meter remains on its own row.
+**The Dock Clearance Rule.** Reserve the measured guess dock height in page flow and keep the dock above the visual viewport keyboard. Neither content nor feedback may disappear behind it.
 
 ## Elevation & Depth
 
-Neuronauts is flat by default. Depth comes from canvas-to-surface tone changes, one-pixel rules, colored rails, progress fills, and scale—not gradients, glass, or decorative glow. Ordinary cards carry no shadow. Compact temporary overlays use restrained shadows: theme menus use `0 8px 22px rgb(17 24 21 / 0.14)`, alert toasts use `0 8px 22px rgb(17 24 21 / 0.16)`, and the classic debrief reserves `0 18px 44px rgb(7 26 22 / 0.18)` for its stage and `0 12px 28px rgb(17 24 21 / 0.1)` for player cards. The input’s mixed-color focus halo is functional focus feedback, not ambient glow.
+Game hierarchy comes from canvas/surface/subtle-surface tones and whitespace. Game cards, inputs, team panels, results, and header frames have no decorative borders or resting card shadows. The bottom dock has a subtle functional separation shadow, `0 -8px 24px rgb(0 0 0 / 0.04)`. Keyboard focus uses an explicit two-pixel accent outline with offset rather than a decorative glow.
 
-### Shadow Vocabulary
+Outside the game-route restyle, incumbent home/lobby controls can retain one-pixel rules and established overlay shadows. Theme menus use `0 8px 22px rgb(17 24 21 / 0.14)`; alert toasts use `0 8px 22px rgb(17 24 21 / 0.16)`. Classic debrief behavior and its existing stage/player-card hierarchy remain supported.
 
-- **Compact Overlay:** `0 8px 22px rgb(17 24 21 / 0.14)` for menus that must sit above the active mission.
-- **Urgent Overlay:** `0 8px 22px rgb(17 24 21 / 0.16)` for temporary alert toasts.
-- **Debrief Stage:** `0 18px 44px rgb(7 26 22 / 0.18)` for the celebratory classic recap plane only.
-- **Debrief Card:** `0 12px 28px rgb(17 24 21 / 0.1)` for classic recap player cards only.
-
-### Named Rules
-
-**The Flat Flight Deck Rule.** Resting application surfaces and all VS structures remain shadowless. Use shadows only for temporary overlays or the established classic debrief hierarchy.
+**The Surface Rule.** Game-route grouping uses tonal surfaces, spacing, and typography. Do not add decorative borders, airlock geometry, or collision effects.
 
 ## Shapes
 
-Ordinary controls use gently rounded 10px corners and incumbent cards use 14px corners. Smaller interactive details use 7–8px corners, while avatars and compact statuses may use circles or pills. Borders are almost always one pixel.
-
-Competitive structures tighten to 4px corners. Live VS uses unclipped rectangular roster rails with a restrained two-pixel team signal at the outer edge; its central meter keeps squared solid-color beams and artist-made raster collision art inside a simple ruled frame. Setup alone may use the earlier clipped inward jaws and asymmetric rails—red’s diagonal rail and `R` emblem against blue’s segmented rail and `B` emblem—because the side-selection metaphor is still useful there.
-
-**The Soft Utility, Hard Competition Rule.** Use 10–14px rounding for general product UI; use 4px edges, clipping, and squared progress geometry for VS bays, consoles, logs, and results.
+Game surfaces use 12px corners. Team emblems are compact 1.6rem squares with 6px corners; setup join actions use 8px corners. Progress tracks are slim 0.3rem bars with 3px corners. The full-width bottom dock has no enclosing rounded frame. Existing home/lobby controls retain 10px corners and incumbent cards retain 14px corners. Do not derive a new competition shape language from earlier clipped bays.
 
 ## Components
 
-### Buttons
+### Buttons and inputs
 
-- **Shape:** Strong, compact controls with a 10px radius and at least 44px height.
-- **Primary:** Solid Navigator Teal with white light-theme contrast ink, a one-pixel matching border, 0.7rem × 1.15rem padding, and a bold label. Hover shifts to the dedicated darker/lighter theme hover token.
-- **Secondary:** Subtle Surface with Flight Ink and a Strong Structural Line. Hover turns the border and label teal without filling the control.
-- **Hint:** A 48px amber-tinted action with matching hint border and icon. Disabled actions keep their geometry and reduce opacity to 0.45.
-- **Focus:** A visible two-pixel teal outline with three-pixel offset. Keep focus independent from hover.
-- **Icons:** Use the incumbent crisp Pixelarticons glyph wrapper, normally at 24px. Avoid generic smooth-stroke icon sets.
+Maintain at least 44px action targets and a 48px, 1rem guess field. Game inputs use Subtle Surface with no border; focus uses a two-pixel accent outline and two-pixel offset. Hint and secondary actions keep semantic color and readable disabled states while removing their game-route outlines. Home/lobby retain existing button variants. Guess submission still accepts a trimmed single word with the existing 40-character limit.
 
-### Cards / Containers
+### Navigation and identity
 
-- **Corner Style:** 14px for incumbent cards; 4px for VS structural containers.
-- **Background:** Instrument Surface on the Mineral Canvas; selected or subordinate areas use Subtle Surface or semantic soft colors.
-- **Shadow Strategy:** None at rest; follow the explicit exceptions in Elevation & Depth.
-- **Border:** One-pixel Structural Line, promoted to Strong Structural Line for major controls and workspace frames.
-- **Internal Padding:** Usually 16px, increasing to 20–24px for larger incumbent cards.
+The game header is a compact borderless row with existing logo, lobby code/copy control, presence, and theme menu. Responsive hiding may simplify text while preserving usable controls. Keep the existing Pixelarticons family and 4×4 neuronaut sprite sheet; avatars remain raster assets. Player names use the workhorse sans.
 
-### Inputs / Fields
+### Team setup and rosters
 
-- **Style:** A 48px-high Instrument Surface with a one-pixel Strong Structural Line, 10px corners, and 0.7rem × 0.9rem padding.
-- **Focus:** Border shifts to Navigator Teal and receives a three-pixel 16%-mixed teal halo; keyboard focus also retains the global two-pixel outline.
-- **Disabled:** Keep the field readable and reduce opacity to 0.55.
-- **Behavior:** Guess submission accepts one trimmed word, uses a 40-character limit, and pairs the field with a Pixelarticons transmit glyph.
+Setup has two simple team surfaces with small colored R/B emblems, names, avatar rows, readiness, and side-switch actions. Randomize and launch controls preserve current host/readiness rules. Live team rosters use expandable summaries with team name and player count. Expanded content exposes contribution and team telemetry without decorative rails or row rules. A team's finish locks its own controls while the opposing team continues.
 
-### Navigation
+### Compact progress board
 
-- **Mission Header:** A flat flex row separated from content by a one-pixel Strong Structural Line. The compact neuronaut mark and product name sit left; live count, monospaced six-character lobby code, copy action, and 44px theme menu sit right.
-- **Responsive Treatment:** Product text and live-count copy may hide on small screens; the identity asset, lobby code, copy affordance, and theme control remain.
-- **Theme Menu:** A compact floating menu with 10px corners, a one-pixel strong border, and the Compact Overlay shadow. It supports Light, Dark, and System and closes on outside click or Escape.
+Two independent red/blue best-similarity bars sit in one neutral surface with explicit team labels, percentages, and supporting status. The ticking elapsed clock remains separate. There is no relative-energy beam, collision, laser artwork, or impact animation in the match UI.
 
-### Player Identity
+### Semantic field and private log
 
-Compact 3D neuronauts come from the existing 4×4 sprite sheet and remain raster identity assets, not emoji substitutes. The default avatar well uses Subtle Surface; player names stay in the workhorse sans. In lists, avatar, name/state, and tabular contribution metrics form a stable row separated by rules.
+The VS map is a borderless neutral surface with a compact target marker and small red/blue points. Own-team words can be disclosed using pointer, keyboard, and touch interaction; opponent points remain anonymized and non-interactive. Pointer coordinates use inverse SVG screenCTM so hover agrees with visible points when the map is stretched responsively. The private log keeps own-team words, sorting, and map linkage. The cooperative map and shared crew log retain their established game meaning.
 
-### Team Bays
+### Bottom guess dock
 
-Setup bays are mirrored side-selection structures with labeled emblems, restrained airlock rails and jaws, ready state, and a team-switch action. Live bays become narrow, quiet, full-height roster rails: an unclipped rectangular field, a two-pixel outer team signal, compact emblem and team heading, ruled player rows, and aggregate average/hints/elapsed telemetry above explicit “Still searching” or “Finished” state. Live rows rank players by best similarity, then average similarity, then guess volume, then name; display the resulting rank with guesses, average, and best. When a team finishes, only that team’s private controls lock—the opposing search remains operable.
+One fixed measured dock holds the active guess form and hint action. Team labeling identifies the private VS console; cooperative mode uses the same anchored action pattern. Locked/finished states retain meaningful copy. The scoring explanation remains visible in VS, and alert toasts clear the measured dock height.
 
-### Energy Clash
+### Results
 
-The live VS focal point is a single score-and-beam instrument above the task lane. Its first row gives Red Shift best signal, a centered elapsed clock that ticks once per second, and Blue Orbit best signal distinct grid regions; the energy meter occupies a separate row below. The score readouts use tabular numerals and no wrapping so exact `100.0%` values remain intact even at 320px. The solid-color beam divides by relative best score: no-signal parity is 50/50; ordinary unsolved ratios clamp to 8–92 so both sides remain legible; one exact solve may own 100/0; simultaneous exact solves return to 50/50. Keep the collision horizontally inset within the meter even at a 100/0 endpoint, and announce the energy share and event text semantically.
-
-The collision uses Wenrexa’s CC0 hand-drawn laser art from both sides and Luis Zuno/Ansimuz’s CC0 animated charged-impact raster at the meeting point; it is not an authored SVG or procedural CSS burst. Reduced motion swaps the animated charged impact for its shipped static frame, makes beam/collision position changes effectively immediate, removes the laser drive animation, and hides transient contribution notes. Asset provenance, source links, license details, and credits live in `public/vfx/README.md`.
-
-Total guess volume raises activity at 8, 24, 60, and 120 signals, accelerating and strengthening the clash without changing the underlying score. Each new guess adds feedback by outcome: `guess` for a plotted signal, `gain` from a best-score increase of at least 0.2 percentage points, `breakthrough` for a 10-point jump or a 3.5-point jump that reaches at least 85%, and `solve` for the exact target. Gain, breakthrough, and solve progressively widen and intensify the charged impact and contribution feedback; they do not replace the beam. Transient event copy names the freshest local impact, but when no fresh event exists—including after reconnect—the fallback is derived from the current red/blue team finish statuses, never from stale event history. The interaction remains visual and textual; never force sound effects.
-
-### Semantic Field
-
-The ordinary map is a rounded 320-unit SVG surface with three dashed rings and full axes. The VS field is open and transparent, keeps only a compact target ring and short axes, and plots small red/blue points. Own points may expose their words on hover; opposing points are anonymized, slightly dimmer, and non-interactive. The target remains a teal outlined center marker, with a workhorse-sans label.
-
-### Result Comparison
-
-Results lead with the winner’s team emblem, condensed win statement, and oversized grade. A ruled equation shows raw time plus guess and hint penalties before paired team panels compare adjusted time, raw time, guesses, hints, average, best, and player contributions. Winner/runner-up language and team structure remain explicit beyond color.
+Preserve winner/runner-up language, grades, the adjusted-time equation, raw time, guess and hint penalties, team/player contributions, and rematch. Present these in borderless 12px surfaces with the same workhorse typography and explicit red/blue team identity.
 
 ## Do's and Don'ts
 
 ### Do:
 
-- **Do** use semantic light/dark tokens so the same hierarchy survives both themes.
-- **Do** build hierarchy with matte field changes, one-pixel rules, size, and typography before considering elevation.
-- **Do** keep interactive controls at least 44px and preserve visible keyboard focus and reduced-motion behavior.
-- **Do** use custom Pixelarticons glyphs and the existing neuronaut sprite sheet or award artwork when those identities are called for.
-- **Do** pair every team color with Red Shift/Blue Orbit naming, the `R`/`B` emblem, mirrored placement, geometry, or explicit status copy.
-- **Do** make the live VS hierarchy read as scores and bounded energy clash first, task lane second, quiet roster telemetry third.
-- **Do** preserve separate whitespace-protected score, elapsed-clock, and meter regions, including exact `100.0%` score fit at 320px.
-- **Do** keep restrained Airlock geometry in VS setup only, where side choice and readiness are the task.
+- Do use the scoped neutral game tokens in both light and dark themes.
+- Do group game content with tonal surfaces, spacing, and 12px corners.
+- Do pair red/blue team color with names, R/B emblems, and clear status language.
+- Do keep the compact independent team progress bars readable at 320px.
+- Do preserve measured bottom input clearance, safe-area padding, and visible keyboard focus.
+- Do preserve existing neuronaut avatars, Pixelarticons glyphs, cooperative mechanics, and result scoring.
 
 ### Don't:
 
-- **Don't** use gradients, glass effects, decorative glow, or floating-card depth in the mission-control world.
-- **Don't** replace the crisp custom glyph family with Lucide-style generic line icons, emoji, or unrelated iconography.
-- **Don't** apply Barlow Condensed to normal body copy, forms, navigation, or cooperative content.
-- **Don't** bring clipped airlock jaws, confrontation seams, or oversized live team bays back into the Energy Clash live match.
-- **Don't** let unsolved beam ratios erase either team or place the charged collision artwork outside the meter’s bounded horizontal range.
-- **Don't** replace the Wenrexa laser art or Luis Zuno/Ansimuz charged-impact assets with authored SVG, procedural bursts, or undocumented VFX.
-- **Don't** reveal opponent words, aliases, hint origins, or interactive tooltips in the VS semantic field.
-- **Don't** require sound effects for guess, gain, breakthrough, or solve feedback.
-- **Don't** use Red Shift color for danger states or Navigator Teal as decoration; semantic color roles remain distinct.
+- Don't add decorative borders, clipped airlock jaws, confrontation seams, beams, or collision animation to the game route.
+- Don't reintroduce condensed competitive typography into the game route.
+- Don't expose opposing words, aliases, hint origins, or interactive opponent tooltips.
+- Don't make team identity depend on color alone.
+- Don't apply game-route palette changes to home and lobby without a separate scoped request.
+- Don't place a fixed guess input over scrollable content without measured clearance.

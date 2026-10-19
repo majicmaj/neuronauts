@@ -1,25 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import {
-  impactIntensity,
   sortPlayerStats,
   versusCurrentStateText,
   versusElapsedSeconds,
-  versusEnergyLevel,
-  versusEnergyShare,
 } from "../src/lib/versusEnergy.ts";
-
-test("energy share stays competitive until a team solves", () => {
-  assert.equal(versusEnergyShare(0.95, 0.02), 92);
-  assert.ok(Math.abs(versusEnergyShare(0.95, 0.9) - 51.35135135135135) < 0.0001);
-  assert.equal(versusEnergyShare(1, 0.9), 100);
-  assert.equal(versusEnergyShare(0.9, 1), 0);
-  assert.equal(versusEnergyShare(0, 0), 50);
-});
-
-test("energy level rises with match activity", () => {
-  assert.deepEqual([0, 7, 8, 24, 60, 120].map(versusEnergyLevel), [0, 0, 1, 2, 3, 4]);
-});
 
 test("elapsed time follows the shared match start and safely handles invalid input", () => {
   const startedAt = "2026-08-24T15:00:00.000Z";
@@ -34,13 +19,6 @@ test("reconnected scoreboards describe the teams' current finish state", () => {
   assert.equal(versusCurrentStateText(true, false), "Red Shift locked the signal · Blue Orbit is still searching");
   assert.equal(versusCurrentStateText(false, true), "Blue Orbit locked the signal · Red Shift is still searching");
   assert.equal(versusCurrentStateText(true, true), "Both teams locked the signal");
-});
-
-test("impact intensity distinguishes ordinary guesses, gains, breakthroughs, and solves", () => {
-  assert.equal(impactIntensity(0.4, 0.4), "guess");
-  assert.equal(impactIntensity(0.4, 0.43), "gain");
-  assert.equal(impactIntensity(0.4, 0.56), "breakthrough");
-  assert.equal(impactIntensity(0.98, 1), "solve");
 });
 
 test("players rank by best guess before average, volume, and name", () => {

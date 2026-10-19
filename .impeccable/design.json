@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-08-24T16:11:13Z",
+  "generatedAt": "2026-10-19T20:18:48.436805+00:00",
   "title": "Design System: Neuronauts",
   "extensions": {
     "colorMeta": {
@@ -723,6 +723,276 @@
           "oklch(87% .04 255)",
           "oklch(95% .04 255)"
         ]
+      },
+      "game-canvas": {
+        "role": "neutral",
+        "displayName": "Game Canvas",
+        "canonical": "#f3f4f6",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "game-surface": {
+        "role": "neutral",
+        "displayName": "Game Surface",
+        "canonical": "#ffffff",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "game-surface-subtle": {
+        "role": "neutral",
+        "displayName": "Game Surface Subtle",
+        "canonical": "#eceef1",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "game-ink": {
+        "role": "neutral",
+        "displayName": "Game Ink",
+        "canonical": "#202228",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "game-muted": {
+        "role": "neutral",
+        "displayName": "Game Muted",
+        "canonical": "#626773",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "game-line": {
+        "role": "neutral",
+        "displayName": "Game Line",
+        "canonical": "#e2e4e8",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "game-line-strong": {
+        "role": "neutral",
+        "displayName": "Game Line Strong",
+        "canonical": "#c8ccd4",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "game-accent": {
+        "role": "primary",
+        "displayName": "Game Accent",
+        "canonical": "#287c70",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "game-accent-hover": {
+        "role": "primary",
+        "displayName": "Game Accent Hover",
+        "canonical": "#20685e",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-canvas": {
+        "role": "neutral",
+        "displayName": "Dark Game Canvas",
+        "canonical": "#101113",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-surface": {
+        "role": "neutral",
+        "displayName": "Dark Game Surface",
+        "canonical": "#191a1e",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-surface-subtle": {
+        "role": "neutral",
+        "displayName": "Dark Game Surface Subtle",
+        "canonical": "#222429",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-ink": {
+        "role": "neutral",
+        "displayName": "Dark Game Ink",
+        "canonical": "#eceef2",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-muted": {
+        "role": "neutral",
+        "displayName": "Dark Game Muted",
+        "canonical": "#a4a9b3",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-line": {
+        "role": "neutral",
+        "displayName": "Dark Game Line",
+        "canonical": "#2c2e35",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-line-strong": {
+        "role": "neutral",
+        "displayName": "Dark Game Line Strong",
+        "canonical": "#4a4e58",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-accent": {
+        "role": "primary",
+        "displayName": "Dark Game Accent",
+        "canonical": "#7ad3bf",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
+      },
+      "dark-game-accent-hover": {
+        "role": "primary",
+        "displayName": "Dark Game Accent Hover",
+        "canonical": "#9adfce",
+        "tonalRamp": [
+          "oklch(15% .005 260)",
+          "oklch(27% .005 260)",
+          "oklch(39% .005 260)",
+          "oklch(51% .005 260)",
+          "oklch(63% .005 260)",
+          "oklch(75% .005 260)",
+          "oklch(87% .005 260)",
+          "oklch(95% .005 260)"
+        ]
       }
     },
     "typographyMeta": {
@@ -746,17 +1016,13 @@
         "displayName": "Label",
         "purpose": "Compact statuses and instrument captions."
       },
-      "vs-display": {
-        "displayName": "VS Display",
-        "purpose": "Winner statements and dominant competitive readouts."
+      "game-heading": {
+        "displayName": "Game Team Heading",
+        "purpose": "Compact workhorse-sans team names."
       },
-      "vs-heading": {
-        "displayName": "VS Heading",
-        "purpose": "Uppercase team names and result headings."
-      },
-      "vs-instrument": {
-        "displayName": "VS Instrument",
-        "purpose": "Tabular metrics, grades, progress, and energy-clash labels."
+      "game-instrument": {
+        "displayName": "Game Instrument",
+        "purpose": "Compact tabular progress percentages and telemetry."
       }
     },
     "shadows": [
@@ -784,6 +1050,11 @@
         "name": "input-focus",
         "value": "0 0 0 3px color-mix(in srgb, var(--accent) 16%, transparent)",
         "purpose": "Functional focus feedback for mission fields."
+      },
+      {
+        "name": "guess-dock",
+        "value": "0 -8px 24px rgb(0 0 0 / 0.04)",
+        "purpose": "Functional separation of the fixed game input from scrolling content."
       }
     ],
     "motion": [
@@ -803,34 +1074,14 @@
         "purpose": "Newly received guess emphasis."
       },
       {
-        "name": "energy-share-shift",
-        "value": "900ms cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Moves the live VS beam and its inset collision point as relative best scores change."
-      },
-      {
-        "name": "energy-clash-activity",
-        "value": "2.25s to 1.05s ease-in-out infinite alternate",
-        "purpose": "Accelerates the artist-made laser drive and strengthens the beam across guess-volume tiers at 8, 24, 60, and 120 total signals."
-      },
-      {
-        "name": "energy-impact",
-        "value": "820ms gain; 1.05s breakthrough/solve; cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Progressively widens and intensifies the CC0 charged-impact raster across gain, breakthrough, and solve feedback."
-      },
-      {
-        "name": "roster-contribution-note",
-        "value": "1.65s cubic-bezier(0.16, 1, 0.3, 1)",
-        "purpose": "Transient team-colored contribution note in the live roster rail."
-      },
-      {
         "name": "mission-loader",
         "value": "1.15s cubic-bezier(0.55, 0.1, 0.35, 0.95) infinite",
         "purpose": "Navigator calibration spinner."
       },
       {
         "name": "reduced-motion",
-        "value": "1ms position transitions; static charged-impact frame; no laser-drive, contribution, or confetti animation",
-        "purpose": "Keeps semantic state changes and the collision readable without continuous or transient motion."
+        "value": "Reduced or disabled decorative transitions and confetti",
+        "purpose": "Preserves semantic state and readable feedback without unnecessary motion."
       }
     ],
     "breakpoints": [
@@ -851,11 +1102,15 @@
         "value": "1024px"
       },
       {
-        "name": "vs-wide-live",
-        "value": "1180px"
+        "name": "debrief-grid",
+        "value": "1280px"
       },
       {
-        "name": "debrief-grid",
+        "name": "vs-roster-columns",
+        "value": "1100px"
+      },
+      {
+        "name": "vs-map-log-columns",
         "value": "1280px"
       }
     ]
@@ -882,7 +1137,7 @@
       "kind": "input",
       "refersTo": "input-mission",
       "description": "Single-word semantic transmission field.",
-      "html": "<label class=\"ds-field-label\" for=\"ds-guess\">Guess a word</label><input class=\"ds-mission-input\" id=\"ds-guess\" type=\"text\" maxlength=\"40\" placeholder=\"Plot a word…\" />",
+      "html": "<label class=\"ds-field-label\" for=\"ds-guess\">Guess a word</label><input class=\"ds-mission-input\" id=\"ds-guess\" type=\"text\" maxlength=\"40\" placeholder=\"Plot a word\u2026\" />",
       "css": ".ds-field-label { display:block;margin-bottom:.5rem;color:var(--ink,#17201d);font:700 .875rem/1.3 \"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif; }.ds-mission-input { width:100%;min-height:48px;border:1px solid var(--line-strong,#aebdb7);border-radius:10px;background:var(--surface,#fff);padding:.7rem .9rem;color:var(--ink,#17201d);font:400 1rem/1.2 \"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif;outline:none;transition:border-color 150ms ease-out,box-shadow 150ms ease-out; }.ds-mission-input::placeholder { color:var(--muted,#5d6a65);opacity:.78; }.ds-mission-input:hover { border-color:var(--accent,#087f70); }.ds-mission-input:focus { border-color:var(--accent,#087f70);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent,#087f70) 16%,transparent); }"
     },
     {
@@ -905,113 +1160,89 @@
       "name": "Mission Header",
       "kind": "nav",
       "description": "Flat mission identity and utility bar with lobby code and theme control.",
-      "html": "<header class=\"ds-mission-header\"><a class=\"ds-brand\" href=\"#\"><span class=\"ds-brand-mark\" aria-hidden=\"true\">N</span><span><strong>Neuronauts VS</strong><small>◆ live mission</small></span></a><nav class=\"ds-mission-tools\" aria-label=\"Mission utilities\"><span class=\"ds-online\">2 online</span><button class=\"ds-code\" type=\"button\">SYIF89<svg class=\"ds-copy-glyph\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8 6h12v2H8zM4 2h12v2H4zm2 6h2v12H6zM2 4h2v12H2zm6 16h12v2H8zM20 8h2v12h-2zm-4-4h2v2h-2zM4 16h2v2H4z\"/></svg></button><button class=\"ds-theme\" type=\"button\" aria-label=\"Theme: System\"><svg class=\"ds-monitor-glyph\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 2h16v2H4zm0 14h16v2H4zM2 4h2v12H2zm18 0h2v12h-2zm-9 14h2v2h-2zm-3 2h8v2H8z\"/></svg></button></nav></header>",
+      "html": "<header class=\"ds-mission-header\"><a class=\"ds-brand\" href=\"#\"><span class=\"ds-brand-mark\" aria-hidden=\"true\">N</span><span><strong>Neuronauts VS</strong><small>\u25c6 live mission</small></span></a><nav class=\"ds-mission-tools\" aria-label=\"Mission utilities\"><span class=\"ds-online\">2 online</span><button class=\"ds-code\" type=\"button\">SYIF89<svg class=\"ds-copy-glyph\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M8 6h12v2H8zM4 2h12v2H4zm2 6h2v12H6zM2 4h2v12H2zm6 16h12v2H8zM20 8h2v12h-2zm-4-4h2v2h-2zM4 16h2v2H4z\"/></svg></button><button class=\"ds-theme\" type=\"button\" aria-label=\"Theme: System\"><svg class=\"ds-monitor-glyph\" viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M4 2h16v2H4zm0 14h16v2H4zM2 4h2v12H2zm18 0h2v12h-2zm-9 14h2v2h-2zm-3 2h8v2H8z\"/></svg></button></nav></header>",
       "css": ".ds-mission-header { min-height:64px;display:flex;align-items:center;justify-content:space-between;gap:.75rem;border-bottom:1px solid var(--line-strong,#aebdb7);padding-bottom:.75rem;color:var(--ink,#17201d);font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif; }.ds-brand { display:flex;align-items:center;gap:.5rem;color:inherit;text-decoration:none; }.ds-brand-mark { width:40px;height:40px;display:grid;place-items:center;background:var(--accent,#087f70);color:var(--accent-contrast,#fff);clip-path:polygon(50% 0,100% 25%,90% 78%,50% 100%,10% 78%,0 25%);font-weight:900; }.ds-brand strong,.ds-brand small { display:block; }.ds-brand strong { font-size:1.125rem;font-weight:800; }.ds-brand small { margin-top:.125rem;color:var(--accent,#087f70);font-size:.75rem; }.ds-mission-tools { display:flex;align-items:center;gap:.5rem; }.ds-online { color:var(--muted,#5d6a65);font-size:.875rem; }.ds-code,.ds-theme { min-height:44px;border:1px solid var(--line-strong,#aebdb7);border-radius:10px;background:var(--surface,#fff);color:var(--ink,#17201d); }.ds-code { display:inline-flex;align-items:center;gap:.5rem;padding:0 .75rem;font:700 .875rem/1 ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.12em; }.ds-theme { width:44px;display:grid;place-items:center; }.ds-code:hover,.ds-theme:hover { border-color:var(--accent,#087f70);color:var(--accent,#087f70); }.ds-code:focus-visible,.ds-theme:focus-visible,.ds-brand:focus-visible { outline:2px solid var(--accent,#087f70);outline-offset:3px; }.ds-copy-glyph,.ds-monitor-glyph { width:24px;height:24px;fill:currentColor;shape-rendering:crispEdges; }"
     },
     {
-      "name": "VS Live Roster Rails",
-      "kind": "custom",
-      "refersTo": "vs-team-bay-red",
-      "description": "Narrow, quiet full-height team rails for ranked live contribution telemetry.",
-      "html": "<div class=\"ds-roster-pair\"><section class=\"ds-roster-rail ds-red\"><header><b class=\"ds-roster-emblem\">R</b><span><h2>Red Shift</h2><small>2 online</small></span><strong>18<small>signals</small></strong></header><div class=\"ds-roster-player\"><span class=\"ds-roster-avatar\">N</span><span><b>Nova Captain</b><small>on comms</small></span><dl><div><dt>Rank</dt><dd>#1</dd></div><div><dt>G</dt><dd>11</dd></div><div><dt>Avg</dt><dd>64.4%</dd></div><div><dt>Best</dt><dd>82.1%</dd></div></dl></div><footer><dl><div><dt>Average</dt><dd>53.8%</dd></div><div><dt>Hints</dt><dd>0</dd></div><div><dt>Elapsed</dt><dd>1:42</dd></div></dl><span>Still searching</span></footer></section><section class=\"ds-roster-rail ds-blue\"><header><b class=\"ds-roster-emblem\">B</b><span><h2>Blue Orbit</h2><small>1 online</small></span><strong>14<small>signals</small></strong></header><div class=\"ds-roster-player\"><span class=\"ds-roster-avatar\">A</span><span><b>Azure Astro</b><small>plotting a guess</small></span><dl><div><dt>Rank</dt><dd>#1</dd></div><div><dt>G</dt><dd>14</dd></div><div><dt>Avg</dt><dd>48.3%</dd></div><div><dt>Best</dt><dd>76.5%</dd></div></dl></div><footer><dl><div><dt>Average</dt><dd>48.3%</dd></div><div><dt>Hints</dt><dd>1</dd></div><div><dt>Elapsed</dt><dd>1:42</dd></div></dl><span>Still searching</span></footer></section></div>",
-      "css": "@font-face{font-family:\"Barlow Condensed\";src:url(\"/fonts/barlow-condensed/BarlowCondensed-SemiBold.ttf\") format(\"truetype\");font-weight:600}@font-face{font-family:\"Barlow Condensed\";src:url(\"/fonts/barlow-condensed/BarlowCondensed-Black.ttf\") format(\"truetype\");font-weight:900}.ds-roster-pair{display:grid;grid-template-columns:repeat(2,minmax(230px,1fr));gap:.75rem;font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif}.ds-roster-rail{--ds-team:var(--team-red,#c9474f);position:relative;display:flex;min-height:360px;flex-direction:column;overflow:hidden;border:1px solid color-mix(in srgb,var(--ds-team) 42%,var(--line,#cfd8d4));border-radius:4px;background:var(--surface,#fff);color:var(--ink,#17201d)}.ds-roster-rail.ds-blue{--ds-team:var(--team-blue,#3f74bd)}.ds-roster-rail:before{position:absolute;inset-block:0;left:0;width:2px;background:var(--ds-team);content:\"\"}.ds-roster-rail.ds-blue:before{right:0;left:auto}.ds-roster-rail>header{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:.55rem;border-bottom:1px solid var(--line,#cfd8d4);padding:.85rem}.ds-roster-emblem{width:1.5rem;height:1.5rem;display:grid;place-items:center;background:var(--ds-team);clip-path:polygon(50% 0,100% 25%,90% 78%,50% 100%,10% 78%,0 25%);color:var(--surface,#fff);font:900 .62rem/1 \"Barlow Condensed\",\"Arial Narrow\",sans-serif}.ds-roster-rail h2{margin:0;color:var(--ds-team);font:900 1.12rem/1.05 \"Barlow Condensed\",\"Arial Narrow\",sans-serif;letter-spacing:.04em;text-transform:uppercase}.ds-roster-rail header small{display:block;margin-top:.12rem;color:var(--muted,#5d6a65);font-size:.66rem}.ds-roster-rail header>strong{color:var(--ds-team);font:900 1.55rem/1 \"Barlow Condensed\",\"Arial Narrow\",sans-serif;text-align:right}.ds-roster-rail header>strong small{font-size:.54rem;letter-spacing:.08em;text-transform:uppercase}.ds-roster-player{display:grid;grid-template-columns:2.5rem minmax(0,1fr);gap:.55rem;border-bottom:1px solid var(--line,#cfd8d4);margin:0 .75rem;padding:.55rem 0}.ds-roster-avatar{width:2.5rem;height:2.5rem;display:grid;place-items:center;background:var(--surface-subtle,#f6f8f7);color:var(--ds-team);font-weight:900}.ds-roster-player>span b,.ds-roster-player>span small{display:block}.ds-roster-player>span b{font-size:.78rem}.ds-roster-player>span small{margin-top:.1rem;color:var(--muted,#5d6a65);font-size:.63rem}.ds-roster-player dl{grid-column:2;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.3rem;margin:0;font-family:\"Barlow Condensed\",\"Arial Narrow\",sans-serif}.ds-roster-player dt,.ds-roster-rail footer dt{color:var(--muted,#5d6a65);font-size:.52rem;text-transform:uppercase}.ds-roster-player dd,.ds-roster-rail footer dd{margin:0;font-weight:900;font-variant-numeric:tabular-nums}.ds-roster-player dl div:first-child dd{color:var(--ds-team)}.ds-roster-rail footer{display:grid;gap:.6rem;margin-top:auto;border-top:1px solid var(--line,#cfd8d4);padding:.75rem;font-family:\"Barlow Condensed\",\"Arial Narrow\",sans-serif}.ds-roster-rail footer dl{display:grid;grid-template-columns:repeat(3,1fr);margin:0}.ds-roster-rail footer dd{font-size:.78rem}.ds-roster-rail footer>span{min-height:2.1rem;display:grid;place-items:center;border:1px solid var(--line,#cfd8d4);color:var(--ds-team);font-size:.6rem;font-weight:900;letter-spacing:.07em;text-transform:uppercase}"
-    },
-    {
-      "name": "VS Energy Clash",
-      "kind": "custom",
-      "description": "Whitespace-protected opposing scores, centered elapsed clock, and bounded meter using documented CC0 raster collision art.",
-      "html": "<section class=\"ds-energy-board\" style=\"--ds-share:50%;--ds-clash:50%\"><div class=\"ds-energy-scores\"><div class=\"ds-energy-score ds-red\"><span>Red Shift</span><strong>100.0%</strong><small>target locked</small></div><div class=\"ds-energy-clock\"><span>Elapsed</span><time>1:42</time></div><div class=\"ds-energy-score ds-blue\"><span>Blue Orbit</span><strong>100.0%</strong><small>target locked</small></div></div><div class=\"ds-energy-meter\" role=\"img\" aria-label=\"Both teams control 50 percent of the energy field.\"><i class=\"ds-energy-beam ds-red\"></i><i class=\"ds-energy-beam ds-blue\"></i><span class=\"ds-energy-laser ds-red\" aria-hidden=\"true\"><img src=\"/vfx/wenrexa-laser-red.png\" alt=\"\"></span><span class=\"ds-energy-laser ds-blue\" aria-hidden=\"true\"><img src=\"/vfx/wenrexa-laser-red.png\" alt=\"\"></span><span class=\"ds-energy-clash ds-solve\" aria-hidden=\"true\"><picture><source media=\"(prefers-reduced-motion: reduce)\" srcset=\"/vfx/luis-zuno-charged-still.png\"><img src=\"/vfx/luis-zuno-charged.gif\" alt=\"\"></picture><b>VS</b></span></div><p>Both teams locked the signal</p></section>",
-      "css": "@font-face{font-family:\"Barlow Condensed\";src:url(\"/fonts/barlow-condensed/BarlowCondensed-Black.ttf\") format(\"truetype\");font-weight:900}.ds-energy-board{--ds-share:50%;--ds-clash:50%;color:var(--ink,#17201d);font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif}.ds-energy-scores{display:grid;grid-template-columns:minmax(0,1fr) minmax(4.15rem,auto) minmax(0,1fr);align-items:center;gap:.35rem;padding:.45rem .25rem .85rem}.ds-energy-score{display:flex;min-width:0;flex-direction:column;align-items:flex-start;color:var(--team-red,#c9474f);font-family:\"Barlow Condensed\",\"Arial Narrow\",sans-serif;font-variant-numeric:tabular-nums}.ds-energy-score.ds-blue{align-items:flex-end;color:var(--team-blue,#3f74bd);text-align:right}.ds-energy-score span{font-size:.72rem;font-weight:900;letter-spacing:.04em;text-transform:uppercase}.ds-energy-score strong{max-width:100%;font-size:clamp(2.25rem,11vw,2.85rem);font-weight:900;letter-spacing:-.03em;line-height:.88;white-space:nowrap}.ds-energy-score small{font-size:.54rem;font-weight:700;letter-spacing:.035em;text-transform:uppercase;white-space:nowrap}.ds-energy-clock{display:grid;min-width:4.15rem;place-items:center;border-inline:1px solid var(--line,#cfd8d4);padding:.3rem .4rem .36rem;color:var(--muted,#5d6a65);font-family:\"Barlow Condensed\",\"Arial Narrow\",sans-serif;font-variant-numeric:tabular-nums;text-align:center}.ds-energy-clock span{font-size:.53rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}.ds-energy-clock time{color:var(--ink,#17201d);font-size:1.14rem;font-weight:900;white-space:nowrap}.ds-energy-meter{position:relative;height:4.25rem;overflow:hidden;border:1px solid var(--line-strong,#aebdb7);border-radius:4px;background:#0c1412;isolation:isolate}.ds-energy-beam{position:absolute;z-index:1;top:1.15rem;bottom:1.15rem}.ds-energy-beam.ds-red{left:0;width:var(--ds-share);background:var(--team-red,#c9474f)}.ds-energy-beam.ds-blue{right:0;width:calc(100% - var(--ds-share));background:var(--team-blue,#3f74bd)}.ds-energy-laser{position:absolute;z-index:2;top:50%;left:clamp(3.5rem,var(--ds-clash),calc(100% - 3.5rem));width:7rem;height:3.65rem;pointer-events:none}.ds-energy-laser.ds-red{transform:translate(-91%,-50%)}.ds-energy-laser.ds-blue{transform:translate(-9%,-50%)}.ds-energy-laser img{width:100%;height:100%;object-fit:contain;animation:ds-laser-drive 1.05s ease-in-out infinite alternate}.ds-energy-laser.ds-blue img{transform:scaleX(-1);filter:hue-rotate(196deg) saturate(1.18)}.ds-energy-clash{position:absolute;z-index:4;top:50%;left:clamp(3.5rem,var(--ds-clash),calc(100% - 3.5rem));display:grid;width:5.5rem;height:4.1rem;place-items:center;transform:translate(-50%,-50%);pointer-events:none}.ds-energy-clash picture,.ds-energy-clash img{display:block;width:100%;height:100%}.ds-energy-clash img{object-fit:contain;image-rendering:pixelated}.ds-energy-clash.ds-gain{--ds-peak:1.18;width:5.75rem;height:4.15rem;animation:ds-impact 820ms cubic-bezier(.16,1,.3,1) both}.ds-energy-clash.ds-breakthrough{--ds-peak:1.25;width:6.25rem;height:4.35rem;animation:ds-impact 1.05s cubic-bezier(.16,1,.3,1) both}.ds-energy-clash.ds-solve{--ds-peak:1.32;width:6.85rem;height:4.6rem;animation:ds-impact 1.05s cubic-bezier(.16,1,.3,1) both}.ds-energy-clash b{position:absolute;z-index:2;bottom:.18rem;border:1px solid rgb(255 255 255/.38);border-radius:4px;background:#0c1412;padding:.12rem .25rem;color:#fff;font:900 .58rem/1 \"Barlow Condensed\",\"Arial Narrow\",sans-serif}.ds-energy-board>p{min-height:1.2rem;margin:.3rem 0 0;color:var(--muted,#5d6a65);font-size:.72rem;font-weight:700;text-align:center}@keyframes ds-laser-drive{from{opacity:.76}to{opacity:1}}@keyframes ds-impact{0%{opacity:.45;transform:translate(-50%,-50%) scale(.76)}28%{opacity:1;transform:translate(-50%,-50%) scale(var(--ds-peak))}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}@media(prefers-reduced-motion:reduce){.ds-energy-laser img,.ds-energy-clash{animation:none}}"
-    },
-    {
-      "name": "VS Semantic Field",
-      "kind": "custom",
-      "description": "Central shared semantic map; only own-team points receive word disclosure.",
-      "html": "<section class=\"ds-semantic-field\"><div class=\"ds-field-title\"><h2>Semantic space</h2><p>Both teams share this space. Only your crew’s points reveal words.</p></div><svg class=\"ds-map\" viewBox=\"0 0 320 240\" role=\"img\" aria-label=\"Red and blue semantic points around a central target\"><circle class=\"ds-map-ring\" cx=\"160\" cy=\"120\" r=\"28\"/><path class=\"ds-map-axis\" d=\"M160 82v22m0 32v22m-38-38h22m32 0h22\"/><circle class=\"ds-red-point\" cx=\"92\" cy=\"72\" r=\"2.25\"/><circle class=\"ds-red-point\" cx=\"131\" cy=\"146\" r=\"2.25\"/><circle class=\"ds-blue-point\" cx=\"226\" cy=\"84\" r=\"2.25\"/><circle class=\"ds-blue-point\" cx=\"198\" cy=\"159\" r=\"2.25\"/><circle class=\"ds-target\" cx=\"160\" cy=\"120\" r=\"6\"/><text class=\"ds-target-label\" x=\"160\" y=\"141\" text-anchor=\"middle\">TARGET</text></svg><footer class=\"ds-phase-strip\">Same target · private flight logs</footer></section>",
-      "css": "@font-face{font-family:\"Barlow Condensed\";src:url(\"/fonts/barlow-condensed/BarlowCondensed-SemiBold.ttf\") format(\"truetype\");font-weight:600}.ds-semantic-field{overflow:hidden;border:1px solid var(--line,#cfd8d4);border-radius:4px;background:color-mix(in srgb,var(--canvas,#eef2f0) 82%,var(--surface,#fff));color:var(--ink,#17201d);font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif}.ds-field-title{padding:.75rem 1rem 0;text-align:center}.ds-field-title h2{margin:0;font:600 1.15rem/1.2 \"Barlow Condensed\",\"Arial Narrow\",sans-serif;letter-spacing:.1em;text-transform:uppercase}.ds-field-title p{margin:.35rem auto 0;max-width:28rem;color:var(--muted,#5d6a65);font-size:.75rem}.ds-map{display:block;width:100%;min-height:240px;overflow:visible}.ds-map-ring,.ds-map-axis{fill:none;stroke:var(--line-strong,#aebdb7);stroke-width:1;stroke-dasharray:2 5;opacity:.85}.ds-red-point{fill:var(--team-red,#c9474f)}.ds-blue-point{fill:var(--team-blue,#3f74bd)}.ds-red-point,.ds-blue-point{stroke:var(--canvas,#eef2f0);stroke-width:.7}.ds-target{fill:var(--canvas,#eef2f0);stroke:var(--accent,#087f70);stroke-width:2.5}.ds-target-label{fill:var(--accent,#087f70);font:700 11px/1 \"Avenir Next\",\"Segoe UI\",sans-serif;paint-order:stroke;stroke:var(--surface-subtle,#f6f8f7);stroke-width:4px}.ds-phase-strip{border-top:1px solid var(--line,#cfd8d4);padding:.65rem .9rem;color:var(--muted,#5d6a65);font-size:.75rem;font-weight:700;text-align:center}"
-    },
-    {
-      "name": "VS Result Team",
+      "name": "Game Team Surface",
       "kind": "card",
-      "description": "Ruled team result with grade, transparent metrics, and player contribution.",
-      "html": "<article class=\"ds-result-team\"><header class=\"ds-result-heading\"><div><h2>Blue Orbit</h2><span>Mission winner</span></div><strong>S</strong></header><dl class=\"ds-result-metrics\"><div><dt>Adjusted time</dt><dd>8s</dd></div><div><dt>Raw time</dt><dd>0s</dd></div><div><dt>Guesses</dt><dd>4</dd></div><div><dt>Hints</dt><dd>0</dd></div><div><dt>Average</dt><dd>48.3%</dd></div><div><dt>Best</dt><dd>100.0%</dd></div></dl><div class=\"ds-result-player\"><span class=\"ds-result-avatar\">A</span><span><b>Azure Astro</b><small>4 guesses · 100.0% best · 0 hints</small></span></div></article>",
-      "css": "@font-face{font-family:\"Barlow Condensed\";src:url(\"/fonts/barlow-condensed/BarlowCondensed-Black.ttf\") format(\"truetype\");font-weight:900}.ds-result-team{--ds-team:var(--team-blue,#3f74bd);overflow:hidden;border:1px solid color-mix(in srgb,var(--ds-team) 70%,var(--line,#cfd8d4));border-radius:4px;background:var(--surface,#fff);color:var(--ink,#17201d);font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif}.ds-result-heading{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;border-bottom:1px solid var(--line,#cfd8d4);padding:1rem}.ds-result-heading h2{margin:0;color:var(--ds-team);font:900 1.9rem/1 \"Barlow Condensed\",\"Arial Narrow\",sans-serif;letter-spacing:.015em}.ds-result-heading span{display:block;margin-top:.3rem;color:var(--muted,#5d6a65);font-size:.72rem;font-weight:650}.ds-result-heading>strong{color:var(--ds-team);font:900 3.25rem/.85 \"Barlow Condensed\",\"Arial Narrow\",sans-serif}.ds-result-metrics{display:grid;grid-template-columns:repeat(3,1fr);margin:0;border-bottom:1px solid var(--line,#cfd8d4);font-family:\"Barlow Condensed\",\"Arial Narrow\",sans-serif}.ds-result-metrics div{border-right:1px solid var(--line,#cfd8d4);padding:.8rem 1rem}.ds-result-metrics div:nth-child(3n){border-right:0}.ds-result-metrics dt{color:var(--muted,#5d6a65);font-size:.62rem;font-weight:900;text-transform:uppercase}.ds-result-metrics dd{margin:.15rem 0 0;font-size:1rem;font-variant-numeric:tabular-nums;font-weight:900}.ds-result-player{display:flex;align-items:center;gap:.65rem;padding:.65rem 1rem}.ds-result-avatar{width:2.5rem;aspect-ratio:1;display:grid;place-items:center;background:var(--surface-subtle,#f6f8f7);color:var(--ds-team);font-weight:900}.ds-result-player b,.ds-result-player small{display:block}.ds-result-player b{font-size:.78rem}.ds-result-player small{margin-top:.1rem;color:var(--muted,#5d6a65);font-size:.65rem}"
+      "refersTo": "game-team-surface",
+      "description": "Simple setup surface with compact explicit red team identity.",
+      "html": "<section class=\"ds-team\"><h2><b>R</b> Red Shift</h2><p>2 players \u00b7 Ready</p><button>Join Red Shift</button></section>",
+      "css": ".ds-team{font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif;color:var(--ink,#202228);background:var(--surface,#fff);border:0;border-radius:12px;padding:16px}.ds-team h2{display:flex;align-items:center;gap:10px;margin:0;font-size:14px;color:var(--team-red,#c9474f)}.ds-team h2 b{display:grid;place-items:center;width:26px;height:26px;border-radius:6px;background:var(--team-red-soft,#fae9ea);font-size:12px}.ds-team p{font-size:12px;color:var(--muted,#626773)}.ds-team button{min-height:44px;border:0;border-radius:8px;background:var(--surface-subtle,#eceef1);color:inherit;padding:0 16px;font:inherit}.ds-team button:hover{color:var(--team-red,#c9474f)}.ds-team button:focus-visible{outline:2px solid var(--accent,#287c70);outline-offset:3px}"
+    },
+    {
+      "name": "Game Progress Board",
+      "kind": "custom",
+      "refersTo": "game-progress-board",
+      "description": "Independent best-signal bars replace the retired energy collision.",
+      "html": "<section class=\"ds-progress\"><label class=\"ds-red\">Red Shift <b>62.4%</b><progress max=\"100\" value=\"62.4\">62.4%</progress></label><label class=\"ds-blue\">Blue Orbit <b>48.1%</b><progress max=\"100\" value=\"48.1\">48.1%</progress></label><time>02:14</time></section>",
+      "css": ".ds-progress{font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif;color:var(--ink,#202228);background:var(--surface,#fff);border:0;border-radius:12px;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;gap:24px;padding:16px 20px;font-size:13px}.ds-progress label{min-width:0;font-weight:700}.ds-progress b{float:right;color:var(--ink,#202228);font-variant-numeric:tabular-nums}.ds-red{color:var(--team-red,#c9474f)}.ds-blue{color:var(--team-blue,#3f74bd)}.ds-progress progress{display:block;width:100%;height:5px;margin-top:8px;appearance:none;border:0;border-radius:3px;background:var(--surface-subtle,#eceef1);accent-color:currentColor}.ds-progress progress::-webkit-progress-bar{border-radius:3px;background:var(--surface-subtle,#eceef1)}.ds-progress progress::-webkit-progress-value{border-radius:3px;background:currentColor}.ds-progress progress::-moz-progress-bar{border-radius:3px;background:currentColor}.ds-progress time{font-variant-numeric:tabular-nums}@media(max-width:719px){.ds-progress{gap:12px;padding:14px}.ds-progress time{grid-column:1/-1;text-align:center}}"
+    },
+    {
+      "name": "Game Guess Dock",
+      "kind": "input",
+      "refersTo": "game-guess-dock",
+      "description": "Preview of anchored input controls; runtime measures clearance and keyboard offset.",
+      "html": "<section class=\"ds-dock\"><label for=\"ds-guess\">Your team\u2019s guess</label><form><input id=\"ds-guess\" placeholder=\"Enter a word\" maxlength=\"40\"><button>Guess</button></form></section>",
+      "css": ".ds-dock{font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif;color:var(--ink,#202228);background:var(--surface,#fff);border:0;border-radius:12px;border-radius:0;padding:14px 24px;box-shadow:0 -8px 24px rgb(0 0 0 / .04)}.ds-dock label{display:block;margin-bottom:8px;font-size:12px}.ds-dock form{display:flex;gap:8px}.ds-dock input{flex:1;min-width:0;min-height:48px;border:0;border-radius:10px;padding:0 14px;background:var(--surface-subtle,#eceef1);color:inherit;font:inherit;font-size:16px}.ds-dock button{min-height:44px;border:0;border-radius:10px;background:var(--accent,#287c70);color:var(--accent-contrast,#fff);padding:0 16px;font:inherit}.ds-dock button:hover{background:var(--accent-hover,#20685e)}.ds-dock input:focus-visible,.ds-dock button:focus-visible{outline:2px solid var(--accent,#287c70);outline-offset:3px}.ds-dock button:active{opacity:.85}"
+    },
+    {
+      "name": "Game Semantic Field",
+      "kind": "custom",
+      "description": "Borderless responsive map; opponent points remain anonymous.",
+      "html": "<section class=\"ds-field\"><h2>Semantic space</h2><p>Only your team\u2019s points reveal words.</p><svg viewBox=\"0 0 320 240\" aria-label=\"Team signals around the target\" role=\"img\"><circle cx=\"160\" cy=\"120\" r=\"28\" fill=\"none\" stroke=\"var(--line-strong,#c8ccd4)\" stroke-dasharray=\"2 5\"/><circle cx=\"160\" cy=\"120\" r=\"6\" fill=\"none\" stroke=\"var(--accent,#287c70)\" stroke-width=\"2.5\"/><circle cx=\"120\" cy=\"85\" r=\"3\" fill=\"var(--team-red,#c9474f)\"/><circle cx=\"205\" cy=\"150\" r=\"3\" fill=\"var(--team-blue,#3f74bd)\"/></svg></section>",
+      "css": ".ds-field{font-family:\"Avenir Next\",\"Segoe UI\",ui-sans-serif,system-ui,sans-serif;color:var(--ink,#202228);background:var(--surface,#fff);border:0;border-radius:12px;overflow:hidden}.ds-field h2{margin:0;padding:16px 20px 0;font-size:14px;font-weight:600}.ds-field p{margin:4px 20px;color:var(--muted,#626773);font-size:12px}.ds-field svg{display:block;width:100%;height:300px}"
     }
   ],
   "narrative": {
-    "northStar": "The Matte Flight Deck",
-    "overview": "Neuronauts is a restrained mission-control interface built for quick social play. Its world is practical rather than cinematic: pale mineral fields or deep green-black fields, compact information density, one-pixel rules, a heavy workhorse sans, crisp custom Pixelarticons glyphs, and small 3D neuronauts that carry the character. Copy is concise and playful, but state is never disguised by atmosphere.\n\nThe default system is calm, rounded, and cooperative. VS mode is a durable extension of that world, not a replacement: self-hosted Barlow Condensed turns team names, grades, percentages, and labels into instrumentation; Red Shift and Blue Orbit meet in dominant opposing scores and a bounded relative energy beam; narrow roster rails flank a central search lane. Restrained airlock geometry remains appropriate in setup, where choosing teams is the task, but it is not the live-match focal structure.",
+    "northStar": "The Quiet Match Workspace",
+    "overview": "Neuronauts uses concise mission-control language, custom Pixelarticons glyphs, and small 3D neuronaut avatars to support social semantic search. Home and lobby keep their incumbent mineral-green palette and rounded, ruled components.\n\nThe game route follows the user-pinned Linear direction: a quiet, full-width workspace with neutral light/dark surfaces, one workhorse sans, compact red/blue denoters, and a persistent bottom guess input. Setup, live play, and results share this calmer grammar. Team names, emblems, and progress communicate competition while the map and private log carry the active task.",
     "keyCharacteristics": [
-      "Matte light and dark themes driven by semantic CSS properties.",
-      "Flat tonal layering with structural one-pixel rules and sparing overlay shadows.",
-      "Avenir-like workhorse typography, with condensed instrumentation reserved for VS telemetry.",
-      "Custom Pixelarticons glyphs and compact 3D neuronaut assets as identity anchors.",
-      "Red/blue competition reinforced by names, initials, roster rails, opposing score placement, and status language.",
-      "A three-region VS instrument protects opposing score percentages, the centered ticking elapsed clock, and the relative energy meter from one another.",
-      "Responsive layouts that preserve task order and 44px minimum interactive targets."
+      "Neutral light/dark tokens scoped to `.game-shell`; incumbent home/lobby styling remains separate.",
+      "Borderless 12px game surfaces, compact spacing, and one workhorse sans.",
+      "Red/blue team names, R/B emblems, small progress bars, and explicit statuses.",
+      "Full-width game content with responsive roster disclosures and desktop map/log columns.",
+      "Measured, keyboard-aware bottom guess controls in both cooperative and VS play.",
+      "Existing Pixelarticons glyphs and neuronaut avatars preserve product identity."
     ],
     "rules": [
       {
-        "name": "The Signal Has a Job Rule",
-        "body": "Teal means navigation, action, focus, or semantic success; amber means hints; red and blue mean team identity. Do not use these colors as decoration without that state relationship.",
-        "section": "colors"
-      },
-      {
         "name": "The Two-Factor Team Rule",
-        "body": "Every red/blue distinction also needs a name, emblem, placement, geometry, or status phrase. Color alone never carries team identity.",
+        "body": "Pair team color with a name, emblem, placement, or status. Color alone never carries team identity.",
         "section": "colors"
       },
       {
-        "name": "The Workhorse First Rule",
-        "body": "Keep navigation, instructions, forms, player names, and normal card copy in the base sans. Introduce Barlow Condensed only when content is functioning as VS instrumentation or a competitive headline.",
+        "name": "The Workhorse Rule",
+        "body": "Use Avenir Next and its system sans fallbacks throughout the game route, including VS names, scores, grades, and labels.",
         "section": "typography"
       },
       {
-        "name": "The Numbers Lock Rule",
-        "body": "Metrics, timers, counts, ranks, grades, and percentages use tabular numerals and compact alignment so live updates do not destabilize the layout.",
-        "section": "typography"
-      },
-      {
-        "name": "The Task-Order Rule",
-        "body": "Responsive changes may reorder regions, but live VS must preserve energy state → semantic map → search console → latest guess/private flight log before roster telemetry; setup must preserve readiness before long team rosters on mobile.",
+        "name": "The Dock Clearance Rule",
+        "body": "Reserve the measured guess dock height in page flow and keep the dock above the visual viewport keyboard. Neither content nor feedback may disappear behind it.",
         "section": "layout"
       },
       {
-        "name": "The Three-Region Instrument Rule",
-        "body": "Opposing score percentages, the centered ticking elapsed clock, and the energy meter remain separate, whitespace-protected layout regions. At the 320px minimum width, both score regions must fit exact `100.0%` values while the clock stays centered and the meter remains on its own row.",
-        "section": "layout"
-      },
-      {
-        "name": "The Flat Flight Deck Rule",
-        "body": "Resting application surfaces and all VS structures remain shadowless. Use shadows only for temporary overlays or the established classic debrief hierarchy.",
+        "name": "The Surface Rule",
+        "body": "Game-route grouping uses tonal surfaces, spacing, and typography. Do not add decorative borders, airlock geometry, or collision effects.",
         "section": "elevation"
-      },
-      {
-        "name": "The Soft Utility, Hard Competition Rule",
-        "body": "Use 10–14px rounding for general product UI; use 4px edges, clipping, and squared progress geometry for VS bays, consoles, logs, and results.",
-        "section": "shapes"
       }
     ],
     "dos": [
-      "Do use semantic light/dark tokens so the same hierarchy survives both themes.",
-      "Do build hierarchy with matte field changes, one-pixel rules, size, and typography before considering elevation.",
-      "Do keep interactive controls at least 44px and preserve visible keyboard focus and reduced-motion behavior.",
-      "Do use custom Pixelarticons glyphs and the existing neuronaut sprite sheet or award artwork when those identities are called for.",
-      "Do pair every team color with Red Shift/Blue Orbit naming, the `R`/`B` emblem, mirrored placement, geometry, or explicit status copy.",
-      "Do make the live VS hierarchy read as scores and bounded energy clash first, task lane second, quiet roster telemetry third.",
-      "Do preserve separate whitespace-protected score, elapsed-clock, and meter regions, including exact `100.0%` score fit at 320px.",
-      "Do keep restrained Airlock geometry in VS setup only, where side choice and readiness are the task."
+      "Do use the scoped neutral game tokens in both light and dark themes.",
+      "Do group game content with tonal surfaces, spacing, and 12px corners.",
+      "Do pair red/blue team color with names, R/B emblems, and clear status language.",
+      "Do keep the compact independent team progress bars readable at 320px.",
+      "Do preserve measured bottom input clearance, safe-area padding, and visible keyboard focus.",
+      "Do preserve existing neuronaut avatars, Pixelarticons glyphs, cooperative mechanics, and result scoring."
     ],
     "donts": [
-      "Don't use gradients, glass effects, decorative glow, or floating-card depth in the mission-control world.",
-      "Don't replace the crisp custom glyph family with Lucide-style generic line icons, emoji, or unrelated iconography.",
-      "Don't apply Barlow Condensed to normal body copy, forms, navigation, or cooperative content.",
-      "Don't bring clipped airlock jaws, confrontation seams, or oversized live team bays back into the Energy Clash live match.",
-      "Don't let unsolved beam ratios erase either team or place the charged collision artwork outside the meter’s bounded horizontal range.",
-      "Don't replace the Wenrexa laser art or Luis Zuno/Ansimuz charged-impact assets with authored SVG, procedural bursts, or undocumented VFX.",
-      "Don't reveal opponent words, aliases, hint origins, or interactive tooltips in the VS semantic field.",
-      "Don't require sound effects for guess, gain, breakthrough, or solve feedback.",
-      "Don't use Red Shift color for danger states or Navigator Teal as decoration; semantic color roles remain distinct."
+      "Don't add decorative borders, clipped airlock jaws, confrontation seams, beams, or collision animation to the game route.",
+      "Don't reintroduce condensed competitive typography into the game route.",
+      "Don't expose opposing words, aliases, hint origins, or interactive opponent tooltips.",
+      "Don't make team identity depend on color alone.",
+      "Don't apply game-route palette changes to home and lobby without a separate scoped request.",
+      "Don't place a fixed guess input over scrollable content without measured clearance."
     ]
   }
 }
