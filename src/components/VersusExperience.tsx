@@ -500,6 +500,14 @@ function VersusResults(props: VersusExperienceProps) {
   const winner = result.standings.find((team) => team.id === result.winnerTeamId)!;
   const loser = result.standings.find((team) => team.id === result.loserTeamId)!;
   const margin = Math.abs((loser.score || 0) - (winner.score || 0));
+  // Personal results come first on narrow screens, independently of standings.
+  const crewResults = [versus.teamId, versus.teamId === "red" ? "blue" : "red"].map((id) => {
+    const team = result.standings.find((standing) => standing.id === id)!;
+    const recap: GameRecap | null | undefined = team.id === versus.teamId
+      ? props.gameState.recap || result.teamRecaps?.[team.id]
+      : result.teamRecaps?.[team.id];
+    return { team, recap };
+  });
 
   return (
     <main className="vs-results-shell">
@@ -533,7 +541,7 @@ function VersusResults(props: VersusExperienceProps) {
         <ResultTeam team={loser} winner={false} recapAvailable={Boolean(result.teamRecaps?.[loser.id] || (loser.id === versus.teamId && props.gameState.recap))} />
       </div>
 
-      <section className="vs-crew-results" aria-labelledby="vs-crew-results-title">
+      {crewResults.some(({ recap }) => recap) && <section className="vs-crew-results" aria-labelledby="vs-crew-results-title">
         <header className="debrief-roster-heading">
           <div>
             <h2 id="vs-crew-results-title">Crew results</h2>
@@ -542,20 +550,17 @@ function VersusResults(props: VersusExperienceProps) {
           <MissionGlyph name="crew" className="h-8 w-8" />
         </header>
         <div className="vs-crew-results-comparison">
-        {[winner, loser].map((team) => {
-          const recap: GameRecap | null | undefined = team.id === versus.teamId
-            ? props.gameState.recap || result.teamRecaps?.[team.id]
-            : result.teamRecaps?.[team.id];
+        {crewResults.map(({ team, recap }) => {
           if (!recap) return null;
           return (
             <section key={team.id} className="vs-crew-results-team" style={teamStyle(team.id)} aria-labelledby={`crew-results-${team.id}`}>
               <h3 id={`crew-results-${team.id}`}>{TEAM_COPY[team.id].label}{team.id === versus.teamId ? " · your crew" : " · rival crew"}</h3>
-              <CrewResultCards recap={recap} selfParticipantId={selfParticipantId} />
+              <CrewResultCards recap={recap} selfParticipantId={selfParticipantId} headingLevel={4} />
             </section>
           );
         })}
         </div>
-      </section>
+      </section>}
 
       <footer className="vs-result-actions">
         <p>Same crew, fresh target, one shared rematch lobby.</p>

@@ -1161,7 +1161,7 @@
     padding: 1rem 1rem 0.85rem;
   }
 
-  .debrief-player-heading h3 {
+  .debrief-player-heading :is(h3, h4) {
     min-width: 0;
     overflow: hidden;
     font-size: 1.15rem;
@@ -3318,7 +3318,7 @@
 .game-shell .debrief-card-avatar { width: 5rem; height: 5rem; flex-shrink: 0; }
 .game-shell .debrief-card-awards { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding-bottom: 1rem; }
 .game-shell .debrief-card-award { flex: 1 1 180px; min-width: 0; }
-.game-shell .debrief-player-heading h3 { font-weight: 700; }
+.game-shell .debrief-player-heading :is(h3, h4) { font-weight: 700; }
 .game-shell .map-surface { fill: transparent; stroke: none; pointer-events: none; }
 
 /* Shared per-player debriefs remain distinct from the compact team scorecards. */

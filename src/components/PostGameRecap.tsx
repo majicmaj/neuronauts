@@ -238,12 +238,15 @@ function PlayerResultCard({
   avatarId,
   awards,
   isSelf,
+  headingLevel = 3,
 }: {
   player: PlayerRecap;
   avatarId: AvatarId;
   awards: Citation[];
   isSelf: boolean;
+  headingLevel?: 3 | 4;
 }) {
+  const Heading = headingLevel === 4 ? "h4" : "h3";
   const color = playerColor(player.colorIndex, player.playerId);
 
   return (
@@ -259,7 +262,7 @@ function PlayerResultCard({
       </div>
 
       <header className="debrief-player-heading">
-        <h3>{player.playerName}</h3>
+        <Heading>{player.playerName}</Heading>
         {isSelf && <span className="debrief-you">you</span>}
       </header>
 
@@ -298,9 +301,10 @@ function PlayerResultCard({
   );
 }
 
-export function CrewResultCards({ recap, selfParticipantId }: {
+export function CrewResultCards({ recap, selfParticipantId, headingLevel = 3 }: {
   recap: GameRecap;
   selfParticipantId?: string;
+  headingLevel?: 3 | 4;
 }) {
   const avatarAssignments = assignUniqueAvatarIds(
     recap.players.map((player) => ({ key: player.playerId, avatarId: player.avatarId }))
@@ -314,6 +318,7 @@ export function CrewResultCards({ recap, selfParticipantId }: {
           avatarId={avatarAssignments.get(player.playerId) || AVATARS[0].id}
           awards={coolestAwards(player, recap.awards)}
           isSelf={player.playerId === selfParticipantId}
+          headingLevel={headingLevel}
         />
       ))}
     </div>
