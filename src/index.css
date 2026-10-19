@@ -2407,14 +2407,6 @@
     padding-left: 7%;
   }
 
-  .vs-team-jaw {
-    width: calc(7% + 0.65rem);
-  }
-
-  .vs-team-bay.is-blue .vs-team-jaw {
-    width: calc(7% + 0.65rem);
-  }
-
   .vs-setup-arena .vs-join-team {
     margin-top: auto;
   }
@@ -2492,19 +2484,6 @@
   .vs-team-bay.is-blue .vs-team-telemetry {
     padding-right: 1.25rem;
     padding-left: 1rem;
-  }
-
-  .vs-team-rail {
-    width: 0.45rem;
-    padding: 0;
-  }
-
-  .vs-team-rail i {
-    display: none;
-  }
-
-  .vs-team-jaw {
-    width: 0.35rem;
   }
 
   .vs-member-stats {
@@ -2754,39 +2733,6 @@
 
 .vs-live-shell .vs-player-rank dd {
   color: var(--team-color);
-}
-
-.vs-team-contribution {
-  position: absolute;
-  z-index: 5;
-  top: 3.7rem;
-  right: 0.5rem;
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  background: var(--surface);
-  color: var(--team-color);
-  font-size: 0.62rem;
-  font-weight: 800;
-  pointer-events: none;
-  animation: vs-contribution-note 1.65s cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-.vs-team-contribution i {
-  width: 1rem;
-  height: 2px;
-  background: var(--team-color);
-}
-
-.vs-team-contribution.is-breakthrough,
-.vs-team-contribution.is-solve {
-  font-size: 0.7rem;
-}
-
-@keyframes vs-contribution-note {
-  0% { opacity: 0; transform: translateY(0.5rem); }
-  18%, 72% { opacity: 1; transform: translateY(0); }
-  100% { opacity: 0; transform: translateY(-0.3rem); }
 }
 
 .vs-live-shell .vs-team-telemetry,

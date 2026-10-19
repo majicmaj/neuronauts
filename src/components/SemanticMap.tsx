@@ -28,6 +28,7 @@ export function SemanticMap({
 }: SemanticMapProps) {
   const plotted = guesses.filter((guess) => guess.position);
   const hoveredGuess = plotted.find((guess) => guess.id === hoveredGuessId);
+  const tabStopId = hoveredGuess?.id ?? plotted[plotted.length - 1]?.id;
   const fullTooltipText = hoveredGuess
     ? `${hoveredGuess.isHint ? "hint: " : ""}${hoveredGuess.guess}`
     : "";
@@ -127,23 +128,33 @@ export function SemanticMap({
             />
           ))}
 
-          {plotted.map((guess) => {
+          {plotted.map((guess, index) => {
             const x = pointX(guess);
             const y = pointY(guess);
             return (
               <circle
                 key={guess.id}
-                tabIndex={0}
+                data-guess-id={guess.id}
+                // Roving tab stop: one Tab enters the map, arrow keys move between dots.
+                tabIndex={guess.id === tabStopId ? 0 : -1}
                 role="button"
-                aria-label={`${guess.guess}, ${(guess.similarity * 100).toFixed(1)} percent`}
+                aria-label={`${guess.isHint ? "hint: " : ""}${guess.guess}, ${(guess.similarity * 100).toFixed(1)} percent`}
                 onFocus={() => onGuessHover?.(guess.id)}
                 onBlur={() => onGuessHover?.(null)}
-                onPointerDown={() => onGuessHover?.(guess.id)}
                 onKeyDown={(event) => {
                   if (event.key === "Escape") onGuessHover?.(null);
                   if (event.key === "Enter" || event.key === " ") {
                     event.preventDefault();
                     onGuessHover?.(guess.id);
+                  }
+                  const step = event.key === "ArrowRight" || event.key === "ArrowDown" ? 1
+                    : event.key === "ArrowLeft" || event.key === "ArrowUp" ? -1 : 0;
+                  if (step) {
+                    event.preventDefault();
+                    const next = plotted[(index + step + plotted.length) % plotted.length];
+                    event.currentTarget.ownerSVGElement
+                      ?.querySelector<SVGElement>(`[data-guess-id="${CSS.escape(next.id)}"]`)
+                      ?.focus();
                   }
                 }}
                 cx={x}

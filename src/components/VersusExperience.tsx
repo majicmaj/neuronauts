@@ -195,6 +195,7 @@ function VersusPowerMeter({ red, blue, startedAt }: {
   const [now, setNow] = useState(() => Date.now());
   useEffect(() => {
     if (!startedAt) return;
+    setNow(Date.now());
     const timer = window.setInterval(() => setNow(Date.now()), 1_000);
     return () => window.clearInterval(timer);
   }, [startedAt]);
@@ -415,7 +416,7 @@ function VersusLive(props: VersusExperienceProps) {
       <GuessDock className={`vs-transmit-console is-${versus.teamId}`} label="Team guess controls">
         <div className="vs-console-heading">
           <div>
-            <h2 id="transmit-title">{TEAM_COPY[versus.teamId].label}</h2>
+            <h2>{TEAM_COPY[versus.teamId].label}</h2>
             <p>{gameState.targetLength}-letter target · team guesses</p>
           </div>
         </div>
