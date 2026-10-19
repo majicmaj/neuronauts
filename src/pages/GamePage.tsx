@@ -12,6 +12,8 @@ import { WinBanner } from "@/components/WinBanner";
 import { VersusExperience } from "@/components/VersusExperience";
 import {
   getPreferredPlayerName,
+  getLobbyResumeToken,
+  saveLobbyResumeToken,
   savePreferredPlayerName,
   socket,
 } from "@/lib/socket";
@@ -74,10 +76,12 @@ export function GamePage() {
       socket.emit("joinLobby", {
         lobbyId,
         preferredName: getPreferredPlayerName(),
+        resumeToken: getLobbyResumeToken(lobbyId),
       });
     };
     const onDisconnect = () => setConnected(false);
     const onLobbyJoined = (payload: LobbyPayload) => {
+      saveLobbyResumeToken(payload);
       setMode(payload.mode || "classic");
       setVersus(payload.versus || null);
       setCategory(payload.category);
@@ -98,6 +102,7 @@ export function GamePage() {
       }
     };
     const onVersusUpdated = (payload: LobbyPayload) => {
+      saveLobbyResumeToken(payload);
       setMode("versus");
       setCategory(payload.category);
       setGameState(payload.gameState);

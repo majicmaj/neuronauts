@@ -3282,3 +3282,5 @@
 .game-shell { font-family: "Avenir Next", "Segoe UI", ui-sans-serif, system-ui, sans-serif; }
 .vs-setup-intro h1 { font-weight: 650; }
 .vs-launch-status span, .vs-join-team { font-weight: 600; }
+
+.game-shell .mission-input::placeholder { opacity: 1; }
