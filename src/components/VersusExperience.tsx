@@ -1,4 +1,5 @@
 import type {
+  GameRecap,
   GameState,
   GuessResult,
   Player,
@@ -19,6 +20,7 @@ import { GuessList } from "./GuessList";
 import { MissionGlyph } from "./MissionGlyph";
 import { PlayAgainButton } from "./PlayAgainButton";
 import { PlayerAvatar } from "./PlayerAvatar";
+import { CrewResultCards } from "./PostGameRecap";
 import { SemanticMap } from "./SemanticMap";
 
 interface VersusExperienceProps {
@@ -462,7 +464,7 @@ function VersusLive(props: VersusExperienceProps) {
   );
 }
 
-function ResultTeam({ team, winner }: { team: VersusTeamSummary; winner: boolean }) {
+function ResultTeam({ team, winner, recapAvailable }: { team: VersusTeamSummary; winner: boolean; recapAvailable: boolean }) {
   return (
     <article className={`vs-result-team is-${team.id} ${winner ? "is-winner" : "is-runner-up"}`} style={teamStyle(team.id)}>
       <header>
@@ -480,14 +482,14 @@ function ResultTeam({ team, winner }: { team: VersusTeamSummary; winner: boolean
         <div><dt>Average</dt><dd>{percent(team.averageSimilarity)}</dd></div>
         <div><dt>Best</dt><dd>{percent(team.bestSimilarity)}</dd></div>
       </dl>
-      <div className="vs-result-roster">
+      {!recapAvailable && <div className="vs-result-roster">
         {team.playerStats.map((player) => (
           <div key={player.playerId}>
             <PlayerAvatar avatarId={player.avatarId} decorative />
             <span><strong>{player.playerName}</strong><small>{player.guessCount} guesses · {percent(player.bestSimilarity)} best · {player.hintCount} hints</small></span>
           </div>
         ))}
-      </div>
+      </div>}
     </article>
   );
 }
@@ -498,6 +500,14 @@ function VersusResults(props: VersusExperienceProps) {
   const winner = result.standings.find((team) => team.id === result.winnerTeamId)!;
   const loser = result.standings.find((team) => team.id === result.loserTeamId)!;
   const margin = Math.abs((loser.score || 0) - (winner.score || 0));
+  // Personal results come first on narrow screens, independently of standings.
+  const crewResults = [versus.teamId, versus.teamId === "red" ? "blue" : "red"].map((id) => {
+    const team = result.standings.find((standing) => standing.id === id)!;
+    const recap: GameRecap | null | undefined = team.id === versus.teamId
+      ? props.gameState.recap || result.teamRecaps?.[team.id]
+      : result.teamRecaps?.[team.id];
+    return { team, recap };
+  });
 
   return (
     <main className="vs-results-shell">
@@ -526,10 +536,31 @@ function VersusResults(props: VersusExperienceProps) {
       </section>
 
       <div className="vs-result-comparison">
-        <ResultTeam team={winner} winner />
+        <ResultTeam team={winner} winner recapAvailable={Boolean(result.teamRecaps?.[winner.id] || (winner.id === versus.teamId && props.gameState.recap))} />
         <div className="vs-result-divider" aria-hidden="true">VS</div>
-        <ResultTeam team={loser} winner={false} />
+        <ResultTeam team={loser} winner={false} recapAvailable={Boolean(result.teamRecaps?.[loser.id] || (loser.id === versus.teamId && props.gameState.recap))} />
       </div>
+
+      {crewResults.some(({ recap }) => recap) && <section className="vs-crew-results" aria-labelledby="vs-crew-results-title">
+        <header className="debrief-roster-heading">
+          <div>
+            <h2 id="vs-crew-results-title">Crew results</h2>
+            <p>Each neuronaut’s distinctions and mission stats. Awards compare crewmates within their team.</p>
+          </div>
+          <MissionGlyph name="crew" className="h-8 w-8" />
+        </header>
+        <div className="vs-crew-results-comparison">
+        {crewResults.map(({ team, recap }) => {
+          if (!recap) return null;
+          return (
+            <section key={team.id} className="vs-crew-results-team" style={teamStyle(team.id)} aria-labelledby={`crew-results-${team.id}`}>
+              <h3 id={`crew-results-${team.id}`}>{TEAM_COPY[team.id].label}{team.id === versus.teamId ? " · your crew" : " · rival crew"}</h3>
+              <CrewResultCards recap={recap} selfParticipantId={selfParticipantId} headingLevel={4} />
+            </section>
+          );
+        })}
+        </div>
+      </section>}
 
       <footer className="vs-result-actions">
         <p>Same crew, fresh target, one shared rematch lobby.</p>

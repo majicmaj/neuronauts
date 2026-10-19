@@ -1161,7 +1161,7 @@
     padding: 1rem 1rem 0.85rem;
   }
 
-  .debrief-player-heading h3 {
+  .debrief-player-heading :is(h3, h4) {
     min-width: 0;
     overflow: hidden;
     font-size: 1.15rem;
@@ -3318,5 +3318,16 @@
 .game-shell .debrief-card-avatar { width: 5rem; height: 5rem; flex-shrink: 0; }
 .game-shell .debrief-card-awards { display: flex; flex-wrap: wrap; gap: .5rem 1rem; padding-bottom: 1rem; }
 .game-shell .debrief-card-award { flex: 1 1 180px; min-width: 0; }
-.game-shell .debrief-player-heading h3 { font-weight: 700; }
+.game-shell .debrief-player-heading :is(h3, h4) { font-weight: 700; }
 .game-shell .map-surface { fill: transparent; stroke: none; pointer-events: none; }
+
+/* Shared per-player debriefs remain distinct from the compact team scorecards. */
+.game-shell .vs-crew-results { margin-block: 1.5rem; }
+.game-shell .vs-crew-results-team { margin-top: 1.5rem; min-width: 0; }
+.game-shell .vs-crew-results-team > h3 { margin-bottom: .75rem; color: var(--team-color); font-size: 1.125rem; font-weight: 750; }
+.game-shell .vs-crew-results .debrief-player-grid { grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+
+.game-shell .vs-crew-results-comparison { display: grid; gap: 1.5rem; }
+@media (min-width: 1000px) {
+  .game-shell .vs-crew-results-comparison { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}

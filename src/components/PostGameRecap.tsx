@@ -6,7 +6,7 @@ import {
 } from "@/lib/floatingDisclosure";
 import { calculateMissionGrade, type MissionGradeLetter } from "@/lib/missionGrade";
 import { playerColor } from "@/lib/playerColors";
-import type { GameState, PlayerRecap, RecapAward, RematchState } from "@/types";
+import type { GameRecap, GameState, PlayerRecap, RecapAward, RematchState } from "@/types";
 import {
   useCallback,
   useEffect,
@@ -238,12 +238,15 @@ function PlayerResultCard({
   avatarId,
   awards,
   isSelf,
+  headingLevel = 3,
 }: {
   player: PlayerRecap;
   avatarId: AvatarId;
   awards: Citation[];
   isSelf: boolean;
+  headingLevel?: 3 | 4;
 }) {
+  const Heading = headingLevel === 4 ? "h4" : "h3";
   const color = playerColor(player.colorIndex, player.playerId);
 
   return (
@@ -253,13 +256,13 @@ function PlayerResultCard({
     >
       <div className="debrief-player-stage">
         <span className="debrief-player-result">
-          {player.foundTarget ? "Target finder" : `${player.guessCount} transmissions`}
+          {player.foundTarget ? "Target finder" : `${player.guessCount} ${player.guessCount === 1 ? "transmission" : "transmissions"}`}
         </span>
         <PlayerAvatar avatarId={avatarId} className="debrief-card-avatar" decorative />
       </div>
 
       <header className="debrief-player-heading">
-        <h3>{player.playerName}</h3>
+        <Heading>{player.playerName}</Heading>
         {isSelf && <span className="debrief-you">you</span>}
       </header>
 
@@ -281,7 +284,7 @@ function PlayerResultCard({
         <div>
           <dt>Best signal</dt>
           <dd>{percent(player.bestGuess?.similarity ?? null)}</dd>
-          {player.bestGuess && <span>{player.bestGuess.word}</span>}
+          {player.bestGuess?.word && <span>{player.bestGuess.word}</span>}
         </div>
         <div>
           <dt>Hints</dt>
@@ -295,6 +298,30 @@ function PlayerResultCard({
         {player.wrongGuessCount} wrong {player.wrongGuessCount === 1 ? "turn" : "turns"}
       </p>
     </article>
+  );
+}
+
+export function CrewResultCards({ recap, selfParticipantId, headingLevel = 3 }: {
+  recap: GameRecap;
+  selfParticipantId?: string;
+  headingLevel?: 3 | 4;
+}) {
+  const avatarAssignments = assignUniqueAvatarIds(
+    recap.players.map((player) => ({ key: player.playerId, avatarId: player.avatarId }))
+  );
+  return (
+    <div className="debrief-player-grid">
+      {recap.players.map((player) => (
+        <PlayerResultCard
+          key={player.playerId}
+          player={player}
+          avatarId={avatarAssignments.get(player.playerId) || AVATARS[0].id}
+          awards={coolestAwards(player, recap.awards)}
+          isSelf={player.playerId === selfParticipantId}
+          headingLevel={headingLevel}
+        />
+      ))}
+    </div>
   );
 }
 
@@ -316,12 +343,6 @@ export function PostGameRecap({
     totalGuesses: recap.totalGuesses,
     totalHints: recap.totalHints,
   });
-  const avatarAssignments = assignUniqueAvatarIds(
-    recap.players.map((player) => ({
-      key: player.playerId,
-      avatarId: player.avatarId,
-    }))
-  );
   const gradeStyle = {
     "--grade-color": (effectiveTheme === "dark" ? GRADE_COLORS : LIGHT_GRADE_COLORS)[grade.letter],
   } as CSSProperties;
@@ -405,17 +426,7 @@ export function PostGameRecap({
           <MissionGlyph name="crew" className="h-8 w-8" />
         </header>
 
-        <div className="debrief-player-grid">
-          {recap.players.map((player) => (
-            <PlayerResultCard
-              key={player.playerId}
-              player={player}
-              avatarId={avatarAssignments.get(player.playerId) || AVATARS[0].id}
-              awards={coolestAwards(player, recap.awards)}
-              isSelf={player.playerId === selfParticipantId}
-            />
-          ))}
-        </div>
+        <CrewResultCards recap={recap} selfParticipantId={selfParticipantId} />
       </section>
     </div>
   );
