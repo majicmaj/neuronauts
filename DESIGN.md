@@ -2,15 +2,15 @@
 name: Neuronauts
 description: Quiet full-screen game surfaces with clear red and blue team signals.
 colors:
-  canvas: "#eef2f0"
+  canvas: "#f3f4f6"
   surface: "#ffffff"
-  surface-subtle: "#f6f8f7"
-  ink: "#17201d"
-  muted: "#5d6a65"
-  line: "#cfd8d4"
-  line-strong: "#aebdb7"
-  accent: "#087f70"
-  accent-hover: "#06695e"
+  surface-subtle: "#eceef1"
+  ink: "#202228"
+  muted: "#626773"
+  line: "#e2e4e8"
+  line-strong: "#c8ccd4"
+  accent: "#287c70"
+  accent-hover: "#20685e"
   accent-soft: "#dff1ed"
   accent-contrast: "#ffffff"
   hint: "#9a5b0a"
@@ -26,15 +26,15 @@ colors:
   team-red-soft: "#fae9ea"
   team-blue: "#3f74bd"
   team-blue-soft: "#e8f0fb"
-  dark-canvas: "#101613"
-  dark-surface: "#171f1c"
-  dark-surface-subtle: "#1c2622"
-  dark-ink: "#edf4f1"
-  dark-muted: "#a8b5b0"
-  dark-line: "#33413b"
-  dark-line-strong: "#52645c"
-  dark-accent: "#65cdb9"
-  dark-accent-hover: "#83dbc9"
+  dark-canvas: "#101113"
+  dark-surface: "#191a1e"
+  dark-surface-subtle: "#222429"
+  dark-ink: "#eceef2"
+  dark-muted: "#a4a9b3"
+  dark-line: "#2c2e35"
+  dark-line-strong: "#4a4e58"
+  dark-accent: "#7ad3bf"
+  dark-accent-hover: "#9adfce"
   dark-accent-soft: "#173b34"
   dark-accent-contrast: "#10201c"
   dark-hint: "#f0bb64"
@@ -275,3 +275,7 @@ Preserve winner/runner-up language, grades, the adjusted-time equation, raw time
 - Don't make team identity depend on color alone.
 - Don't apply game-route palette changes to home and lobby without a separate scoped request.
 - Don't place a fixed guess input over scrollable content without measured clearance.
+
+## Entry and recovery
+
+Home uses the same neutral palette and surface hierarchy as game routes. Classic places the map and shared log first, with a native crew disclosure that adapts to smaller screens. Offline and reconnect banners preserve mission context and input drafts; initial connection, map loading, host approval, invalid/expired missions, route failures and missing pages share one recovery surface. Every failure offers a meaningful retry or return path. No new decorative motion or frame borders are introduced.

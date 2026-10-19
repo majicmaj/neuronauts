@@ -40,7 +40,7 @@ interface VersusExperienceProps {
   onRandomizeTeams: () => void;
   onToggleReady: () => void;
   onStartMatch: () => void;
-  onGuess: (guess: string) => void;
+  onGuess: (guess: string) => void | Promise<boolean>;
   onTypingChange: (isTyping: boolean) => void;
   onRequestHint: () => void;
   onGuessHover: (guessId: string | null) => void;

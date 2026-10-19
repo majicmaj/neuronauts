@@ -1,3 +1,6 @@
+import { ConnectionBanner } from "@/components/ConnectionBanner";
+import { StatusScreen, StatusPanel } from "@/components/StatusScreen";
+import { useConnection } from "@/hooks/useConnection";
 import { Celebration } from "@/components/Celebration";
 import { GuessDock } from "@/components/GuessDock";
 import { GuessInput } from "@/components/GuessInput";
@@ -54,7 +57,10 @@ export function GamePage() {
   const [versus, setVersus] = useState<VersusState | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [typingPlayerIds, setTypingPlayerIds] = useState<string[]>([]);
-  const [connected, setConnected] = useState(socket.connected);
+  const connection = useConnection();
+  const { connected } = connection;
+  const [joined, setJoined] = useState(false);
+  const [joinAttempt, setJoinAttempt] = useState(0);
   const [joinPending, setJoinPending] = useState(false);
   const [joinRequests, setJoinRequests] = useState<{ id: string; name: string }[]>([]);
   const [fatalError, setFatalError] = useState<string | null>(null);
@@ -73,19 +79,25 @@ export function GamePage() {
   useEffect(() => {
     if (!lobbyId) return;
 
+    let joinTimer: number | undefined;
+    const clearJoinTimer = () => window.clearTimeout(joinTimer);
     const joinLobby = () => {
+      clearJoinTimer();
+      setJoined(false);
+      joinTimer = window.setTimeout(() => setFatalError("The mission didn’t respond. Retry to reconnect to this lobby."), 10_000);
       setJoinPending(false);
       setJoinRequests([]);
       setFatalError(null);
-      setConnected(true);
       socket.emit("joinLobby", {
         lobbyId,
         preferredName: getPreferredPlayerName(),
         resumeToken: getLobbyResumeToken(lobbyId),
       });
     };
-    const onDisconnect = () => setConnected(false);
+    const onDisconnect = () => { clearJoinTimer(); setJoined(false); setPlayAgainBusy(false); };
     const onLobbyJoined = (payload: LobbyPayload) => {
+      clearJoinTimer();
+      setJoined(true);
       setJoinPending(false);
       saveLobbyResumeToken(payload);
       setMode(payload.mode || "classic");
@@ -108,6 +120,8 @@ export function GamePage() {
       }
     };
     const onVersusUpdated = (payload: LobbyPayload) => {
+      clearJoinTimer();
+      setJoined(true);
       setJoinPending(false);
       saveLobbyResumeToken(payload);
       setMode("versus");
@@ -190,8 +204,8 @@ export function GamePage() {
         }));
       }
     };
-    const onLobbyError = (message: string) => { setJoinPending(false); setFatalError(message); };
-    const onJoinPending = () => { setFatalError(null); setJoinPending(true); };
+    const onLobbyError = (message: string) => { clearJoinTimer(); setJoined(false); setJoinPending(false); setFatalError(message); };
+    const onJoinPending = () => { clearJoinTimer(); setJoined(false); setFatalError(null); setJoinPending(true); };
     const onJoinRequests = (payload: { lobbyId: string; requests: { id: string; name: string }[] }) => {
       if (payload.lobbyId === lobbyId) setJoinRequests(payload.requests);
     };
@@ -218,6 +232,7 @@ export function GamePage() {
     if (socket.connected) joinLobby();
 
     return () => {
+      clearJoinTimer();
       socket.off("connect", joinLobby);
       socket.off("disconnect", onDisconnect);
       socket.off("lobbyJoined", onLobbyJoined);
@@ -236,7 +251,7 @@ export function GamePage() {
       socket.off("error", onLobbyError);
       socket.off("playerNameChanged", onNameChanged);
     };
-  }, [lobbyId, navigate]);
+  }, [lobbyId, navigate, joinAttempt]);
 
   useEffect(() => {
     if (!actionError) return;
@@ -249,6 +264,15 @@ export function GamePage() {
     const timer = window.setTimeout(() => setCelebrating(false), 6_000);
     return () => window.clearTimeout(timer);
   }, [celebrating]);
+
+  useEffect(() => {
+    if (!playAgainBusy) return;
+    const timer = window.setTimeout(() => {
+      setPlayAgainBusy(false);
+      setActionError("The next mission didn’t respond. Try Play again once more.");
+    }, 10_000);
+    return () => window.clearTimeout(timer);
+  }, [playAgainBusy]);
 
   useEffect(() => {
     const availableAt = gameState.hintAvailableAt
@@ -278,7 +302,7 @@ export function GamePage() {
       ),
     [gameState.guessHistory]
   );
-  const canPlay = connected && gameState.status === "playing";
+  const canPlay = connected && joined && gameState.status === "playing";
   const canHint = canPlay && Boolean(bestGuess) && hintSeconds === 0;
   const featuredGuess = useMemo(
     () => gameState.guessHistory.find((guess) => guess.id === featuredGuessId) || null,
@@ -292,41 +316,49 @@ export function GamePage() {
 
   const copyCode = async () => {
     if (!lobbyId) return;
-    await navigator.clipboard.writeText(lobbyId);
-    setCopied(true);
-    window.setTimeout(() => setCopied(false), 1_500);
+    try {
+      await navigator.clipboard.writeText(lobbyId);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1_500);
+    } catch { setActionError(`Couldn’t copy automatically. Your lobby code is ${lobbyId}.`); }
   };
 
-  const submitGuess = (rawGuess: string) => {
-    const guess = rawGuess.trim().toLowerCase();
-    setActionError(null);
-    socket.timeout(5_000).emit(
-      "guess",
-      { lobbyId, guess },
-      (timeoutError: Error | null, response?: GuessSubmissionResponse) => {
-        if (timeoutError || !response) {
-          setActionError("The signal timed out. Try that guess again.");
-          return;
-        }
+  const submitGuess = (rawGuess: string): Promise<boolean> => {
+    if (!canPlay) return Promise.resolve(false);
+    return new Promise(resolve => {
+      const guess = rawGuess.trim().toLowerCase();
+      setActionError(null);
+      socket.timeout(5_000).emit(
+        "guess",
+        { lobbyId, guess },
+        (timeoutError: Error | null, response?: GuessSubmissionResponse) => {
+          if (timeoutError || !response) {
+            setActionError("The signal timed out. Your guess is still in the input; try again.");
+            resolve(false);
+            return;
+          }
 
-        const presentation = presentGuessSubmission(response);
-        const result = presentation.result;
-        if (result) {
-          setFeaturedGuessId(result.id);
-          setFeaturedGuessVersion((version) => version + 1);
-        }
+          const presentation = presentGuessSubmission(response);
+          const result = presentation.result;
+          if (result) {
+            setFeaturedGuessId(result.id);
+            setFeaturedGuessVersion((version) => version + 1);
+          }
 
-        setFeaturedGuessNotice(presentation.notice);
-        if (presentation.error) {
-          setActionError(presentation.error);
-          return;
+          setFeaturedGuessNotice(presentation.notice);
+          if (presentation.error) {
+            setActionError(presentation.error);
+            resolve(false);
+            return;
+          }
+          resolve(true);
         }
-      }
-    );
+      );
+    });
   };
 
   const playAgain = () => {
-    if (!lobbyId || playAgainBusy || gameState.status !== "won") return;
+    if (!lobbyId || !connected || !joined || playAgainBusy || gameState.status !== "won") return;
     setActionError(null);
     setPlayAgainBusy(true);
     socket.emit("requestRematch", { lobbyId });
@@ -341,30 +373,33 @@ export function GamePage() {
     socket.emit("reviewJoinRequest", { lobbyId, requestId, teamId, reject: !teamId });
   };
 
-  if (joinPending && !fatalError) {
-    return (
-      <div className="app-shell game-shell grid min-h-dvh place-items-center px-4 text-center">
-        <main className="neuron-card max-w-md p-8" aria-live="polite">
-          <Neuronaut className="mx-auto mb-4 h-16 w-16" />
-          <h1 className="text-2xl font-bold">Waiting for the host</h1>
-          <p className="mt-3 text-zinc-500 dark:text-zinc-400">{connected ? `Your request to join ${lobbyId} is sent. The host will choose your team.` : "Reconnecting to the mission…"}</p>
-          <button onClick={() => { socket.emit("leaveLobby"); navigate("/"); }} className="neuron-secondary-button mx-auto mt-6">Cancel request</button>
-        </main>
-      </div>
-    );
-  }
+  const retryMission = () => {
+    setFatalError(null);
+    setActionError(null);
+    setGameState(EMPTY_GAME);
+    setJoined(false);
+    setJoinAttempt(value => value + 1);
+    connection.retry();
+  };
+  const returnHome = () => { socket.emit("leaveLobby"); navigate("/"); };
 
   if (fatalError) {
-    return (
-      <div className="app-shell grid min-h-dvh place-items-center px-4 text-center">
-        <div className="neuron-card max-w-md p-8">
-          <Neuronaut className="mx-auto mb-4 h-16 w-16" />
-          <h1 className="text-2xl font-black">Mission unavailable</h1>
-          <p className="mt-2 text-zinc-500 dark:text-zinc-400">{fatalError}</p>
-          <button onClick={() => navigate("/")} className="neuron-primary-button mx-auto mt-6">Return home</button>
-        </div>
-      </div>
-    );
+    return <StatusScreen title="Mission unavailable" description={fatalError}>
+      <button onClick={retryMission} className="neuron-primary-button">Try again</button>
+      <button onClick={returnHome} className="neuron-secondary-button">Return home</button>
+    </StatusScreen>;
+  }
+  if (joinPending) {
+    return <StatusScreen title="Waiting for the host" description={connected ? `Your request to join ${lobbyId} is sent. The host will choose your team.` : "Your request is paused while we reconnect."}>
+      {!connected && <ConnectionBanner phase={connection.phase} onRetry={connection.retry} />}
+      <button onClick={returnHome} className="neuron-secondary-button">Cancel request</button>
+    </StatusScreen>;
+  }
+  if (gameState.status === "loading" && !connected) {
+    return <StatusScreen title={connection.phase === "offline" ? "You’re offline" : "Connecting to your mission"} description={connection.phase === "offline" ? "Reconnect to the internet to open this lobby. Your saved mission identity stays on this device." : "We’re trying to reach the navigator. You can retry now or come back from home."} busy={connection.phase === "connecting" || connection.phase === "reconnecting"}>
+      <button onClick={connection.retry} className="neuron-primary-button">Retry connection</button>
+      <button onClick={returnHome} className="neuron-secondary-button">Return home</button>
+    </StatusScreen>;
   }
 
   return (
@@ -373,7 +408,7 @@ export function GamePage() {
 
       <div className="game-page-content w-full px-3 py-3 sm:px-6 sm:py-4">
         <header className="mission-header mb-5 flex items-center justify-between gap-3 pb-3">
-          <button onClick={() => navigate("/")} className="flex min-w-0 items-center gap-2 text-left">
+          <button onClick={returnHome} className="flex min-w-0 items-center gap-2 text-left">
             <Neuronaut className="h-10 w-10 shrink-0" />
             <div className="hidden min-w-0 sm:block">
               <div className="truncate text-lg font-extrabold leading-tight tracking-tight">Neuronauts{mode === "versus" ? " VS" : ""}</div>
@@ -396,6 +431,8 @@ export function GamePage() {
             <ThemeToggle />
           </div>
         </header>
+
+        <ConnectionBanner phase={connection.phase} onRetry={connection.retry} />
 
         {selfParticipantId && selfParticipantId === versus?.hostParticipantId && joinRequests.length > 0 && (
           <section className="neuron-card mb-4 p-4" aria-label="Join requests" aria-live="polite">
@@ -422,12 +459,11 @@ export function GamePage() {
         )}
 
         {gameState.status === "loading" ? (
-          <div className="grid min-h-[70vh] place-items-center">
-            <div className="neuron-card flex flex-col items-center px-8 py-10 text-center">
-              <MissionGlyph name="loader" className="mission-loader mb-4 h-12 w-12 text-teal-500" />
-              <p className="font-bold">Calibrating semantic space</p>
-              <p className="mt-1 text-sm text-zinc-500">Loading the navigator’s word map…</p>
-            </div>
+          <div className="mission-loading">
+            <StatusPanel title={joined ? "Calibrating semantic space" : "Opening mission…"} description={joined ? "The navigator is loading the word map. You can leave this page open; the mission will appear when it’s ready." : "Finding your lobby and restoring your crew identity."} busy>
+              <button onClick={retryMission} className="neuron-secondary-button">Try again</button>
+              <button onClick={returnHome} className="neuron-secondary-button">Return home</button>
+            </StatusPanel>
           </div>
         ) : mode === "versus" && versus ? (
           <VersusExperience
@@ -437,7 +473,7 @@ export function GamePage() {
             typingPlayerIds={typingPlayerIds}
             selfSocketId={socket.id}
             selfParticipantId={selfParticipantId}
-            connected={connected}
+            connected={connected && joined}
             featuredGuess={featuredGuess}
             featuredGuessVersion={featuredGuessVersion}
             featuredGuessNotice={featuredGuessNotice}
@@ -468,7 +504,8 @@ export function GamePage() {
             />
           </main>
         ) : (
-          <main className="game-layout">
+          <main className={`classic-workspace${gameState.status === "won" ? " is-complete" : ""}`}>
+            <h1 className="sr-only">Classic mission</h1>
             <div className="game-primary">
               <div className="game-actions min-w-0 space-y-4">
               {gameState.status === "won" && gameState.recap && (
@@ -509,6 +546,7 @@ export function GamePage() {
                   <div className="flex flex-col gap-2 sm:flex-row">
                     <GuessInput
                       onGuess={submitGuess}
+                      submitLabel="Guess"
                       onTypingChange={handleTypingChange}
                       disabled={!canPlay}
                     />

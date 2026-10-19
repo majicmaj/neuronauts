@@ -3,8 +3,10 @@ import { ThemeContext, type Theme } from "./theme";
 
 const getSavedTheme = () => {
   if (typeof window !== "undefined") {
-    const savedTheme = localStorage.getItem("theme") as Theme;
-    return savedTheme || "system";
+    try {
+      const savedTheme = localStorage.getItem("theme");
+      return savedTheme === "light" || savedTheme === "dark" ? savedTheme : "system";
+    } catch { return "system"; }
   }
   return "system";
 };
@@ -38,7 +40,7 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     root.classList.remove("light", "dark");
     root.classList.add(effectiveTheme);
-    localStorage.setItem("theme", theme);
+    try { localStorage.setItem("theme", theme); } catch { /* The current theme still works without persistent storage. */ }
   }, [theme, effectiveTheme, root]);
 
   return (

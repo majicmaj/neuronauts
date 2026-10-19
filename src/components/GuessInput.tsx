@@ -2,7 +2,7 @@ import { FormEvent, useCallback, useEffect, useRef, useState } from "react";
 import { MissionGlyph } from "./MissionGlyph";
 
 interface GuessInputProps {
-  onGuess: (guess: string) => void;
+  onGuess: (guess: string) => void | Promise<boolean>;
   onTypingChange?: (isTyping: boolean) => void;
   disabled?: boolean;
   inputId?: string;
@@ -17,6 +17,8 @@ export function GuessInput({
   submitLabel,
 }: GuessInputProps) {
   const [input, setInput] = useState("");
+  const [pending, setPending] = useState(false);
+  const submitting = useRef(false);
   const typing = useRef(false);
   const idleTimer = useRef<number | null>(null);
 
@@ -53,24 +55,33 @@ export function GuessInput({
     [stopTyping]
   );
 
-  const handleSubmit = (event: FormEvent) => {
+  const handleSubmit = async (event: FormEvent) => {
     event.preventDefault();
     const value = input.trim();
-    if (!value || value.includes(" ")) return;
+    if (disabled || submitting.current || !value || value.includes(" ")) return;
     stopTyping();
-    onGuess(value);
-    setInput("");
+    submitting.current = true;
+    setPending(true);
+    try {
+      const accepted = await onGuess(value);
+      if (accepted !== false) setInput(current => current.trim() === value ? "" : current);
+    } catch {
+      // Keep the draft if a caller cannot complete submission.
+    } finally {
+      submitting.current = false;
+      setPending(false);
+    }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex min-w-0 flex-1 gap-2">
+    <form onSubmit={handleSubmit} aria-busy={pending} className="flex min-w-0 flex-1 gap-2">
       <label className="sr-only" htmlFor={inputId}>Guess a word</label>
       <input
         id={inputId}
         type="text"
         value={input}
         onChange={(event) => handleChange(event.target.value)}
-        disabled={disabled}
+        disabled={disabled || pending}
         maxLength={40}
         autoComplete="off"
         autoCapitalize="none"
@@ -80,7 +91,7 @@ export function GuessInput({
       />
       <button
         type="submit"
-        disabled={disabled || !input.trim() || input.trim().includes(" ")}
+        disabled={disabled || pending || !input.trim() || input.trim().includes(" ")}
         className={`neuron-primary-button guess-submit-button shrink-0 ${submitLabel ? "has-label" : ""}`}
         aria-label="Send guess"
       >

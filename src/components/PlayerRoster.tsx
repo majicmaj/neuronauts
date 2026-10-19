@@ -31,6 +31,7 @@ export function PlayerRoster({
   onAvatarChange,
 }: PlayerRosterProps) {
   const self = players.find((player) => player.id === selfId);
+  const [expanded, setExpanded] = useState(() => window.matchMedia("(min-width: 1024px)").matches);
   const [editing, setEditing] = useState(false);
   const [choosingAvatar, setChoosingAvatar] = useState(false);
   const [name, setName] = useState(self?.name || "");
@@ -70,6 +71,13 @@ export function PlayerRoster({
     if (!editing) setName(self?.name || "");
   }, [editing, self?.name]);
 
+  useEffect(() => {
+    const media = window.matchMedia("(min-width: 1024px)");
+    const resize = () => setExpanded(media.matches);
+    media.addEventListener("change", resize);
+    return () => media.removeEventListener("change", resize);
+  }, []);
+
   const submit = (event: FormEvent) => {
     event.preventDefault();
     if (!name.trim()) return;
@@ -83,14 +91,15 @@ export function PlayerRoster({
   };
 
   return (
-    <section className="neuron-card crew-manifest" aria-labelledby="crew-title">
-      <div className="crew-manifest-heading">
+    <details className="neuron-card crew-manifest" open={expanded} onToggle={event => setExpanded(event.currentTarget.open)}>
+      <summary className="crew-manifest-heading">
         <div className="flex items-center gap-2">
           <MissionGlyph name="crew" className="h-6 w-6 text-teal-700 dark:text-teal-300" />
-          <h2 id="crew-title" className="font-semibold">Crew manifest</h2>
+          <h2 id="crew-title" className="font-semibold">Crew</h2>
         </div>
         <span>{players.length} online</span>
-      </div>
+        <MissionGlyph name="launch" className="crew-toggle h-4 w-4" />
+      </summary>
 
       <div className="crew-list">
         {players.map((player) => {
@@ -210,6 +219,6 @@ export function PlayerRoster({
           </div>
         </div>
       )}
-    </section>
+    </details>
   );
 }
