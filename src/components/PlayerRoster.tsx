@@ -91,11 +91,13 @@ export function PlayerRoster({
   };
 
   return (
-    <details className="neuron-card crew-manifest" open={expanded} onToggle={event => setExpanded(event.currentTarget.open)}>
+    <section className="neuron-card crew-manifest" aria-labelledby="crew-title">
+      <h2 id="crew-title" className="sr-only">Crew</h2>
+      <details className="crew-disclosure" open={expanded} onToggle={event => setExpanded(event.currentTarget.open)}>
       <summary className="crew-manifest-heading">
         <div className="flex items-center gap-2">
           <MissionGlyph name="crew" className="h-6 w-6 text-teal-700 dark:text-teal-300" />
-          <h2 id="crew-title" className="font-semibold">Crew</h2>
+          <span className="font-semibold">Crew</span>
         </div>
         <span>{players.length} online</span>
         <MissionGlyph name="launch" className="crew-toggle h-4 w-4" />
@@ -219,6 +221,7 @@ export function PlayerRoster({
           </div>
         </div>
       )}
-    </details>
+      </details>
+    </section>
   );
 }

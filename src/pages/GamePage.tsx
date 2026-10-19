@@ -33,7 +33,7 @@ import type {
   TeamId,
   VersusState,
 } from "@/types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 
 const EMPTY_GAME: GameState = {
@@ -61,6 +61,8 @@ export function GamePage() {
   const { connected } = connection;
   const [joined, setJoined] = useState(false);
   const [joinAttempt, setJoinAttempt] = useState(0);
+  const [joinSlow, setJoinSlow] = useState(false);
+  const restoredLobby = useRef<string | null>(null);
   const [joinPending, setJoinPending] = useState(false);
   const [joinRequests, setJoinRequests] = useState<{ id: string; name: string }[]>([]);
   const [fatalError, setFatalError] = useState<string | null>(null);
@@ -84,7 +86,11 @@ export function GamePage() {
     const joinLobby = () => {
       clearJoinTimer();
       setJoined(false);
-      joinTimer = window.setTimeout(() => setFatalError("The mission didn’t respond. Retry to reconnect to this lobby."), 10_000);
+      setJoinSlow(false);
+      joinTimer = window.setTimeout(() => {
+        if (restoredLobby.current === lobbyId) setJoinSlow(true);
+        else setFatalError("The mission didn’t respond. Retry to reconnect to this lobby.");
+      }, 10_000);
       setJoinPending(false);
       setJoinRequests([]);
       setFatalError(null);
@@ -98,6 +104,8 @@ export function GamePage() {
     const onLobbyJoined = (payload: LobbyPayload) => {
       clearJoinTimer();
       setJoined(true);
+      restoredLobby.current = payload.lobbyId;
+      setJoinSlow(false);
       setJoinPending(false);
       saveLobbyResumeToken(payload);
       setMode(payload.mode || "classic");
@@ -122,6 +130,8 @@ export function GamePage() {
     const onVersusUpdated = (payload: LobbyPayload) => {
       clearJoinTimer();
       setJoined(true);
+      restoredLobby.current = payload.lobbyId;
+      setJoinSlow(false);
       setJoinPending(false);
       saveLobbyResumeToken(payload);
       setMode("versus");
@@ -324,7 +334,7 @@ export function GamePage() {
   };
 
   const submitGuess = (rawGuess: string): Promise<boolean> => {
-    if (!canPlay) return Promise.resolve(false);
+    if (!canPlay) { setActionError("Your mission is still reconnecting. Try again when your crew is restored."); return Promise.resolve(false); }
     return new Promise(resolve => {
       const guess = rawGuess.trim().toLowerCase();
       setActionError(null);
@@ -333,7 +343,7 @@ export function GamePage() {
         { lobbyId, guess },
         (timeoutError: Error | null, response?: GuessSubmissionResponse) => {
           if (timeoutError || !response) {
-            setActionError("The signal timed out. Your guess is still in the input; try again.");
+            setActionError(`The signal timed out for “${guess}”. Try that guess again.`);
             resolve(false);
             return;
           }
@@ -381,7 +391,8 @@ export function GamePage() {
     setJoinAttempt(value => value + 1);
     connection.retry();
   };
-  const returnHome = () => { socket.emit("leaveLobby"); navigate("/"); };
+  const returnHome = () => navigate("/");
+  const retryJoin = () => { setJoinAttempt(value => value + 1); connection.retry(); };
 
   if (fatalError) {
     return <StatusScreen title="Mission unavailable" description={fatalError}>
@@ -391,7 +402,7 @@ export function GamePage() {
   }
   if (joinPending) {
     return <StatusScreen title="Waiting for the host" description={connected ? `Your request to join ${lobbyId} is sent. The host will choose your team.` : "Your request is paused while we reconnect."}>
-      {!connected && <ConnectionBanner phase={connection.phase} onRetry={connection.retry} />}
+      {!connected && <ConnectionBanner phase={connection.phase} onRetry={connection.retry} autoRetry={connection.autoRetry} />}
       <button onClick={returnHome} className="neuron-secondary-button">Cancel request</button>
     </StatusScreen>;
   }
@@ -432,7 +443,7 @@ export function GamePage() {
           </div>
         </header>
 
-        <ConnectionBanner phase={connection.phase} onRetry={connection.retry} />
+        <ConnectionBanner phase={connection.phase} onRetry={connected && !joined ? retryJoin : connection.retry} autoRetry={connection.autoRetry} restoring={connected && !joined && gameState.status !== "loading"} slow={joinSlow} />
 
         {selfParticipantId && selfParticipantId === versus?.hostParticipantId && joinRequests.length > 0 && (
           <section className="neuron-card mb-4 p-4" aria-label="Join requests" aria-live="polite">
@@ -498,7 +509,7 @@ export function GamePage() {
               selfParticipantId={selfParticipantId}
               rematch={rematch}
               playAgainBusy={playAgainBusy}
-              playAgainDisabled={!connected}
+              playAgainDisabled={!connected || !joined}
               onPlayAgain={playAgain}
               onReviewFlightLog={() => setPostGameView("flight-log")}
             />
@@ -522,7 +533,7 @@ export function GamePage() {
                 rematch={rematch}
                 selfParticipantId={selfParticipantId}
                 playAgainBusy={playAgainBusy}
-                playAgainDisabled={!connected}
+                playAgainDisabled={!connected || !joined}
                 onPlayAgain={playAgain}
               />
 

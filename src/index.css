@@ -3259,7 +3259,7 @@
 .crew-manifest-heading::-webkit-details-marker { display: none; }
 .crew-manifest-heading > span { margin-inline-start: auto; }
 .crew-toggle { color: var(--muted); }
-.crew-manifest[open] > summary .crew-toggle { transform: rotate(90deg); }
+.crew-disclosure[open] > summary .crew-toggle { transform: rotate(90deg); }
 .game-shell .crew-name-line > button, .game-shell .crew-name-form > button, .game-shell .avatar-picker-heading > button { min-width: 44px; min-height: 44px; }
 .game-shell .crew-member { grid-template-columns: 2.75rem minmax(0, 1fr); }
 .game-shell .crew-avatar-button { width: 2.75rem; height: 2.75rem; }

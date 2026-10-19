@@ -20,6 +20,7 @@ export function GuessInput({
   const [pending, setPending] = useState(false);
   const submitting = useRef(false);
   const typing = useRef(false);
+  const inputRef = useRef<HTMLInputElement>(null);
   const idleTimer = useRef<number | null>(null);
 
   const stopTyping = useCallback(() => {
@@ -60,16 +61,20 @@ export function GuessInput({
     const value = input.trim();
     if (disabled || submitting.current || !value || value.includes(" ")) return;
     stopTyping();
+    const form = event.currentTarget;
+    const hadFocus = form.contains(document.activeElement);
+    setInput("");
     submitting.current = true;
     setPending(true);
     try {
       const accepted = await onGuess(value);
-      if (accepted !== false) setInput(current => current.trim() === value ? "" : current);
+      if (accepted === false) setInput(current => current || value);
     } catch {
-      // Keep the draft if a caller cannot complete submission.
+      setInput(current => current || value);
     } finally {
       submitting.current = false;
       setPending(false);
+      if (hadFocus && !inputRef.current?.disabled && (document.activeElement === document.body || form.contains(document.activeElement))) inputRef.current?.focus({ preventScroll: true });
     }
   };
 
@@ -77,11 +82,12 @@ export function GuessInput({
     <form onSubmit={handleSubmit} aria-busy={pending} className="flex min-w-0 flex-1 gap-2">
       <label className="sr-only" htmlFor={inputId}>Guess a word</label>
       <input
+        ref={inputRef}
         id={inputId}
         type="text"
         value={input}
         onChange={(event) => handleChange(event.target.value)}
-        disabled={disabled || pending}
+        disabled={disabled}
         maxLength={40}
         autoComplete="off"
         autoCapitalize="none"
