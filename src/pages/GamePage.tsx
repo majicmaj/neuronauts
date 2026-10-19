@@ -55,6 +55,8 @@ export function GamePage() {
   const [players, setPlayers] = useState<Player[]>([]);
   const [typingPlayerIds, setTypingPlayerIds] = useState<string[]>([]);
   const [connected, setConnected] = useState(socket.connected);
+  const [joinPending, setJoinPending] = useState(false);
+  const [joinRequests, setJoinRequests] = useState<{ id: string; name: string }[]>([]);
   const [fatalError, setFatalError] = useState<string | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [celebrating, setCelebrating] = useState(false);
@@ -72,6 +74,9 @@ export function GamePage() {
     if (!lobbyId) return;
 
     const joinLobby = () => {
+      setJoinPending(false);
+      setJoinRequests([]);
+      setFatalError(null);
       setConnected(true);
       socket.emit("joinLobby", {
         lobbyId,
@@ -81,6 +86,7 @@ export function GamePage() {
     };
     const onDisconnect = () => setConnected(false);
     const onLobbyJoined = (payload: LobbyPayload) => {
+      setJoinPending(false);
       saveLobbyResumeToken(payload);
       setMode(payload.mode || "classic");
       setVersus(payload.versus || null);
@@ -102,6 +108,7 @@ export function GamePage() {
       }
     };
     const onVersusUpdated = (payload: LobbyPayload) => {
+      setJoinPending(false);
       saveLobbyResumeToken(payload);
       setMode("versus");
       setCategory(payload.category);
@@ -183,13 +190,19 @@ export function GamePage() {
         }));
       }
     };
-    const onLobbyError = (message: string) => setFatalError(message);
+    const onLobbyError = (message: string) => { setJoinPending(false); setFatalError(message); };
+    const onJoinPending = () => { setFatalError(null); setJoinPending(true); };
+    const onJoinRequests = (payload: { lobbyId: string; requests: { id: string; name: string }[] }) => {
+      if (payload.lobbyId === lobbyId) setJoinRequests(payload.requests);
+    };
     const onNameChanged = ({ name }: { name: string }) =>
       savePreferredPlayerName(name);
 
     socket.on("connect", joinLobby);
     socket.on("disconnect", onDisconnect);
     socket.on("lobbyJoined", onLobbyJoined);
+    socket.on("lobbyJoinPending", onJoinPending);
+    socket.on("joinRequestsUpdated", onJoinRequests);
     socket.on("gameReady", onGameReady);
     socket.on("versusUpdated", onVersusUpdated);
     socket.on("playersUpdated", onPlayersUpdated);
@@ -208,6 +221,8 @@ export function GamePage() {
       socket.off("connect", joinLobby);
       socket.off("disconnect", onDisconnect);
       socket.off("lobbyJoined", onLobbyJoined);
+      socket.off("lobbyJoinPending", onJoinPending);
+      socket.off("joinRequestsUpdated", onJoinRequests);
       socket.off("gameReady", onGameReady);
       socket.off("versusUpdated", onVersusUpdated);
       socket.off("playersUpdated", onPlayersUpdated);
@@ -320,6 +335,24 @@ export function GamePage() {
   const setTeam = (teamId: TeamId) => socket.emit("setTeam", { lobbyId, teamId });
   const randomizeTeams = () => socket.emit("randomizeTeams", { lobbyId });
   const toggleReady = () => socket.emit("toggleReady", { lobbyId });
+  const startMatch = () => socket.emit("startMatch", { lobbyId });
+  const reviewJoinRequest = (requestId: string, teamId?: TeamId) => {
+    setJoinRequests(requests => requests.filter(request => request.id !== requestId));
+    socket.emit("reviewJoinRequest", { lobbyId, requestId, teamId, reject: !teamId });
+  };
+
+  if (joinPending && !fatalError) {
+    return (
+      <div className="app-shell game-shell grid min-h-dvh place-items-center px-4 text-center">
+        <main className="neuron-card max-w-md p-8" aria-live="polite">
+          <Neuronaut className="mx-auto mb-4 h-16 w-16" />
+          <h1 className="text-2xl font-bold">Waiting for the host</h1>
+          <p className="mt-3 text-zinc-500 dark:text-zinc-400">{connected ? `Your request to join ${lobbyId} is sent. The host will choose your team.` : "Reconnecting to the mission…"}</p>
+          <button onClick={() => { socket.emit("leaveLobby"); navigate("/"); }} className="neuron-secondary-button mx-auto mt-6">Cancel request</button>
+        </main>
+      </div>
+    );
+  }
 
   if (fatalError) {
     return (
@@ -364,6 +397,21 @@ export function GamePage() {
           </div>
         </header>
 
+        {selfParticipantId && selfParticipantId === versus?.hostParticipantId && joinRequests.length > 0 && (
+          <section className="neuron-card mb-4 p-4" aria-label="Join requests" aria-live="polite">
+            <h2 className="font-bold">Waiting to join</h2>
+            <p className="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Admit people you recognize. They will see their team’s word history.</p>
+            {joinRequests.map(request => (
+              <div key={request.id} className="mt-3 flex flex-wrap items-center gap-2">
+                <strong className="mr-auto min-w-0 break-words">{request.name}</strong>
+                <button className="neuron-secondary-button" onClick={() => reviewJoinRequest(request.id, "red")}>Admit to Red Shift</button>
+                <button className="neuron-secondary-button" onClick={() => reviewJoinRequest(request.id, "blue")}>Admit to Blue Orbit</button>
+                <button className="neuron-secondary-button" onClick={() => reviewJoinRequest(request.id)}>Decline</button>
+              </div>
+            ))}
+          </section>
+        )}
+
         {category && (
           <div className="mission-category-context mb-5 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm" role="note" aria-label="Mission category">
             <MissionGlyph name="signal" className="h-5 w-5" />
@@ -400,6 +448,7 @@ export function GamePage() {
             onSetTeam={setTeam}
             onRandomizeTeams={randomizeTeams}
             onToggleReady={toggleReady}
+            onStartMatch={startMatch}
             onGuess={submitGuess}
             onTypingChange={handleTypingChange}
             onRequestHint={() => socket.emit("requestHint", { lobbyId })}

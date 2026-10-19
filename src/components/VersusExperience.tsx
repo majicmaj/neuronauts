@@ -39,6 +39,7 @@ interface VersusExperienceProps {
   onSetTeam: (teamId: TeamId) => void;
   onRandomizeTeams: () => void;
   onToggleReady: () => void;
+  onStartMatch: () => void;
   onGuess: (guess: string) => void;
   onTypingChange: (isTyping: boolean) => void;
   onRequestHint: () => void;
@@ -235,22 +236,26 @@ function LaunchConsole({
   selfReady,
   isHost,
   canReady,
+  canHostStart,
   onRandomizeTeams,
   onToggleReady,
+  onStartMatch,
 }: {
   className: string;
   versus: VersusState;
   selfReady: boolean;
   isHost: boolean;
   canReady: boolean;
+  canHostStart: boolean;
   onRandomizeTeams: () => void;
   onToggleReady: () => void;
+  onStartMatch: () => void;
 }) {
   return (
     <div className={`${className}${isHost ? " has-randomize" : ""}`}>
       <div className="vs-launch-status">
         <span>{versus.readyCount} / {versus.totalCount} ready</span>
-        <p>{versus.canStart ? "Launches automatically when every neuronaut is ready." : "Each team needs at least one player."}</p>
+        <p>{isHost ? versus.canStart ? "Start now, or wait for everyone to ready up." : "Each team needs at least one player." : versus.canStart ? "Starts when everyone is ready, or when the host starts." : "Waiting for teammates or the host to start."}</p>
       </div>
       {isHost && (
         <button type="button" className="neuron-secondary-button px-4" onClick={onRandomizeTeams}>
@@ -259,13 +264,18 @@ function LaunchConsole({
       )}
       <button
         type="button"
-        className="neuron-primary-button vs-ready-button"
+        className={`${isHost ? "neuron-secondary-button" : "neuron-primary-button"} vs-ready-button flex items-center gap-2`}
         disabled={!canReady}
         onClick={onToggleReady}
       >
         <MissionGlyph name={selfReady ? "cancel" : "confirm"} className="h-6 w-6" />
         {selfReady ? "Not ready" : "Ready for launch"}
       </button>
+      {isHost && (
+        <button type="button" className="neuron-primary-button vs-start-button" disabled={!canHostStart} onClick={onStartMatch}>
+          Start game
+        </button>
+      )}
     </div>
   );
 }
@@ -280,14 +290,16 @@ function VersusSetup({
   onSetTeam,
   onRandomizeTeams,
   onToggleReady,
+  onStartMatch,
 }: Pick<VersusExperienceProps,
   "versus" | "players" | "typingPlayerIds" | "selfSocketId" | "selfParticipantId" |
-  "connected" | "onSetTeam" | "onRandomizeTeams" | "onToggleReady"
+  "connected" | "onSetTeam" | "onRandomizeTeams" | "onToggleReady" | "onStartMatch"
 >) {
   const self = players.find((player) => player.id === selfSocketId);
   const isHost = selfParticipantId === versus.hostParticipantId;
   const teams = new Map(versus.teams.map((team) => [team.id, team]));
   const canReady = connected && (versus.canStart || Boolean(self?.ready));
+  const canHostStart = connected && Boolean(versus.canHostStart);
 
   return (
     <main className="vs-setup-shell">
@@ -308,8 +320,10 @@ function VersusSetup({
         selfReady={Boolean(self?.ready)}
         isHost={isHost}
         canReady={canReady}
+        canHostStart={canHostStart}
         onRandomizeTeams={onRandomizeTeams}
         onToggleReady={onToggleReady}
+        onStartMatch={onStartMatch}
       />
 
       <div className="vs-setup-arena">
@@ -341,8 +355,10 @@ function VersusSetup({
         selfReady={Boolean(self?.ready)}
         isHost={isHost}
         canReady={canReady}
+        canHostStart={canHostStart}
         onRandomizeTeams={onRandomizeTeams}
         onToggleReady={onToggleReady}
+        onStartMatch={onStartMatch}
       />
     </main>
   );
@@ -353,12 +369,13 @@ function VersusLive(props: VersusExperienceProps) {
     gameState, versus, players, typingPlayerIds, selfSocketId, connected,
     featuredGuess, featuredGuessVersion, featuredGuessNotice, hoveredGuessId,
     hintSeconds, onSetTeam: _onSetTeam, onRandomizeTeams: _onRandomizeTeams,
-    onToggleReady: _onToggleReady, onGuess, onTypingChange, onRequestHint,
+    onToggleReady: _onToggleReady, onStartMatch: _onStartMatch, onGuess, onTypingChange, onRequestHint,
     onGuessHover,
   } = props;
   void _onSetTeam;
   void _onRandomizeTeams;
   void _onToggleReady;
+  void _onStartMatch;
   const teams = new Map(versus.teams.map((team) => [team.id, team]));
   const redTeam = teams.get("red")!;
   const blueTeam = teams.get("blue")!;
