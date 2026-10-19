@@ -4,7 +4,7 @@
 
 A cooperative, real-time semantic word game. A crew shares guesses, charts them around a hidden target in vector space, and tries to find the target word together.
 
-Production: <https://semantle.netlify.app>
+Production: <https://neuronauts.hobbyhood.app>
 
 ## Gameplay
 
@@ -45,4 +45,28 @@ npm audit --omit=dev
 - Lazy-loaded game route to keep the landing-page bundle smaller
 - Server-calculated semantic positions; target embeddings never reach browsers
 
-Netlify builds `main` and publishes `dist/`. `VITE_API_URL` is a build-time variable and must point at the public backend.
+## Production deployment
+
+Cloudflare Workers Static Assets serves `dist/` directly at
+<https://neuronauts.hobbyhood.app>; Netlify is no longer in the request path.
+The configuration lives in `wrangler.jsonc` and preserves client-side routes
+such as `/game/GKG0Y0` with the SPA fallback.
+
+After `npm ci`, authenticate with `npx wrangler login` if needed, then run:
+
+```bash
+npm test
+npm run lint
+npm run deploy
+```
+
+The deploy command builds with `VITE_API_URL=https://semantle.hobbyhood.app`
+and publishes to the existing `neuronauts-web-edge` Worker and custom domain.
+Deployment is explicit; a Git push alone does not publish a release. The
+backend remains a separately deployed service, so a frontend release does
+not restart the backend or clear its rooms. The old Netlify URL is a legacy
+deployment and will no longer receive updates from this flow.
+
+Cooperative missions use `PostGameRecap` for player awards and mission grades.
+VS missions use the separate `VersusResults` in `VersusExperience.tsx` for
+team standings and adjusted-time scoring.

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite --host",
     "build": "tsc && vite build",
+    "deploy": "VITE_API_URL=https://semantle.hobbyhood.app npm run build && wrangler deploy",
     "lint": "eslint .",
     "test": "node --experimental-strip-types --test test/*.test.ts",
     "preview": "vite preview"
@@ -32,6 +33,7 @@
     "tsconfig-paths": "^4.2.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.22.0",
-    "vite": "^6.4.3"
+    "vite": "^6.4.3",
+    "wrangler": "4.151.2"
   }
 }
