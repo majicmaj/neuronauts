@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /game/
+
+Sitemap: https://neuronauts.hobbyhood.app/sitemap.xml
